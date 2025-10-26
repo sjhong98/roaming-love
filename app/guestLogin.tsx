@@ -1,4 +1,4 @@
-import supabase from "@/db";
+import supabase, { AsyncStorageAdapter } from "@/db";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import { Alert, Text, TextInput, TouchableOpacity, View } from "react-native";
@@ -32,9 +32,7 @@ export default function GuestLogin() {
             id: data.id,
             platform: 'guest',
         }
-        if (typeof window !== 'undefined') {
-            window.localStorage.setItem('userInfo', JSON.stringify(userInfo))
-        }
+        await AsyncStorageAdapter.setItem('userInfo', JSON.stringify(userInfo))
         router.replace('/main')
     }
 

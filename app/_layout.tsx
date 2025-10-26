@@ -27,6 +27,7 @@ export default function RootLayout() {
         <Stack.Screen name="main" options={{ title: '메인화면' }} />
         <Stack.Screen name="guestLogin" options={{ headerShown: false, title: '게스트로그인' }} />
         <Stack.Screen name="test1" options={{ headerShown: false, title: '테스트1' }} />
+        <Stack.Screen name="test1Result" options={{ headerShown: false, title: '테스트1결과' }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

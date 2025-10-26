@@ -4,10 +4,18 @@ import ParallaxScrollView from "@/components/parallax-scroll-view";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { useRouter } from "expo-router";
-import { Image, StyleSheet, TouchableOpacity } from "react-native";
+import { useEffect } from "react";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function Index() {
   const router = useRouter()
+
+  useEffect(() => {
+    setTimeout(() => {
+      router.push('/test1')
+    }, 100)
+  }, [])
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
@@ -18,10 +26,15 @@ export default function Index() {
         />
       }>
       <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">로밍러브</ThemedText>
+        <ThemedText type="title">로밍러브test</ThemedText>
         <HelloWave />
       </ThemedView>
       <ThemedView style={styles.stepContainer}>
+        <View style={{ width: '100%', alignItems: 'center' }}>
+          <TouchableOpacity onPress={() => router.push('/guestLogin')}>
+            <Text style={{ textDecorationLine: 'underline' }}>게스트로 시작하기</Text>
+          </TouchableOpacity>
+        </View>
         <TouchableOpacity onPress={() => router.push('/login?provider=kakao')}>
           <Image source={require('@/assets/images/kakaoLogin.png')} style={{ width: '100%' }} />
         </TouchableOpacity>

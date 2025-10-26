@@ -1,8 +1,10 @@
 import useUser from "@/hooks/use-user";
+import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 export default function Main() {
+    const router = useRouter();
     const { user } = useUser();
     const [loading, setLoading] = useState(true);
 
@@ -35,6 +37,7 @@ export default function Main() {
             {user.user_metadata && (
                 <Text style={styles.info}>메타데이터: {JSON.stringify(user.user_metadata, null, 2)}</Text>
             )}
+            <TouchableOpacity onPress={() => router.push('/test1')}><Text style={{ textDecorationLine: 'underline' }}>테스트1</Text></TouchableOpacity>
         </View>
     );
 }

@@ -1,0 +1,409 @@
+import LiquidGlassButton from "@/components/LiquidGlassButton";
+import { QAFormAnswerType, QAFormType } from "@/constants/QAForm";
+import { Image } from "expo-image";
+import { useRouter } from "expo-router";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Animated, SafeAreaView, Text, TouchableOpacity, View, StyleSheet } from "react-native";
+
+const ProgressBar = ({ progress, totalSteps }: { progress: number, totalSteps: number }) => {
+    const [animatedWidth] = useState(new Animated.Value(0));
+    const progressPercentage = (progress / totalSteps) * 100;
+
+    useEffect(() => {
+        Animated.timing(animatedWidth, {
+            toValue: progressPercentage,
+            duration: 300, // 300ms 애니메이션
+            useNativeDriver: false, // width는 native driver 사용 불가
+        }).start();
+    }, [progress, animatedWidth]);
+
+    return (
+        <View style={{ width: '100%', paddingHorizontal: 35, position: 'relative', paddingVertical: 22 }}>
+            <View style={[progressBarStyle.view, progressBarStyle.viewBg]}>
+                <Animated.View
+                    style={[
+                        progressBarStyle.filled,
+                        {
+                            width: animatedWidth.interpolate({
+                                inputRange: [0, 100],
+                                outputRange: ['0%', '100%'],
+                                extrapolate: 'clamp',
+                            })
+                        }
+                    ]}
+                />
+            </View>
+            <Text style={progressBarStyle.text}>{progress}/{totalSteps}</Text>
+        </View>
+    )
+}
+
+const TestStartScreen = ({ testDescription, testImage }: { testDescription: string, testImage: any }) => {
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 34 }}>
+            <Image style={[test1_1_style.icon,]} resizeMode="cover" source={testImage} />
+            <Text style={[test1_1_style.text, { paddingVertical: 20 }]}>
+                {testDescription}
+            </Text>
+        </View>
+    )
+}
+
+const TestChapterStartScreen = ({ chapterDescription, chapterImage, imageWidth, imageHeight }: { chapterDescription: string, chapterImage: any, imageWidth: number, imageHeight: number }) => {
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 34, gap: 30 }}>
+            <Text style={test1_2_style.text}>
+                {chapterDescription}
+            </Text>
+            <Image style={[test1_2_style.icon, { width: imageWidth, height: imageHeight }]} resizeMode="cover" source={chapterImage} />
+        </View>
+    )
+}
+
+
+const TestQuestionScreen = ({ question, answers, onChange }: {
+    question: string,
+    answers: QAFormAnswerType[],
+    onChange: (index: number) => void
+}) => {
+    return (
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 34, gap: 116, marginTop: -200 }}>
+            <Text style={test1_3_style.text}>
+                {question}
+            </Text>
+            <View style={test1_3_style.view}>
+                {answers.map((answer, index) => {
+                    const isSelected = answer.selected === true;
+                    return (
+                        <TouchableOpacity
+                            key={index}
+                            style={[test1_3_style.rectangleGroup]}
+                            onPress={() => onChange(index)}
+                        >
+                            <View style={[test1_3_style.groupChild, { backgroundColor: isSelected ? '#FF2D55' : '#efeff0' }]}>
+                                <Text style={[test1_3_style.textTypo, { color: isSelected ? '#fff' : '#999' }]}>{answer.answer}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    )
+                })}
+            </View>
+        </View>
+    )
+}
+
+export const TestForm = ({ form, setForm }:
+    {
+        form: QAFormType,
+        setForm: (form: QAFormType) => void
+    }) => {
+    const router = useRouter()
+    const [step, setStep] = useState(1);
+    const [currentChapter, setCurrentChapter] = useState<number>(1);
+    const [currentQuestion, setCurrentQuestion] = useState<number>(0);
+    const totalStepCount = form.chapters.reduce((acc, section) => acc + section.questions.length, 0) + form.chapters.length + 1;
+
+    const handleSelectForm = ({ section, questionId, answerIndex }:
+        {
+            section: number,
+            questionId: string,
+            answerIndex: number
+        }) => {
+        let _QAForm = [...form.chapters];
+
+        let currentSectionIndex = _QAForm.findIndex(sectionItem => sectionItem.chapter === section);
+        let currentQuestionIndex = _QAForm[currentSectionIndex]?.questions.findIndex(questionItem => questionItem.questionId === questionId);
+        let currentAnswer = _QAForm[currentSectionIndex].questions[currentQuestionIndex].answers;
+
+        currentAnswer = currentAnswer?.map((answerItem, index) => answerIndex === index ? { ...answerItem, selected: true } : { ...answerItem, selected: false });
+        _QAForm[currentSectionIndex].questions[currentQuestionIndex].answers = currentAnswer;
+
+        // console.log('_QAForm', _QAForm[currentSectionIndex].questions[currentQuestionIndex].answers);
+
+        setForm({ ...form, chapters: _QAForm });
+    }
+
+    const renderChapter = useMemo(() => {
+        return currentQuestion === 0 ? (
+            // 챕터 시작 페이지
+            <TestChapterStartScreen
+                chapterDescription={form.chapters[currentChapter - 1].chapterDescription}
+                chapterImage={form.chapters[currentChapter - 1].chapterImage}
+                imageWidth={form.chapters[currentChapter - 1].imageWidth}
+                imageHeight={form.chapters[currentChapter - 1].imageHeight}
+            />
+        ) : (
+            // 질문 페이지
+            <TestQuestionScreen
+                question={form.chapters[currentChapter - 1].questions[currentQuestion - 1].question}
+                answers={form.chapters[currentChapter - 1].questions[currentQuestion - 1].answers}
+                onChange={(index: number) => handleSelectForm({
+                    section: currentChapter,
+                    questionId: form.chapters[currentChapter - 1].questions[currentQuestion - 1].questionId,
+                    answerIndex: index
+                })}
+            />
+        )
+    }, [form.chapters, currentChapter, currentQuestion])
+
+    const handleNext = useCallback(() => {
+        if (step === totalStepCount) {
+            router.push(`/test1Result?form=${JSON.stringify(form)}`)
+        } else {
+            if (currentQuestion === form.chapters[currentChapter - 1].questions.length) {
+                setCurrentChapter(currentChapter + 1);
+                setCurrentQuestion(0);
+                setStep(prev => prev + 1)
+                console.log('다음 챕터로 이동')
+            } else if (step > 1) {
+                setCurrentQuestion(currentQuestion + 1);
+                setStep(prev => prev + 1)
+                console.log('다음 질문으로 이동')
+            } else {
+                setStep(prev => prev + 1)
+                console.log('테스트 시작')
+            }
+
+        }
+    }, [step, totalStepCount, router, currentChapter, currentQuestion, form.chapters])
+
+    return (
+        <SafeAreaView style={styles.safeareaview}>
+            {step > 1 && <ProgressBar progress={step - 1} totalSteps={totalStepCount} />}
+            <View style={styles.view}>
+                {
+                    // 테스트 시작 페이지
+                    step === 1 ?
+                        <TestStartScreen
+                            testDescription={form.testDescription}
+                            testImage={form.testImage}
+                        />
+                        : renderChapter
+                }
+                <View style={{ width: '100%', alignItems: 'center', position: 'absolute', bottom: 0 }}>
+                    <LiquidGlassButton
+                        text={step === 1 ? "시작하기" : "다음"}
+                        backgroundColor="#FF5878"
+                        onPress={handleNext}
+                    />
+                </View>
+            </View>
+        </SafeAreaView>);
+};
+const progressBarStyle = StyleSheet.create({
+    track: {
+        // flex: 1,
+        backgroundColor: "rgba(120, 120, 128, 0.16)"
+    },
+    viewBg: {
+        backgroundColor: "rgba(120, 120, 128, 0.16)",
+        // flex: 1
+    },
+    view: {
+        width: "100%",
+        height: 4
+    },
+    filled: {
+        position: "absolute",
+        marginTop: -2,
+        top: "50%",
+        left: 0,
+        borderRadius: 100,
+        backgroundColor: "#FF2D55",
+        height: 4,
+        width: 0 // 초기값은 0, 애니메이션으로 조절됨
+    },
+    text: {
+        width: 30,
+        height: 17,
+        fontSize: 14,
+        fontWeight: "700",
+        fontFamily: "Pretendard",
+        color: "#b3b3b3",
+        textAlign: "center",
+        position: 'absolute',
+        bottom: 0,
+        right: 34
+    }
+})
+
+const test1_1_style = StyleSheet.create({
+    text: {
+        // marginLeft: -160,
+        // top: '50%',
+        fontSize: 30,
+        fontWeight: "700",
+        fontFamily: "Pretendard",
+        textAlign: "left",
+        display: "flex",
+        width: 320,
+        minHeight: 111,
+        alignItems: "center",
+        color: "#000",
+    },
+    icon: {
+        marginLeft: 'auto',
+        width: 154,
+        height: 114
+    },
+})
+
+const test1_2_style = StyleSheet.create({
+    text: {
+        width: '100%',
+        height: 'auto',
+        fontSize: 30,
+        fontWeight: "700",
+        fontFamily: "Pretendard",
+        color: "#000",
+        textAlign: "left"
+    },
+    icon: {
+        overflow: "hidden",
+    },
+})
+
+const test1_3_style = StyleSheet.create({
+    groupPosition: {
+    },
+    textTypo: {
+        color: "#999",
+        fontFamily: "Pretendard",
+        fontWeight: "700",
+        fontSize: 17,
+    },
+    view: {
+        width: "100%",
+        gap: 17
+    },
+    rectangleParent: {
+        width: "100%"
+    },
+    groupChild: {
+        height: 59,
+        borderRadius: 30,
+        backgroundColor: "#efeff0",
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    text: {
+        width: '100%',
+        fontSize: 30,
+        fontWeight: "700",
+        fontFamily: "Pretendard",
+        color: "#000",
+    },
+    rectangleGroup: {
+    },
+})
+
+const styles = StyleSheet.create({
+    safeareaview: {
+        backgroundColor: "#fff",
+        flex: 1
+    },
+    iconPosition: {
+        left: "50%",
+        position: "absolute"
+    },
+    iconLayout: {
+        height: 12,
+        color: "#000"
+    },
+    view: {
+        width: "100%",
+        overflow: "hidden",
+        height: 'auto',
+        backgroundColor: "#fff",
+        flex: 1
+    },
+    safeareaviewHomeIndicator: {
+        marginLeft: 72,
+        bottom: 8,
+        backgroundColor: "rgba(128, 128, 128, 0.55)",
+        width: 144,
+        height: 5,
+        transform: [
+            {
+                rotate: "180deg"
+            }
+        ],
+        borderRadius: 100
+    },
+    statusBarIphone: {
+        marginLeft: -201,
+        width: 402,
+        height: 50,
+        paddingTop: 21,
+        top: 0,
+        backgroundColor: "#fff"
+    },
+    frame: {
+        alignSelf: "stretch",
+        justifyContent: "space-between",
+        gap: 0,
+        flexDirection: "row",
+        alignItems: "center"
+    },
+    time: {
+        paddingLeft: 16,
+        paddingRight: 6,
+        flexDirection: "row",
+        flex: 1
+    },
+    safeareaviewTime: {
+        lineHeight: 22,
+        fontWeight: "600",
+        color: "#000"
+    },
+    dynamicIslandSpacer: {
+        height: 10,
+        width: 124
+    },
+    levels: {
+        paddingLeft: 6,
+        paddingRight: 16,
+        gap: 7,
+        flexDirection: "row",
+        flex: 1
+    },
+    cellularConnectionIcon: {
+        width: 19
+    },
+    wifiIcon: {
+        width: 17
+    },
+    battery: {
+        height: 13,
+        width: 27
+    },
+    border: {
+        height: "100%",
+        marginLeft: -13.65,
+        top: "0%",
+        bottom: "0%",
+        borderRadius: 4,
+        borderStyle: "solid",
+        borderColor: "#000",
+        borderWidth: 1,
+        width: 25,
+        opacity: 0.35
+    },
+    capIcon: {
+        height: "31.54%",
+        marginLeft: 12.35,
+        top: "36.78%",
+        bottom: "31.68%",
+        maxHeight: "100%",
+        width: 1,
+        color: "#000"
+    },
+    capacity: {
+        height: "69.23%",
+        marginLeft: -11.65,
+        top: "15.38%",
+        bottom: "15.38%",
+        borderRadius: 3,
+        backgroundColor: "#000",
+        width: 21
+    }
+});
