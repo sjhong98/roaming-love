@@ -117,8 +117,6 @@ export const TestForm = ({ form, setForm }:
         currentAnswer = currentAnswer?.map((answerItem, index) => answerIndex === index ? { ...answerItem, selected: true } : { ...answerItem, selected: false });
         _QAForm[currentSectionIndex].questions[currentQuestionIndex].answers = currentAnswer;
 
-        // console.log('_QAForm', _QAForm[currentSectionIndex].questions[currentQuestionIndex].answers);
-
         setForm({ ...form, chapters: _QAForm });
     }
 

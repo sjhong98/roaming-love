@@ -130,6 +130,8 @@ export default function TestResult() {
     const { form } = useLocalSearchParams();
 
     const [step, setStep] = useState<number>(1);
+    const [result, setResult] = useState<QAFormType | null>(null);
+    const [type, setType] = useState<string | null>(null);
 
     useEffect(() => {
         if (step === 1)
@@ -143,15 +145,31 @@ export default function TestResult() {
     }, [])
 
     const calculateResult =useCallback(() => {
-        const parsedForm: QAFormType = JSON.parse(form as string);
-        const chapters: Chapter[] = parsedForm.chapters;
-        chapters.forEach(chapter => {
-            chapter.questions.forEach(question => {
-                question.answers.forEach(answer => {
-                    console.log('answer', answer);
+        let parsedForm: QAFormType = JSON.parse(form as string);
+
+        parsedForm.chapters.forEach((chapter, chapterIndex) => {
+            chapter.questions.forEach((question, questionIndex) => {
+                question.answers.forEach((answer, answerIndex) => {
+                    if(answer.selected) {
+                        parsedForm.resultTypes[answer.type].score += answer.score;
+                    }
                 })
             })
         })
+        setResult(parsedForm);
+        
+        let maxScore = 0;
+        let maxScoreType = ''
+        Object.keys(parsedForm.resultTypes).forEach(type => {
+            const score = Math.max(...Object.values(parsedForm.resultTypes).map(type => type.score))
+            if(score > maxScore) {
+                maxScore = score;
+                maxScoreType = type;
+            }
+        })
+        setType(maxScoreType)
+
+        console.log('\n\n\n계산결과 : ', maxScoreType);
     }, [])
 
     return (

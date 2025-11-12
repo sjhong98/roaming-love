@@ -93,7 +93,7 @@ export default function LoginScreen() {
                                 await AsyncStorageAdapter.setItem('userInfo', JSON.stringify(userInfo));
 
                                 // main 화면으로 이동
-                                router.replace('/main');
+                                router.replace('/(tabs)/main');
                             }
                         } else {
                             throw new Error('토큰을 찾을 수 없습니다');
