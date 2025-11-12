@@ -1,12 +1,15 @@
 import { Image } from "expo-image";
-import { Text, View, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Animated, Modal, Pressable, Easing, FlatList } from "react-native";
+import { Text, View, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Animated, Modal, Pressable, Easing } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import HeartActiveIcon from '@/assets/images/heartActive.svg';
 import HeartInactiveIcon from '@/assets/images/heartInactive.svg';
+import BackArrowIcon from '@/assets/images/backArrow.svg';
 import { useState, useRef, useEffect } from "react";
 import Locations from "@/constants/Locations";
 import { useRouter } from "expo-router";
 import Rating from "@/components/ui/Rating";
+import UserDummy from "@/constants/UserDummy";
+import LocationCard, { LOCATION_CARD_FONT_SIZE, LOCATION_CARD_MARKER_SIZE } from "@/components/ui/LocationCard";
 
 export default function Main() {
     const router = useRouter();
@@ -21,17 +24,18 @@ export default function Main() {
     const animatedLeft = useRef(new Animated.Value(0)).current;
     const animatedOpacity = useRef(new Animated.Value(0)).current;
     const otherElementsOpacity = useRef(new Animated.Value(1)).current;
-    const markerLeft = useRef(new Animated.Value(15)).current;
-    const markerBottom = useRef(new Animated.Value(23)).current;
-    const markerSize = useRef(new Animated.Value(25)).current;
-    const textLeft = useRef(new Animated.Value(44)).current;
-    const textBottom = useRef(new Animated.Value(26)).current;
-    const textFontSize = useRef(new Animated.Value(16)).current;
+    const initialMarkerSize = LOCATION_CARD_MARKER_SIZE;
+    const expandedMarkerSize = LOCATION_CARD_MARKER_SIZE;
+    const initialTextFontSize = LOCATION_CARD_FONT_SIZE;
+    const expandedTextFontSize = 24;
+    const markerSize = useRef(new Animated.Value(initialMarkerSize)).current;
+    const textFontSize = useRef(new Animated.Value(initialTextFontSize)).current;
     const scrollY = useRef(new Animated.Value(0)).current;
     const cardRefs = useRef<{ [key: number]: View | null }>({});
     const screenWidth = Dimensions.get('window').width;
     const screenHeight = Dimensions.get('window').height;
     const overlayTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const cardContainerWidth = (screenWidth - 54 - 15) / 2;
 
     useEffect(() => {
         return () => {
@@ -49,12 +53,8 @@ export default function Main() {
         animatedHeight.setValue(261);
         animatedTop.setValue(0);
         animatedLeft.setValue(0);
-        markerLeft.setValue(15);
-        markerBottom.setValue(23);
-        markerSize.setValue(25);
-        textLeft.setValue(44);
-        textBottom.setValue(26);
-        textFontSize.setValue(16);
+        markerSize.setValue(initialMarkerSize);
+        textFontSize.setValue(initialTextFontSize);
         scrollY.setValue(0);
         setSelectedLocationIndex(null);
         setCardLayout(null);
@@ -86,12 +86,8 @@ export default function Main() {
             animatedTop.setValue(y);
             animatedLeft.setValue(x);
             animatedOpacity.setValue(1);
-            markerLeft.setValue(15);
-            markerBottom.setValue(23);
-            markerSize.setValue(25);
-            textLeft.setValue(44);
-            textBottom.setValue(26);
-            textFontSize.setValue(16);
+            markerSize.setValue(initialMarkerSize);
+            textFontSize.setValue(initialTextFontSize);
 
             // 다른 요소들 opacity 1->0 애니메이션 (숨김)
             Animated.timing(otherElementsOpacity, {
@@ -130,38 +126,14 @@ export default function Main() {
                         easing: Easing.bezier(0.76, 0.14, 0.43, 1.01),
                         useNativeDriver: false,
                     }),
-                    Animated.timing(markerLeft, {
-                        toValue: 24,
-                        duration: 1000,
-                        easing: Easing.bezier(0.76, 0.14, 0.43, 1.01),
-                        useNativeDriver: false,
-                    }),
-                    Animated.timing(markerBottom, {
-                        toValue: 35,
-                        duration: 1000,
-                        easing: Easing.bezier(0.76, 0.14, 0.43, 1.01),
-                        useNativeDriver: false,
-                    }),
                     Animated.timing(markerSize, {
-                        toValue: 45,
-                        duration: 1000,
-                        easing: Easing.bezier(0.76, 0.14, 0.43, 1.01),
-                        useNativeDriver: false,
-                    }),
-                    Animated.timing(textLeft, {
-                        toValue: 84,
-                        duration: 1000,
-                        easing: Easing.bezier(0.76, 0.14, 0.43, 1.01),
-                        useNativeDriver: false,
-                    }),
-                    Animated.timing(textBottom, {
-                        toValue: 44,
+                        toValue: expandedMarkerSize,
                         duration: 1000,
                         easing: Easing.bezier(0.76, 0.14, 0.43, 1.01),
                         useNativeDriver: false,
                     }),
                     Animated.timing(textFontSize, {
-                        toValue: 24,
+                        toValue: expandedTextFontSize,
                         duration: 1000,
                         easing: Easing.bezier(0.76, 0.14, 0.43, 1.01),
                         useNativeDriver: false,
@@ -247,19 +219,11 @@ export default function Main() {
                                         onPress={() => handleCardPress(index)}
                                         activeOpacity={1}
                                     >
-                                        <View
+                                        <LocationCard
                                             ref={(ref) => { cardRefs.current[index] = ref; }}
-                                            style={{ width: 189, height: 261, borderRadius: 24, position: 'relative', overflow: 'hidden', boxShadow: '0px 8px 20px 5px rgba(0, 0, 0, 0.2)' }}
-                                        >
-                                            {/* <Image source={require('@/assets/images/liquidCard.png')} style={{ width: 269, height: 330, marginTop: -30, marginLeft: -40, borderRadius: 24 }} /> */}
-                                            <Image source={item.image} style={{ width: 189, height: 270, marginTop: -3, position: 'absolute', top: 0, left: 0 }} contentFit="cover" />
-                                            {/* heart */}
-                                            <HeartActiveIcon style={{ position: 'absolute', top: 14, right: 19, width: 25, height: 25 }} />
-                                            {/* marker */}
-                                            <Image source={require('@/assets/images/marker.png')} style={{ position: 'absolute', bottom: 23, left: 15, width: 25, height: 25 }} contentFit="contain" />
-                                            {/* location */}
-                                            <Text style={{ position: 'absolute', bottom: 26, left: 44, fontSize: 16, fontWeight: 600, color: '#FFF' }}>{item.name}</Text>
-                                        </View>
+                                            image={item.image}
+                                            name={item.name}
+                                        />
                                     </TouchableOpacity>
                                 ))
                             }
@@ -307,33 +271,30 @@ export default function Main() {
                         contentFit="cover"
                     />
                     <HeartActiveIcon style={{ position: 'absolute', top: 14, right: 19, width: 25, height: 25 }} />
-                    <Animated.View
-                        style={{
-                            position: 'absolute',
-                            bottom: markerBottom,
-                            left: markerLeft,
-                            width: markerSize,
-                            height: markerSize,
-                        }}
-                    >
-                        <Image
-                            source={require('@/assets/images/marker.png')}
-                            style={{ width: '100%', height: '100%' }}
-                            contentFit="contain"
-                        />
-                    </Animated.View>
-                    <Animated.Text
-                        style={{
-                            position: 'absolute',
-                            bottom: textBottom,
-                            left: textLeft,
-                            fontSize: textFontSize,
-                            fontWeight: 600,
-                            color: '#FFF',
-                        }}
-                    >
-                        {Locations[selectedLocationIndex].name}
-                    </Animated.Text>
+                    <View style={{ position: 'absolute', bottom: 18, width: '100%', alignItems: 'center' }}>
+                        <Animated.View
+                            style={{
+                                width: markerSize,
+                                height: markerSize,
+                            }}
+                        >
+                            <Image
+                                source={require('@/assets/images/marker.png')}
+                                style={{ width: '100%', height: '100%' }}
+                                contentFit="contain"
+                            />
+                        </Animated.View>
+                        <Animated.Text
+                            style={{
+                                marginTop: 7,
+                                fontSize: textFontSize,
+                                fontWeight: 600,
+                                color: '#FFF',
+                            }}
+                        >
+                            {Locations[selectedLocationIndex].name}
+                        </Animated.Text>
+                    </View>
                 </Animated.View>
             )}
 
@@ -377,21 +338,31 @@ export default function Main() {
                                 style={{ width: '100%', height: '100%' }}
                                 contentFit="cover"
                             />
-                            <HeartActiveIcon style={{ position: 'absolute', top: 14, right: 19, width: 25, height: 25 }} />
-                            <View
-                                style={{ position: 'absolute', bottom: 35, left: 24, width: 45, height: 45 }}
-                            >
-                                <Image
-                                    source={require('@/assets/images/marker.png')}
-                                    style={{ width: '100%', height: '100%' }}
-                                    contentFit="contain"
-                                />
+                            <View style={{ position: 'absolute', top: 60, width: '100%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20 }}>
+                                <TouchableOpacity onPress={() => {
+                                    setShowTripContent(false)
+                                    resetAnimationState()
+                                }}>
+                                <BackArrowIcon style={{ width: 25, height: 25 }} />
+                                </TouchableOpacity>
+                                <HeartActiveIcon style={{ width: 25, height: 25 }} />
                             </View>
-                            <Text
-                                style={{ position: 'absolute', bottom: 44, left: 84, fontSize: 24, fontWeight: 600, color: '#FFF' }}
-                            >
-                                {Locations[selectedLocationIndex].name}
-                            </Text>
+                            <View style={{ gap: 7, position: 'absolute', bottom: 18, width: '100%', alignItems: 'center' }}>
+                                <View
+                                    style={{ width: 32, height: 32 }}
+                                >
+                                    <Image
+                                        source={require('@/assets/images/marker.png')}
+                                        style={{ width: '100%', height: '100%' }}
+                                        contentFit="contain"
+                                    />
+                                </View>
+                                <Text
+                                    style={{ fontSize: 24, fontWeight: 600, color: '#FFF' }}
+                                >
+                                    {Locations[selectedLocationIndex].name}
+                                </Text>
+                            </View>
                         </Animated.View>
 
                         {/* 본문 스크롤: 헤더 높이만큼 상단 패딩을 두어 콘텐츠가 헤더 아래에서 시작 */}
@@ -429,42 +400,29 @@ export default function Main() {
                                     </View>
                                 </View>
 
-                                <FlatList
-                                    data={[{
-                                        nickname: '닉네임',
-                                        introduction: '한줄소개',
-                                        favorite: '#연애취향',
-                                        image: require('@/assets/images/userIcon.png'),
-                                        follow: 'Follow',
-                                        backgroundColor: '#ffd8e4',
-                                    }, {
-                                        nickname: '닉네임',
-                                        introduction: '한줄소개',
-                                        favorite: '#연애취향',
-                                        image: require('@/assets/images/userIcon.png'),
-                                        follow: 'Follow',
-                                        backgroundColor: '#C9FFF5',
-                                    }]}
-                                    numColumns={2}
-                                    style={{ marginTop: 30, paddingHorizontal: 27, overflow: 'visible' }}
-                                    columnWrapperStyle={{ gap: 15 }}
-                                    renderItem={({ item }) => (
-                                        <View style={[userCardStyles.view]}>
-                                            <View style={[userCardStyles.child, { backgroundColor: item.backgroundColor }]} />
-                                            <View style={userCardStyles.view2}>
-                                                <Text style={[userCardStyles.text, userCardStyles.textTypo]}>{item.nickname}</Text>
-                                                <Text style={[userCardStyles.text2, userCardStyles.textTypo]}>{item.introduction}</Text>
+                                <View style={{ marginTop: 30, paddingHorizontal: 27, overflow: 'visible' }}>
+                                    <View style={userCardStyles.grid}>
+                                        {UserDummy.map((item, index) => (
+                                            <View key={`${item.nickname}-${index}`} style={[userCardStyles.cardWrapper, { width: cardContainerWidth }]}>
+                                                <View style={[userCardStyles.view]}>
+                                                    <View style={[userCardStyles.child, { backgroundColor: item.backgroundColor }]} />
+                                                    <View style={userCardStyles.view2}>
+                                                        <Text style={[userCardStyles.text, userCardStyles.textTypo]}>{item.nickname}</Text>
+                                                        <Text style={[userCardStyles.text2, userCardStyles.textTypo]}>{item.introduction}</Text>
+                                                    </View>
+                                                    <View style={userCardStyles.view3}>
+                                                        <Text style={[userCardStyles.text3, userCardStyles.text3Typo]}>{item.favorite}</Text>
+                                                    </View>
+                                                    <Image source={item.image} style={userCardStyles.item} />
+                                                    <View style={[userCardStyles.view4, userCardStyles.view4Position]}>
+                                                        <View style={[userCardStyles.inner, userCardStyles.view4Position]} />
+                                                        <Text style={[userCardStyles.follow, userCardStyles.text3Typo]}>{item.follow}</Text>
+                                                    </View>
+                                                </View>
                                             </View>
-                                            <View style={userCardStyles.view3}>
-                                                <Text style={[userCardStyles.text3, userCardStyles.text3Typo]}>{item.favorite}</Text>
-                                            </View>
-                                            <Image source={item.image} style={userCardStyles.item} />
-                                            <View style={[userCardStyles.view4, userCardStyles.view4Position]}>
-                                                <View style={[userCardStyles.inner, userCardStyles.view4Position]} />
-                                                <Text style={[userCardStyles.follow, userCardStyles.text3Typo]}>{item.follow}</Text>
-                                            </View>
-                                        </View>
-                                    )} />
+                                        ))}
+                                    </View>
+                                </View>
                             </View>
                         </Animated.ScrollView>
                     </View>
@@ -477,6 +435,14 @@ export default function Main() {
 const userCardStyles = StyleSheet.create({
     parent: {
         flex: 1
+    },
+    grid: {
+        flexDirection: "row",
+        flexWrap: "wrap",
+        justifyContent: "space-between"
+    },
+    cardWrapper: {
+        marginBottom: 15
     },
     textTypo: {
         textAlign: "left",
