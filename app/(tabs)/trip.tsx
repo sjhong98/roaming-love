@@ -146,14 +146,12 @@ export default function Trip() {
                 && user.loveType === selectedForm.loveType
         });
         setFilteredUserList(filteredUserList);
-
-        console.log('\n\nfilteredUserList', filteredUserList);
     }
 
 
     return !searchResult ? (
-        <SafeAreaView>
-            <ScrollView ref={scrollRef} style={{ position: 'relative', height: '100%' }}>
+        <View>
+            <ScrollView ref={scrollRef} style={{ position: 'relative', height: '110%', paddingTop: 80 }} contentContainerStyle={{ paddingBottom: 150 }}>
                 <View style={topStyles.view0}>
                     <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={topStyles.text}>검색</Text>
@@ -163,7 +161,9 @@ export default function Trip() {
                 </View>
                 {!locationSelectOpen ? (
                     <TouchableOpacity onPress={() => setLocationSelectOpen(true)} activeOpacity={1} style={topStyles.view}>
-                        <View style={topStyles.view2} />
+                        <View style={{ width: '100%', paddingHorizontal: 24, justifyContent: 'center', alignItems: 'center' }}>
+                            <View style={topStyles.view2} />
+                        </View>
                         <ChangeEachOtherIcon style={[topStyles.child, topStyles.childPosition, { marginTop: 2 }]} width={347} />
                         <Text style={[topStyles.sel, topStyles.toTypo]}>SEL</Text>
                         <Text style={[topStyles.to, topStyles.toTypo, selectedForm.location ? topStyles.toActive : '']}>{selectedForm.location ? changeToThreeLetter(selectedForm.location) : 'To'}</Text>
@@ -172,7 +172,9 @@ export default function Trip() {
                         <View style={{ position: 'absolute', right: '11%', top: 160, width: 140, justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={[topStyles.text5, selectedForm.location ? { color: '#333' } : '']}>{!selectedForm.location ? '도착지' : selectedForm.location}</Text>
                         </View>
-                        <View style={topStyles.divider} />
+                        <View style={{ width: '100%', paddingHorizontal: 24, justifyContent: 'center', alignItems: 'center'}}>
+                            <View style={topStyles.divider} />
+                        </View>
                         <View style={[topStyles.group, { width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 5 }]}>
                             <CalendarIcon style={[topStyles.vectorIcon2, { position: 'relative', marginTop: -2 }]} width={18} height={14} />
                             <Text style={[topStyles.text6, topStyles.textTypo, { position: 'relative' }]}>{selectedForm.dateRange.startDate && selectedForm.dateRange.endDate ? `${dayjs(selectedForm.dateRange.startDate).format('YYYY.MM.DD')} ~ ${dayjs(selectedForm.dateRange.endDate).format('YYYY.MM.DD')}` : '가는 날 ~ 오는 날'}</Text>
@@ -280,10 +282,10 @@ export default function Trip() {
 
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     ) : (
-        <SafeAreaView>
-            <ScrollView ref={scrollRef} style={{ position: 'relative', height: '100%' }}>
+        <View>
+            <ScrollView ref={scrollRef} style={{ position: 'relative', height: '110%', paddingTop: 80 }} contentContainerStyle={{ paddingBottom: 150 }}>
                 <View style={topStyles.view0}>
                     <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={topStyles.text}>탐색하기</Text>
@@ -321,7 +323,7 @@ export default function Trip() {
                     }
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     )
 }
 
@@ -515,15 +517,13 @@ const userCardStyles = StyleSheet.create({
     },
     view: {
         width: "100%",
-
         elevation: 7,
         height: 104,
-        // flex: 1
     },
     view2: {
         borderRadius: 24,
         backgroundColor: "#ffd8e4",
-        width: 167,
+        width: '98%',
         left: 0,
         top: 0,
         position: "absolute",
@@ -645,15 +645,13 @@ const topStyles = StyleSheet.create({
         color: "#999"
     },
     view2: {
-        marginLeft: -173.5,
         top: 79,
-        boxShadow: "0px 4px 7.4px rgba(0, 0, 0, 0.25)",
+        boxShadow: "0px 5px 9.1px rgba(0, 0, 0, 0.1)",
         elevation: 7.4,
         borderRadius: 20,
         backgroundColor: "#fff",
         height: 161,
-        width: 347,
-        left: "50%",
+        width: '100%',
         position: "absolute"
     },
     child: {
@@ -684,9 +682,7 @@ const topStyles = StyleSheet.create({
         height: 1,
         backgroundColor: "#DEDEDE",
         top: 193,
-        width: 347,
-        left: "50%",
-        marginLeft: -173.5,
+        width: '100%',
         position: "absolute"
     },
     text4: {

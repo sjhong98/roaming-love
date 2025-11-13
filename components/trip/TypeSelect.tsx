@@ -11,6 +11,7 @@ export default function TypeSelect({ tripType, loveType, setTripType, setLoveTyp
     const handleChangeTripType = (tripType: string) => {
         setTripType(tripType);
         setTripTypeSelectOpen(false);
+        if(!loveType) setLoveTypeSelectOpen(true);
     }
 
     const handleChangeLoveType = (loveType: string) => {
@@ -220,6 +221,7 @@ const tripTypeDetail = StyleSheet.create({
         boxShadow: "0px 4px 7.4px rgba(0, 0, 0, 0.25)",
         borderRadius: 10,
         backgroundColor: "#fff",
+        zIndex: 1000
     },
     text: {
         width: "70.29%",
@@ -351,6 +353,7 @@ const filterStyles = StyleSheet.create({
         flexDirection: 'row',
         gap: 20,
         paddingHorizontal: 22,
+        height: 55
     },
     view2: {
         position: 'relative',
