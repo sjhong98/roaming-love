@@ -2,12 +2,16 @@ import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-nati
 import { SafeAreaView } from "react-native-safe-area-context";
 import ChangeEachOtherIcon from '@/assets/images/changeEachOther.svg';
 import CalendarIcon from '@/assets/images/calendarRed.svg';
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Image, ImageSource } from "expo-image";
 import LocationCard from "@/components/ui/LocationCard";
 import SearchRedIcon from '@/assets/images/searchRed.svg';
 import LocationSelect from "@/components/trip/LocationSelect";
 import DateSelect from "@/components/trip/DateSelect";
+import { changeToThreeLetter } from "@/utils/changeToThreeLetter";
+import dayjs from "dayjs";
+import SettingIcon from '@/assets/images/settingIcon.svg';
+import TypeSelect from "@/components/trip/TypeSelect";
 
 type UserCardItem = {
     type: 'user';
@@ -34,16 +38,21 @@ type DateRange = {
 export default function Trip() {
     const [locationSelectOpen, setLocationSelectOpen] = useState(false);
     const [dateSelectOpen, setDateSelectOpen] = useState(false);
+    const scrollRef = useRef<ScrollView>(null);
 
     const [selectedForm, setSelectedForm] = useState<{
         location: string | undefined;
         dateRange: DateRange;
+        tripType: string | undefined;
+        loveType: string | undefined;
     }>({
         location: undefined,
         dateRange: {
             startDate: null,
             endDate: null,
         },
+        tripType: undefined,
+        loveType: undefined,
     });
 
     const evenCardList: CardItem[] = [
@@ -114,10 +123,18 @@ export default function Trip() {
         },
     ]
 
+    useEffect(() => {
+        if (!locationSelectOpen) {
+            requestAnimationFrame(() => {
+                scrollRef.current?.scrollTo({ y: 0, animated: true });
+            });
+        }
+    }, [locationSelectOpen]);
+
 
     return (
         <SafeAreaView>
-            <ScrollView style={{ position: 'relative', height: '100%' }}>
+            <ScrollView ref={scrollRef} style={{ position: 'relative', height: '100%' }}>
                 <View style={topStyles.view0}>
                     <Text style={topStyles.text}>검색</Text>
                     <Text style={[topStyles.text2, topStyles.textTypo1]}>날짜 지정</Text>
@@ -126,16 +143,18 @@ export default function Trip() {
                 {!locationSelectOpen ? (
                     <TouchableOpacity onPress={() => setLocationSelectOpen(true)} activeOpacity={1} style={topStyles.view}>
                         <View style={topStyles.view2} />
-                        <ChangeEachOtherIcon style={[topStyles.child, topStyles.childPosition]} width={347} />
+                        <ChangeEachOtherIcon style={[topStyles.child, topStyles.childPosition, { marginTop: 2 }]} width={347} />
                         <Text style={[topStyles.sel, topStyles.toTypo]}>SEL</Text>
-                        <Text style={[topStyles.to, topStyles.toTypo]}>To</Text>
+                        <Text style={[topStyles.to, topStyles.toTypo, selectedForm.location ? topStyles.toActive : '']}>{selectedForm.location ? changeToThreeLetter(selectedForm.location) : 'To'}</Text>
                         {/* <Component5 style={[topStyles.vectorIcon, topStyles.groupLayout]} width={14} height={16} /> */}
                         <Text style={[topStyles.text4, topStyles.textTypo]}>서울/모든 공항</Text>
-                        <Text style={[topStyles.text5, topStyles.textTypo]}>도착지</Text>
+                        <View style={{ position: 'absolute', right: '11%', top: 160, width: 140, justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={[topStyles.text5, selectedForm.location ? { color: '#333' } : '']}>{!selectedForm.location ? '도착지' : selectedForm.location}</Text>
+                        </View>
                         <View style={topStyles.divider} />
-                        <View style={[topStyles.group, topStyles.groupLayout]}>
-                            <Text style={[topStyles.text6, topStyles.textTypo]}>가는 날 ~ 오는 날</Text>
-                            <CalendarIcon style={[topStyles.vectorIcon2, topStyles.childPosition]} width={18} height={14} />
+                        <View style={[topStyles.group, { width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 5 }]}>
+                            <CalendarIcon style={[topStyles.vectorIcon2, { position: 'relative', marginTop: -2 }]} width={18} height={14} />
+                            <Text style={[topStyles.text6, topStyles.textTypo, { position: 'relative' }]}>{selectedForm.dateRange.startDate && selectedForm.dateRange.endDate ? `${dayjs(selectedForm.dateRange.startDate).format('YYYY.MM.DD')} ~ ${dayjs(selectedForm.dateRange.endDate).format('YYYY.MM.DD')}` : '가는 날 ~ 오는 날'}</Text>
                         </View>
                     </TouchableOpacity>
                 ) : (
@@ -147,14 +166,14 @@ export default function Trip() {
                 )}
 
                 {!dateSelectOpen ? (
-                <TouchableOpacity onPress={() => setDateSelectOpen(true)} activeOpacity={1} style={{ width: '100%', paddingHorizontal: 24, position: 'relative', marginTop: 20 }}>
-                    <View style={selectDateStyles.view}>
-                        <View style={[selectDateStyles.view2, selectDateStyles.viewPosition]} />
-                        <View style={[selectDateStyles.view3, selectDateStyles.viewPosition]} />
-                        <Text style={[selectDateStyles.text, selectDateStyles.textTypo]}>날짜</Text>
-                        <Text style={[selectDateStyles.safeareaviewText, selectDateStyles.textTypo]}>일주일</Text>
-                    </View>
-                </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setDateSelectOpen(true)} activeOpacity={1} style={{ width: '100%', paddingHorizontal: 24, position: 'relative', marginTop: 20 }}>
+                        <View style={selectDateStyles.view}>
+                            <View style={[selectDateStyles.view2, selectDateStyles.viewPosition]} />
+                            <View style={[selectDateStyles.view3, selectDateStyles.viewPosition]} />
+                            <Text style={[selectDateStyles.text, selectDateStyles.textTypo]}>날짜</Text>
+                            <Text style={[selectDateStyles.safeareaviewText, selectDateStyles.textTypo]}>{selectedForm.dateRange.endDate ? `${dayjs(selectedForm.dateRange.endDate).diff(dayjs(selectedForm.dateRange.startDate), 'day') + 1}일` : '일수'}</Text>
+                        </View>
+                    </TouchableOpacity>
                 ) : (
                     <DateSelect
                         setDateSelectOpen={setDateSelectOpen}
@@ -163,20 +182,15 @@ export default function Trip() {
                     />
                 )}
 
-                <View style={filterStyles.view}>
-                    <View style={[filterStyles.view2, filterStyles.viewPosition]}>
-                        <View style={[filterStyles.view3, filterStyles.viewPosition]} />
-                        <Text style={[filterStyles.text, filterStyles.textTypo]}>선택해주세요</Text>
-                        <Text style={[filterStyles.safeareaviewText, filterStyles.textTypo]}>여행 타입</Text>
-                        {/* <Component1 style={filterStyles.adjustmentsoutlineIcon} width={25} height={24} /> */}
-                    </View>
-                    <View style={[filterStyles.view4, filterStyles.viewPosition]}>
-                        <View style={[filterStyles.view3, filterStyles.viewPosition]} />
-                        <Text style={[filterStyles.text, filterStyles.textTypo]}>선택해주세요</Text>
-                        <Text style={[filterStyles.safeareaviewText, filterStyles.textTypo]}>연애 타입</Text>
-                        {/* <Component7 style={filterStyles.adjustmentsoutlineIcon} width={25} height={24} /> */}
-                    </View>
-                </View>
+                <TypeSelect
+                    tripType={selectedForm.tripType}
+                    loveType={selectedForm.loveType}
+                    setTripType={(tripType: string) => {
+                        console.log('tripType', tripType);
+                        setSelectedForm({ ...selectedForm, tripType })
+                    }}
+                    setLoveType={(loveType: string) => setSelectedForm({ ...selectedForm, loveType })}
+                />
 
                 <View style={{ width: '100%', paddingHorizontal: 20, flexDirection: 'row', gap: 10, position: 'relative', marginTop: 28 }}>
                     <View style={{ width: '48.5%', minHeight: 200, gap: 15 }}>
@@ -365,59 +379,6 @@ const userCardStyles = StyleSheet.create({
     }
 });
 
-const filterStyles = StyleSheet.create({
-    viewPosition: {
-        width: 167,
-        left: "50%",
-        top: 0,
-        position: "absolute",
-        height: 52
-    },
-    textTypo: {
-        textAlign: "left",
-        fontFamily: "NanumSquare Neo OTF",
-        left: 12,
-        position: "absolute"
-    },
-    view: {
-        width: "100%",
-        height: 52,
-        marginTop: 17,
-        position: 'relative'
-    },
-    view2: {
-        marginLeft: -170
-    },
-    view3: {
-        marginLeft: -87.5,
-        boxShadow: "0px 5px 9.1px rgba(0, 0, 0, 0.1)",
-        elevation: 7.4,
-        borderRadius: 10,
-        backgroundColor: "#fff"
-    },
-    text: {
-        top: 26,
-        fontSize: 14,
-        color: "#000"
-    },
-    safeareaviewText: {
-        top: 10,
-        fontSize: 10,
-        color: "#999",
-        width: 43
-    },
-    adjustmentsoutlineIcon: {
-        top: 13,
-        left: 140,
-        width: 25,
-        height: 24,
-        position: "absolute"
-    },
-    view4: {
-        marginLeft: 10
-    }
-});
-
 const topStyles = StyleSheet.create({
     parent: {
         flex: 1
@@ -445,7 +406,7 @@ const topStyles = StyleSheet.create({
     },
     groupLayout: {
         height: 16,
-        position: "absolute"
+        // position: "absolute"
     },
     textTypo: {
         fontSize: 13,
@@ -507,8 +468,12 @@ const topStyles = StyleSheet.create({
         color: "#e30247"
     },
     to: {
-        left: '65%',
+        left: '66%',
         color: "#999"
+    },
+    toActive: {
+        left: '62%',
+        color: "#E30247"
     },
     vectorIcon: {
         top: 127,
@@ -531,17 +496,15 @@ const topStyles = StyleSheet.create({
         color: "#000"
     },
     text5: {
-        top: 157,
-        left: '66%',
         color: "#999"
     },
     group: {
         top: 208,
-        left: 117,
-        width: 112
+        // left: 117,
+        // width: 160
     },
     text6: {
-        left: '30%',
+        // left: '30%',
         color: "#999",
         top: 0,
         fontSize: 13
