@@ -1,4 +1,4 @@
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ChangeEachOtherIcon from '@/assets/images/changeEachOther.svg';
 import CalendarIcon from '@/assets/images/calendarRed.svg';
@@ -12,6 +12,7 @@ import { changeToThreeLetter } from "@/utils/changeToThreeLetter";
 import dayjs from "dayjs";
 import SettingIcon from '@/assets/images/settingIcon.svg';
 import TypeSelect from "@/components/trip/TypeSelect";
+import UserDummy from "@/constants/UserDummy";
 
 type UserCardItem = {
     type: 'user';
@@ -38,6 +39,8 @@ type DateRange = {
 export default function Trip() {
     const [locationSelectOpen, setLocationSelectOpen] = useState(false);
     const [dateSelectOpen, setDateSelectOpen] = useState(false);
+    const [searchResult, setSearchResult] = useState<boolean>(false);
+    const [filteredUserList, setFilteredUserList] = useState<any[]>([]);
     const scrollRef = useRef<ScrollView>(null);
 
     const [selectedForm, setSelectedForm] = useState<{
@@ -131,12 +134,30 @@ export default function Trip() {
         }
     }, [locationSelectOpen]);
 
+    const handleSearch = () => {
+        if (!selectedForm.location || !selectedForm.dateRange.startDate || !selectedForm.dateRange.endDate || !selectedForm.tripType || !selectedForm.loveType) return;
 
-    return (
+        setSearchResult(true);
+
+        const filteredUserList = UserDummy.filter((user) => {
+            return user.favoriteLocation.includes(selectedForm.location ?? '')
+                && (dayjs(user.date.startDate).isSame(dayjs(selectedForm.dateRange.startDate), 'day') && dayjs(user.date.endDate).isSame(dayjs(selectedForm.dateRange.endDate), 'day'))
+                && user.tripType === selectedForm.tripType
+                && user.loveType === selectedForm.loveType
+        });
+        setFilteredUserList(filteredUserList);
+
+        console.log('\n\nfilteredUserList', filteredUserList);
+    }
+
+
+    return !searchResult ? (
         <SafeAreaView>
             <ScrollView ref={scrollRef} style={{ position: 'relative', height: '100%' }}>
                 <View style={topStyles.view0}>
-                    <Text style={topStyles.text}>검색</Text>
+                    <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                        <Text style={topStyles.text}>검색</Text>
+                    </View>
                     <Text style={[topStyles.text2, topStyles.textTypo1]}>날짜 지정</Text>
                     <Text style={[topStyles.text3, topStyles.textTypo1]}>일수 지정</Text>
                 </View>
@@ -192,6 +213,16 @@ export default function Trip() {
                     setLoveType={(loveType: string) => setSelectedForm({ ...selectedForm, loveType })}
                 />
 
+                <View style={{ position: 'relative', marginTop: 20, width: '100%', height: 50, paddingHorizontal: 20 }}>
+                    <TouchableOpacity
+                        onPress={handleSearch}
+                        disabled={!selectedForm.location || !selectedForm.dateRange.startDate || !selectedForm.dateRange.endDate || !selectedForm.tripType || !selectedForm.loveType}
+                        style={{ width: '100%', height: 50, backgroundColor: '#FF2D55', borderRadius: 10, justifyContent: 'center', alignItems: 'center', opacity: !selectedForm.location || !selectedForm.dateRange.startDate || !selectedForm.dateRange.endDate || !selectedForm.tripType || !selectedForm.loveType ? 0.5 : 1 }}
+                    >
+                        <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>검색</Text>
+                    </TouchableOpacity>
+                </View>
+
                 <View style={{ width: '100%', paddingHorizontal: 20, flexDirection: 'row', gap: 10, position: 'relative', marginTop: 28 }}>
                     <View style={{ width: '48.5%', minHeight: 200, gap: 15 }}>
                         {evenCardList.map((item, index) => (
@@ -213,7 +244,7 @@ export default function Trip() {
                                     <LocationCard
                                         image={item.image}
                                         name={item.name}
-                                        containerStyle={{ width: "100%", aspectRatio: 189 / 261 }}
+                                        containerStyle={{ width: '100%', height: Dimensions.get('window').width * 0.6, aspectRatio: 189 / 261 }}
                                     />
                                 )}
                             </View>
@@ -240,7 +271,7 @@ export default function Trip() {
                                     <LocationCard
                                         image={item.image}
                                         name={item.name}
-                                        containerStyle={{ width: "100%", aspectRatio: 189 / 261 }}
+                                        containerStyle={{ width: "100%", height: Dimensions.get('window').width * 0.6, aspectRatio: 189 / 261 }}
                                     />
                                 )}
                             </View>
@@ -250,8 +281,178 @@ export default function Trip() {
                 </View>
             </ScrollView>
         </SafeAreaView>
-    );
+    ) : (
+        <SafeAreaView>
+            <ScrollView ref={scrollRef} style={{ position: 'relative', height: '100%' }}>
+                <View style={topStyles.view0}>
+                    <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                        <Text style={topStyles.text}>탐색하기</Text>
+                    </View>
+                    <TouchableOpacity onPress={() => setSearchResult(false)}>
+                        <Text style={{ marginLeft: 20 }}>{`뒤로가기`}</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={{ position: 'relative', width: '100%', paddingHorizontal: 20, gap: 18, marginTop: 50 }}>
+                    {
+                        filteredUserList.map((item, index) => (
+                            <View key={index} style={{ width: '100%' }}>
+                                <View style={userCardStyles2.view}>
+                                    <View style={[userCardStyles2.rectangleParent, userCardStyles2.groupChildPosition]}>
+                                        <View style={[userCardStyles2.groupChild, userCardStyles2.groupChildPosition, { backgroundColor: item.backgroundColor }]} />
+                                        <View style={userCardStyles2.view2}>
+                                            <Text style={userCardStyles2.text}>{item.nickname}</Text>
+                                            <Text style={[userCardStyles2.safeareaviewText, userCardStyles2.smallTalkTypo]}>{item.introduction}</Text>
+                                        </View>
+                                        <View style={userCardStyles2.view3}>
+                                            <Text style={[userCardStyles2.text2, userCardStyles2.textTypo]}>{`#${item.loveType}`}</Text>
+                                        </View>
+                                        <Image source={item.image} style={userCardStyles2.groupItem} />
+                                        <View style={[userCardStyles2.view4, userCardStyles2.view4Layout]}>
+                                            <View style={[userCardStyles2.child, userCardStyles2.view4Layout]} />
+                                            <Text style={[userCardStyles2.smallTalk, userCardStyles2.smallTalkTypo]}>Small Talk</Text>
+                                        </View>
+                                        <Text style={[userCardStyles2.text3, userCardStyles2.textTypo]}>
+                                            {item.description}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </View>
+                        ))
+                    }
+                </View>
+            </ScrollView>
+        </SafeAreaView>
+    )
 }
+
+const userCardStyles2 = StyleSheet.create({
+    safeareaview: {
+        flex: 1
+    },
+    groupChildPosition: {
+        bottom: "0%",
+        right: "0%",
+        top: "0%",
+        height: "100%",
+        left: "0%",
+        position: "absolute",
+        width: "100%"
+    },
+    smallTalkTypo: {
+        fontSize: 14,
+        textAlign: "left",
+        color: "#000",
+        fontFamily: "NanumSquare Neo",
+        left: "50%",
+        position: "absolute"
+    },
+    textTypo: {
+        fontWeight: "300",
+        fontSize: 13,
+        textAlign: "left",
+        color: "#000",
+        fontFamily: "NanumSquare Neo",
+        position: "absolute"
+    },
+    view4Layout: {
+        height: 29,
+        width: 137,
+        left: "50%",
+        position: "absolute"
+    },
+    view: {
+        height: 210,
+        width: "100%",
+        flex: 1
+    },
+    rectangleParent: {
+        left: "0%"
+    },
+    groupChild: {
+        boxShadow: "0px 0px 24px rgba(0, 0, 0, 0.18)",
+        elevation: 18,
+        borderRadius: 20,
+        left: "0%"
+    },
+    view2: {
+        marginLeft: -65,
+        top: 23,
+        height: 47,
+        width: 133,
+        left: "50%",
+        position: "absolute"
+    },
+    text: {
+        top: 0,
+        fontSize: 20,
+        textAlign: "left",
+        color: "#000",
+        fontFamily: "NanumSquare Neo",
+        fontWeight: "800",
+        marginLeft: -66.5,
+        width: 133,
+        left: "50%",
+        position: "absolute"
+    },
+    safeareaviewText: {
+        top: 32,
+        fontSize: 14,
+        marginLeft: -66.5,
+        width: 133
+    },
+    view3: {
+        width: "30.14%",
+        right: "76.29%",
+        bottom: 20,
+        left: "6.57%",
+        height: 14,
+        position: "absolute"
+    },
+    text2: {
+        bottom: 0,
+        left: "0%"
+    },
+    groupItem: {
+        top: 17,
+        left: 15,
+        width: 76,
+        height: 76,
+        color: "#fff",
+        position: "absolute"
+    },
+    view4: {
+        marginLeft: 13,
+        bottom: 12
+    },
+    child: {
+        marginLeft: -68.5,
+        boxShadow: "0px 0px 10.2px #fff",
+        elevation: 10.2,
+        borderRadius: 15,
+        backgroundColor: "#fff",
+        bottom: 0
+    },
+    smallTalk: {
+        marginLeft: -36.5,
+        bottom: 7,
+        fontWeight: "800",
+        fontSize: 14
+    },
+    text3: {
+        top: 110,
+        left: 23
+    },
+    text4: {
+        marginBottom: 4
+    },
+    icon: {
+        top: 13,
+        right: 13,
+        width: 24,
+        height: 21,
+        position: "absolute"
+    }
+});
 
 const selectDateStyles = StyleSheet.create({
     safeareaview: {
@@ -427,13 +628,11 @@ const topStyles = StyleSheet.create({
         position: 'relative'
     },
     text: {
-        marginLeft: -19.5,
         fontSize: 20,
         textAlign: "center",
         fontFamily: "NanumSquare Neo OTF",
         fontWeight: "700",
         color: "#000",
-        left: "50%",
         top: 0,
         position: "absolute"
     },

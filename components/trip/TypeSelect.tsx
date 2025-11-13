@@ -8,10 +8,15 @@ export default function TypeSelect({ tripType, loveType, setTripType, setLoveTyp
     const [tripTypeSelectOpen, setTripTypeSelectOpen] = useState(false);
     const [loveTypeSelectOpen, setLoveTypeSelectOpen] = useState(false);
 
-    useEffect(() => {
-        console.log('tripType', tripType);
-    }, [tripType])
+    const handleChangeTripType = (tripType: string) => {
+        setTripType(tripType);
+        setTripTypeSelectOpen(false);
+    }
 
+    const handleChangeLoveType = (loveType: string) => {
+        setLoveType(loveType);
+        setLoveTypeSelectOpen(false);
+    }
 
     return (
         <View style={filterStyles.view}>
@@ -19,7 +24,7 @@ export default function TypeSelect({ tripType, loveType, setTripType, setLoveTyp
                 !tripTypeSelectOpen ? (
                     <TouchableOpacity onPress={() => setTripTypeSelectOpen(true)} activeOpacity={1} style={[filterStyles.view2, filterStyles.viewPosition]}>
                         <View style={[filterStyles.view3, { width: '100%', height: '100%' }]} />
-                        <Text style={[filterStyles.text, filterStyles.textTypo]}>선택해주세요</Text>
+                        <Text style={[filterStyles.text, filterStyles.textTypo]}>{tripType ? tripType : '선택해주세요'}</Text>
                         <Text style={[filterStyles.safeareaviewText, filterStyles.textTypo]}>여행 타입</Text>
                         <SettingIcon style={filterStyles.adjustmentsoutlineIcon} width={16} height={16} />
                     </TouchableOpacity>
@@ -29,19 +34,19 @@ export default function TypeSelect({ tripType, loveType, setTripType, setLoveTyp
                         <Text style={[tripTypeDetail.safeareaviewText, tripTypeDetail.textTypo]}>여행 타입</Text>
                         <SettingIcon style={filterStyles.adjustmentsoutlineIcon} width={16} height={16} />
                         <View style={tripTypeDetail.parent}>
-                            <TouchableOpacity style={[tripTypeDetail.text2, tripTypeDetail.textTypo]} onPress={() => setTripType('모험 유랑가')}>
+                            <TouchableOpacity style={[tripTypeDetail.text2, tripTypeDetail.textTypo]} onPress={() => handleChangeTripType('모험 유랑가')}>
                                 <Text>모험 유랑가</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[tripTypeDetail.text3, tripTypeDetail.textTypo]} onPress={() => setTripType('여행 만학도')}>
+                            <TouchableOpacity style={[tripTypeDetail.text3, tripTypeDetail.textTypo]} onPress={() => handleChangeTripType('여행 만학도')}>
                                 <Text>여행 만학도</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[tripTypeDetail.text4, tripTypeDetail.textTypo]} onPress={() => setTripType('늘보 베짱이')}>
+                            <TouchableOpacity style={[tripTypeDetail.text4, tripTypeDetail.textTypo]} onPress={() => handleChangeTripType('늘보 베짱이')}>
                                 <Text>늘보 베짱이</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[tripTypeDetail.text5, tripTypeDetail.textTypo]} onPress={() => setTripType('핫플레이더')}>
+                            <TouchableOpacity style={[tripTypeDetail.text5, tripTypeDetail.textTypo]} onPress={() => handleChangeTripType('핫플레이더')}>
                                 <Text>핫플레이더</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[tripTypeDetail.text6, tripTypeDetail.textTypo]} onPress={() => setTripType('가성비로거')}>
+                            <TouchableOpacity style={[tripTypeDetail.text6, tripTypeDetail.textTypo]} onPress={() => handleChangeTripType('가성비로거')}>
                                 <Text>가성비로거</Text>
                             </TouchableOpacity>
                         </View>
@@ -50,7 +55,7 @@ export default function TypeSelect({ tripType, loveType, setTripType, setLoveTyp
                                 tripType === '모험 유랑가' ? (
                                     <RadioActiveIcon style={tripTypeDetail.radioButtonCheckedIcon} />
                                 ) : (
-                                    <TouchableOpacity onPress={() => setTripType('모험 유랑가')}>
+                                    <TouchableOpacity onPress={() => handleChangeTripType('모험 유랑가')}>
                                         <RadioInactiveIcon style={tripTypeDetail.radioButtonCheckedIcon} />
                                     </TouchableOpacity>
                                 )
@@ -59,7 +64,7 @@ export default function TypeSelect({ tripType, loveType, setTripType, setLoveTyp
                                 tripType === '여행 만학도' ? (
                                     <RadioActiveIcon style={[tripTypeDetail.radioButtonUncheckedIcon, tripTypeDetail.radioIconLayout]} />
                                 ) : (
-                                    <TouchableOpacity onPress={() => setTripType('여행 만학도')}>
+                                    <TouchableOpacity onPress={() => handleChangeTripType('여행 만학도')}>
                                         <RadioInactiveIcon style={[tripTypeDetail.radioButtonUncheckedIcon, tripTypeDetail.radioIconLayout]} />
                                     </TouchableOpacity>
                                 )
@@ -68,7 +73,7 @@ export default function TypeSelect({ tripType, loveType, setTripType, setLoveTyp
                                 tripType === '늘보 베짱이' ? (
                                     <RadioActiveIcon style={[tripTypeDetail.safeareaviewRadioButtonUncheckedIcon, tripTypeDetail.radioIconLayout]} />
                                 ) : (
-                                    <TouchableOpacity onPress={() => setTripType('늘보 베짱이')}>
+                                    <TouchableOpacity onPress={() => handleChangeTripType('늘보 베짱이')}>
                                         <RadioInactiveIcon style={[tripTypeDetail.safeareaviewRadioButtonUncheckedIcon, tripTypeDetail.radioIconLayout]} />
                                     </TouchableOpacity>
                                 )
@@ -77,7 +82,7 @@ export default function TypeSelect({ tripType, loveType, setTripType, setLoveTyp
                                 tripType === '핫플레이더' ? (
                                     <RadioActiveIcon style={[tripTypeDetail.radioButtonUncheckedIcon2, tripTypeDetail.radioIconLayout]} />
                                 ) : (
-                                    <TouchableOpacity onPress={() => setTripType('핫플레이더')}>
+                                    <TouchableOpacity onPress={() => handleChangeTripType('핫플레이더')}>
                                         <RadioInactiveIcon style={[tripTypeDetail.radioButtonUncheckedIcon2, tripTypeDetail.radioIconLayout]} />
                                     </TouchableOpacity>
                                 )
@@ -86,7 +91,7 @@ export default function TypeSelect({ tripType, loveType, setTripType, setLoveTyp
                                 tripType === '가성비로거' ? (
                                     <RadioActiveIcon style={[tripTypeDetail.radioButtonUncheckedIcon3, tripTypeDetail.radioIconLayout]} />
                                 ) : (
-                                    <TouchableOpacity onPress={() => setTripType('가성비로거')}>
+                                    <TouchableOpacity onPress={() => handleChangeTripType('가성비로거')}>
                                         <RadioInactiveIcon style={[tripTypeDetail.radioButtonUncheckedIcon3, tripTypeDetail.radioIconLayout]} />
                                     </TouchableOpacity>
                                 )
@@ -100,7 +105,7 @@ export default function TypeSelect({ tripType, loveType, setTripType, setLoveTyp
                 !loveTypeSelectOpen ? (
                     <TouchableOpacity onPress={() => setLoveTypeSelectOpen(true)} activeOpacity={1} style={[filterStyles.view4, filterStyles.viewPosition]}>
                         <View style={[filterStyles.view3, { width: '100%', height: '100%' }]} />
-                        <Text style={[filterStyles.text, filterStyles.textTypo]}>선택해주세요</Text>
+                        <Text style={[filterStyles.text, filterStyles.textTypo]}>{loveType ? loveType : '선택해주세요'}</Text>
                         <Text style={[filterStyles.safeareaviewText, filterStyles.textTypo]}>연애 타입</Text>
                         <SettingIcon style={filterStyles.adjustmentsoutlineIcon} width={16} height={16} />
                     </TouchableOpacity>
@@ -111,19 +116,19 @@ export default function TypeSelect({ tripType, loveType, setTripType, setLoveTyp
                         <Text style={[tripTypeDetail.safeareaviewText, tripTypeDetail.textTypo]}>여행 타입</Text>
                         <SettingIcon style={filterStyles.adjustmentsoutlineIcon} width={16} height={16} />
                         <View style={tripTypeDetail.parent}>
-                            <TouchableOpacity style={[tripTypeDetail.text2, tripTypeDetail.textTypo]} onPress={() => setLoveType('안정적인 동반자')}>
+                            <TouchableOpacity style={[tripTypeDetail.text2, tripTypeDetail.textTypo]} onPress={() => handleChangeLoveType('안정적인 동반자')}>
                                 <Text>안정적인 동반자</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[tripTypeDetail.text3, tripTypeDetail.textTypo]} onPress={() => setLoveType('열정적인 몰입형')}>
+                            <TouchableOpacity style={[tripTypeDetail.text3, tripTypeDetail.textTypo]} onPress={() => handleChangeLoveType('열정적인 몰입형')}>
                                 <Text>열정적인 몰입형</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[tripTypeDetail.text4, tripTypeDetail.textTypo]} onPress={() => setLoveType('자유로운 유희형')}>
+                            <TouchableOpacity style={[tripTypeDetail.text4, tripTypeDetail.textTypo]} onPress={() => handleChangeLoveType('자유로운 유희형')}>
                                 <Text>자유로운 유희형</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[tripTypeDetail.text5, tripTypeDetail.textTypo]} onPress={() => setLoveType('공감중심 밀착형')}>
+                            <TouchableOpacity style={[tripTypeDetail.text5, tripTypeDetail.textTypo]} onPress={() => handleChangeLoveType('공감중심 밀착형')}>
                                 <Text>공감중심 밀착형</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[tripTypeDetail.text6, tripTypeDetail.textTypo]} onPress={() => setLoveType('독립 보장형')}>
+                            <TouchableOpacity style={[tripTypeDetail.text6, tripTypeDetail.textTypo]} onPress={() => handleChangeLoveType('독립 보장형')}>
                                 <Text>독립 보장형</Text>
                             </TouchableOpacity>
                         </View>
@@ -132,7 +137,7 @@ export default function TypeSelect({ tripType, loveType, setTripType, setLoveTyp
                                 loveType === '안정적인 동반자' ? (
                                     <RadioActiveIcon style={tripTypeDetail.radioButtonCheckedIcon} />
                                 ) : (
-                                    <TouchableOpacity onPress={() => setLoveType('안정적인 동반자')}>
+                                    <TouchableOpacity onPress={() => handleChangeLoveType('안정적인 동반자')}>
                                         <RadioInactiveIcon style={tripTypeDetail.radioButtonCheckedIcon} />
                                     </TouchableOpacity>
                                 )
@@ -141,7 +146,7 @@ export default function TypeSelect({ tripType, loveType, setTripType, setLoveTyp
                                 loveType === '열정적인 몰입형' ? (
                                     <RadioActiveIcon style={[tripTypeDetail.radioButtonUncheckedIcon, tripTypeDetail.radioIconLayout]} />
                                 ) : (
-                                    <TouchableOpacity onPress={() => setLoveType('열정적인 몰입형')}>
+                                    <TouchableOpacity onPress={() => handleChangeLoveType('열정적인 몰입형')}>
                                         <RadioInactiveIcon style={[tripTypeDetail.radioButtonUncheckedIcon, tripTypeDetail.radioIconLayout]} />
                                     </TouchableOpacity>
                                 )
@@ -150,7 +155,7 @@ export default function TypeSelect({ tripType, loveType, setTripType, setLoveTyp
                                 loveType === '자유로운 유희형' ? (
                                     <RadioActiveIcon style={[tripTypeDetail.safeareaviewRadioButtonUncheckedIcon, tripTypeDetail.radioIconLayout]} />
                                 ) : (
-                                    <TouchableOpacity onPress={() => setLoveType('자유로운 유희형')}>
+                                    <TouchableOpacity onPress={() => handleChangeLoveType('자유로운 유희형')}>
                                         <RadioInactiveIcon style={[tripTypeDetail.safeareaviewRadioButtonUncheckedIcon, tripTypeDetail.radioIconLayout]} />
                                     </TouchableOpacity>
                                 )
@@ -159,7 +164,7 @@ export default function TypeSelect({ tripType, loveType, setTripType, setLoveTyp
                                 loveType === '공감중심 밀착형' ? (
                                     <RadioActiveIcon style={[tripTypeDetail.radioButtonUncheckedIcon2, tripTypeDetail.radioIconLayout]} />
                                 ) : (
-                                    <TouchableOpacity onPress={() => setLoveType('공감중심 밀착형')}>
+                                    <TouchableOpacity onPress={() => handleChangeLoveType('공감중심 밀착형')}>
                                         <RadioInactiveIcon style={[tripTypeDetail.radioButtonUncheckedIcon2, tripTypeDetail.radioIconLayout]} />
                                     </TouchableOpacity>
                                 )
@@ -168,7 +173,7 @@ export default function TypeSelect({ tripType, loveType, setTripType, setLoveTyp
                                 loveType === '독립 보장형' ? (
                                     <RadioActiveIcon style={[tripTypeDetail.radioButtonUncheckedIcon3, tripTypeDetail.radioIconLayout]} />
                                 ) : (
-                                    <TouchableOpacity onPress={() => setLoveType('독립 보장형')}>
+                                    <TouchableOpacity onPress={() => handleChangeLoveType('독립 보장형')}>
                                         <RadioInactiveIcon style={[tripTypeDetail.radioButtonUncheckedIcon3, tripTypeDetail.radioIconLayout]} />
                                     </TouchableOpacity>
                                 )
