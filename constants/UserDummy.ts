@@ -1,5 +1,6 @@
 const UserDummy = [
     {
+        id: 1,
         nickname: '이가원',
         introduction: '한줄소개',
         favorite: '#연애취향',
@@ -13,9 +14,32 @@ const UserDummy = [
         date: {
             startDate: new Date('2025-11-10'),
             endDate: new Date('2025-11-25'),
-        }
+        },
+        message: [
+            {
+                text: 'Hello, how are you?',
+                time: '2025-11-14 12:00:00',
+                isUser: false
+            },
+            {
+                text: 'I am fine, thank you!',
+                time: '2025-11-14 12:01:00',
+                isUser: true
+            },
+            {
+                text: 'What are you doing?',
+                time: '2025-11-14 12:02:00',
+                isUser: false
+            },
+            {
+                text: 'I am doing nothing, you?',
+                time: '2025-11-14 12:03:00',
+                isUser: true
+            }
+        ]
     },
     {
+        id: 2,
         nickname: '홍승재',
         introduction: '한줄소개',
         favorite: '#연애취향',
@@ -29,9 +53,32 @@ const UserDummy = [
         date: {
             startDate: new Date('2025-11-23'),
             endDate: new Date('2025-11-27'),
-        }
+        },
+        message: [
+            {
+                text: 'Hello, how are you?',
+                time: '2025-11-14 12:00:00',
+                isUser: false
+            },
+            {
+                text: 'I am fine, thank you!',
+                time: '2025-11-14 12:01:00',
+                isUser: true
+            },
+            {
+                text: 'What are you doing?',
+                time: '2025-11-14 12:02:00',
+                isUser: false
+            },
+            {
+                text: 'I am doing nothing, you?',
+                time: '2025-11-14 12:03:00',
+                isUser: true
+            }
+        ]
     },
     {
+        id: 3,
         nickname: '박우현',
         introduction: '한줄소개',
         favorite: '#연애취향',
@@ -45,9 +92,32 @@ const UserDummy = [
         date: {
             startDate: new Date('2025-11-23'),
             endDate: new Date('2025-11-25'),
-        }
+        },
+        message: [
+            {
+                text: 'Hello, how are you?',
+                time: '2025-11-14 12:00:00',
+                isUser: false
+            },
+            {
+                text: 'I am fine, thank you!',
+                time: '2025-11-14 12:01:00',
+                isUser: true
+            },
+            {
+                text: 'What are you doing?',
+                time: '2025-11-14 12:02:00',
+                isUser: false
+            },
+            {
+                text: 'I am doing nothing, you?',
+                time: '2025-11-14 12:03:00',
+                isUser: true
+            }
+        ]
     },
     {
+        id: 4,
         nickname: '이서현',
         introduction: '한줄소개',
         favorite: '#연애취향',
@@ -61,9 +131,32 @@ const UserDummy = [
         date: {
             startDate: new Date('2025-11-23'),
             endDate: new Date('2025-12-25'),
-        }
+        },
+        message: [
+            {
+                text: 'Hello, how are you?',
+                time: '2025-11-14 12:00:00',
+                isUser: false
+            },
+            {
+                text: 'I am fine, thank you!',
+                time: '2025-11-14 12:01:00',
+                isUser: true
+            },
+            {
+                text: 'What are you doing?',
+                time: '2025-11-14 12:02:00',
+                isUser: false
+            },
+            {
+                text: 'I am doing nothing, you?',
+                time: '2025-11-14 12:03:00',
+                isUser: true
+            }
+        ]
     },
     {
+        id: 5,
         nickname: '고정한',
         introduction: '한줄소개',
         favorite: '#연애취향',
@@ -77,10 +170,33 @@ const UserDummy = [
         date: {
             startDate: new Date('2025-11-23'),
             endDate: new Date('2025-12-25'),
-        }
+        },
+        message: [
+            {
+                text: 'Hello, how are you?',
+                time: '2025-11-14 12:00:00',
+                isUser: false
+            },
+            {
+                text: 'I am fine, thank you!',
+                time: '2025-11-14 12:01:00',
+                isUser: true
+            },
+            {
+                text: 'What are you doing?',
+                time: '2025-11-14 12:02:00',
+                isUser: false
+            },
+            {
+                text: 'I am doing nothing, you?',
+                time: '2025-11-14 12:03:00',
+                isUser: true
+            }
+        ]
     },
 
     {
+        id: 6,
         nickname: '곽다빈',
         introduction: '한줄소개',
         favorite: '#연애취향',
@@ -94,9 +210,32 @@ const UserDummy = [
         date: {
             startDate: new Date('2025-11-23'),
             endDate: new Date('2025-12-25'),
-        }
+        },
+        message: [
+            {
+                text: 'Hello, how are you?',
+                time: '2025-11-14 12:00:00',
+                isUser: false
+            },
+            {
+                text: 'I am fine, thank you!',
+                time: '2025-11-14 12:01:00',
+                isUser: true
+            },
+            {
+                text: 'What are you doing?',
+                time: '2025-11-14 12:02:00',
+                isUser: false
+            },
+            {
+                text: 'I am doing nothing, you?',
+                time: '2025-11-14 12:03:00',
+                isUser: true
+            }
+        ]
     },
     {
+        id: 7,
         nickname: '천승호',
         introduction: '한줄소개',
         favorite: '#연애취향',
@@ -110,9 +249,32 @@ const UserDummy = [
         date: {
             startDate: new Date('2025-11-23'),
             endDate: new Date('2025-11-25'),
-        }
+        },
+        message: [
+            {
+                text: 'Hello, how are you?',
+                time: '2025-11-14 12:00:00',
+                isUser: false
+            },
+            {
+                text: 'I am fine, thank you!',
+                time: '2025-11-14 12:01:00',
+                isUser: true
+            },
+            {
+                text: 'What are you doing?',
+                time: '2025-11-14 12:02:00',
+                isUser: false
+            },
+            {
+                text: 'I am doing nothing, you?',
+                time: '2025-11-14 12:03:00',
+                isUser: true
+            }
+        ]
     },
     {
+        id: 8,
         nickname: '배동준',
         introduction: '한줄소개',
         favorite: '#연애취향',
@@ -126,9 +288,32 @@ const UserDummy = [
         date: {
             startDate: new Date('2025-11-23'),
             endDate: new Date('2025-11-25'),
-        }
+        },
+        message: [
+            {
+                text: 'Hello, how are you?',
+                time: '2025-11-14 12:00:00',
+                isUser: false
+            },
+            {
+                text: 'I am fine, thank you!',
+                time: '2025-11-14 12:01:00',
+                isUser: true
+            },
+            {
+                text: 'What are you doing?',
+                time: '2025-11-14 12:02:00',
+                isUser: false
+            },
+            {
+                text: 'I am doing nothing, you?',
+                time: '2025-11-14 12:03:00',
+                isUser: true
+            }
+        ]
     },
     {
+        id: 9,
         nickname: '홍가원',
         introduction: '한줄소개',
         favorite: '#연애취향',
@@ -142,9 +327,32 @@ const UserDummy = [
         date: {
             startDate: new Date('2025-11-10'),
             endDate: new Date('2025-12-14'),
-        }
+        },
+        message: [
+            {
+                text: 'Hello, how are you?',
+                time: '2025-11-14 12:00:00',
+                isUser: false
+            },
+            {
+                text: 'I am fine, thank you!',
+                time: '2025-11-14 12:01:00',
+                isUser: true
+            },
+            {
+                text: 'What are you doing?',
+                time: '2025-11-14 12:02:00',
+                isUser: false
+            },
+            {
+                text: 'I am doing nothing, you?',
+                time: '2025-11-14 12:03:00',
+                isUser: true
+            }
+        ]
     },
     {
+        id: 10,
         nickname: '김예찬',
         introduction: '한줄소개',
         favorite: '#연애취향',
@@ -158,7 +366,29 @@ const UserDummy = [
         date: {
             startDate: new Date('2025-12-01'),
             endDate: new Date('2025-12-23'),
-        }
+        },
+        message: [
+            {
+                text: 'Hello, how are you?',
+                time: '2025-11-14 12:00:00',
+                isUser: false
+            },
+            {
+                text: 'I am fine, thank you!',
+                time: '2025-11-14 12:01:00',
+                isUser: true
+            },
+            {
+                text: 'What are you doing?',
+                time: '2025-11-14 12:02:00',
+                isUser: false
+            },
+            {
+                text: 'I am doing nothing, you?',
+                time: '2025-11-14 12:03:00',
+                isUser: true
+            }
+        ]
     },
 ]
 

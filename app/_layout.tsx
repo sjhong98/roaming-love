@@ -28,6 +28,8 @@ export default function RootLayout() {
         <Stack.Screen name="guestLogin" options={{ headerShown: false, title: '게스트로그인' }} />
         <Stack.Screen name="test1" options={{ headerShown: false, title: '테스트1' }} />
         <Stack.Screen name="test1Result" options={{ headerShown: false, title: '테스트1결과' }} />
+        <Stack.Screen name="chatDetail" options={{ headerShown: false, title: '채팅상세' }} />
+        <Stack.Screen name="userProfile" options={{ headerShown: false, title: '유저프로필' }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
