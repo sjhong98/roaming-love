@@ -11,6 +11,8 @@ import dayjs from "dayjs";
 import { Image, ImageSource } from "expo-image";
 import { useEffect, useRef, useState } from "react";
 import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type UserCardItem = {
     type: 'user';
@@ -140,7 +142,13 @@ export default function Trip() {
     }, [locationSelectOpen]);
 
     const handleSearch = () => {
-        if (!selectedForm.location || (selectedForm.dateType === 'date' && (!selectedForm.dateRange.startDate || !selectedForm.dateRange.endDate)) || (selectedForm.dateType === 'day' && (!selectedForm.period || !selectedForm.month)) || !selectedForm.tripType || !selectedForm.loveType) return;
+        if (
+            !selectedForm.location
+            || (selectedForm.dateType === 'date' && (!selectedForm.dateRange.startDate || !selectedForm.dateRange.endDate))
+            || (selectedForm.dateType === 'day' && (!selectedForm.period || !selectedForm.month))
+            || !selectedForm.tripType
+            || !selectedForm.loveType
+        ) return;
 
         setSearchResult(true);
 
@@ -152,6 +160,7 @@ export default function Trip() {
                 && (selectedForm.dateType === 'day' ? user.period.includes(selectedForm.period) : true)
                 && (selectedForm.dateType === 'day' ? user.month.includes(selectedForm.month ?? 'none') : true)
         });
+        console.log('filteredUserList', filteredUserList);
         setFilteredUserList(filteredUserList);
     }
 
@@ -305,11 +314,13 @@ export default function Trip() {
                             !selectedForm.location
                             || (selectedForm.dateType === 'date' && (!selectedForm.dateRange.startDate || !selectedForm.dateRange.endDate))
                             || (selectedForm.dateType === 'day' && (!selectedForm.period || !selectedForm.month))
-                            || !selectedForm.tripType 
+                            || !selectedForm.tripType
                             || !selectedForm.loveType
                         }
-                        style={{ width: '100%', height: 50, backgroundColor: '#FF2D55', borderRadius: 10, justifyContent: 'center', alignItems: 'center', 
-                            opacity: !selectedForm.location || (selectedForm.dateType === 'date' && (!selectedForm.dateRange.startDate || !selectedForm.dateRange.endDate)) || (selectedForm.dateType === 'day' && (!selectedForm.period || !selectedForm.month)) || !selectedForm.tripType || !selectedForm.loveType ? 0.5 : 1 }}
+                        style={{
+                            width: '100%', height: 50, backgroundColor: '#FF2D55', borderRadius: 10, justifyContent: 'center', alignItems: 'center',
+                            opacity: !selectedForm.location || (selectedForm.dateType === 'date' && (!selectedForm.dateRange.startDate || !selectedForm.dateRange.endDate)) || (selectedForm.dateType === 'day' && (!selectedForm.period || !selectedForm.month)) || !selectedForm.tripType || !selectedForm.loveType ? 0.5 : 1
+                        }}
                     >
                         <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>검색</Text>
                     </TouchableOpacity>
@@ -385,7 +396,7 @@ export default function Trip() {
                     </TouchableOpacity>
                 </View>
                 <View style={{ position: 'relative', width: '100%', paddingHorizontal: 20, gap: 18, marginTop: 50 }}>
-                    {
+                    {filteredUserList?.length > 0 ?
                         filteredUserList.map((item, index) => (
                             <View key={index} style={{ width: '100%' }}>
                                 <View style={userCardStyles2.view}>
@@ -399,10 +410,10 @@ export default function Trip() {
                                             <Text style={[userCardStyles2.text2, userCardStyles2.textTypo]}>{`#${item.loveType}`}</Text>
                                         </View>
                                         <Image source={item.image} style={userCardStyles2.groupItem} />
-                                        <View style={[userCardStyles2.view4, userCardStyles2.view4Layout]}>
+                                        <TouchableOpacity onPress={() => router.push(`/chatDetail?id=${item.id}`)} style={[userCardStyles2.view4, userCardStyles2.view4Layout]}>
                                             <View style={[userCardStyles2.child, userCardStyles2.view4Layout]} />
                                             <Text style={[userCardStyles2.smallTalk, userCardStyles2.smallTalkTypo]}>Small Talk</Text>
-                                        </View>
+                                        </TouchableOpacity>
                                         <Text style={[userCardStyles2.text3, userCardStyles2.textTypo]}>
                                             {item.description}
                                         </Text>
@@ -410,6 +421,10 @@ export default function Trip() {
                                 </View>
                             </View>
                         ))
+                        :
+                        <View style={{ width: '100%', height: 200, justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ fontSize: 16, fontWeight: 300, color: '#444' }}>여행자가 없습니다.</Text>
+                        </View>
                     }
                 </View>
             </ScrollView>

@@ -211,7 +211,6 @@ export default function Explore() {
     };
 
     const handleLike = async (postPk: number, didILike: boolean) => {
-        console.log('postPk', postPk);
         // Pop 애니메이션 트리거
         triggerPopAnimation(postPk);
 

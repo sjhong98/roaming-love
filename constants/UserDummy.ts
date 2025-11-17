@@ -17,7 +17,7 @@ const UserDummy = [
         },
         message: [
             {
-                text: 'Hello, how are you?',
+                text: '안녕하세요, 제 이름은 이가원입니다.',
                 time: '2025-11-14 12:00:00',
                 isUser: false
             },
@@ -58,7 +58,7 @@ const UserDummy = [
         },
         message: [
             {
-                text: 'Hello, how are you?',
+                text: '안녕하세요, 제 이름은 홍승재입니다.',
                 time: '2025-11-14 12:00:00',
                 isUser: false
             },
@@ -99,7 +99,7 @@ const UserDummy = [
         },
         message: [
             {
-                text: 'Hello, how are you?',
+                text: '안녕하세요, 제 이름은 박우현입니다.',
                 time: '2025-11-14 12:00:00',
                 isUser: false
             },
@@ -140,7 +140,7 @@ const UserDummy = [
         },
         message: [
             {
-                text: 'Hello, how are you?',
+                text: '안녕하세요, 제 이름은 이서현입니다.',
                 time: '2025-11-14 12:00:00',
                 isUser: false
             },
@@ -181,7 +181,7 @@ const UserDummy = [
         },
         message: [
             {
-                text: 'Hello, how are you?',
+                text: '안녕하세요, 제 이름은 고정한입니다.',
                 time: '2025-11-14 12:00:00',
                 isUser: false
             },
@@ -223,7 +223,7 @@ const UserDummy = [
         },
         message: [
             {
-                text: 'Hello, how are you?',
+                text: '안녕하세요, 제 이름은 곽다빈입니다.',
                 time: '2025-11-14 12:00:00',
                 isUser: false
             },
@@ -264,7 +264,7 @@ const UserDummy = [
         },
         message: [
             {
-                text: 'Hello, how are you?',
+                text: '안녕하세요, 제 이름은 천승호입니다.',
                 time: '2025-11-14 12:00:00',
                 isUser: false
             },
@@ -305,7 +305,7 @@ const UserDummy = [
         },
         message: [
             {
-                text: 'Hello, how are you?',
+                text: '안녕하세요, 제 이름은 배동준입니다.',
                 time: '2025-11-14 12:00:00',
                 isUser: false
             },
@@ -346,7 +346,7 @@ const UserDummy = [
         },
         message: [
             {
-                text: 'Hello, how are you?',
+                text: '안녕하세요, 제 이름은 홍가원입니다.',
                 time: '2025-11-14 12:00:00',
                 isUser: false
             },
@@ -387,7 +387,7 @@ const UserDummy = [
         },
         message: [
             {
-                text: 'Hello, how are you?',
+                text: '안녕하세요, 제 이름은 김예찬입니다.',
                 time: '2025-11-14 12:00:00',
                 isUser: false
             },

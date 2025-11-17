@@ -1,83 +1,87 @@
-import { Dimensions, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import ChangeEachOtherIcon from '@/assets/images/changeEachOther.svg';
-import CalendarIcon from '@/assets/images/calendarRed.svg';
-import { useEffect, useRef, useState } from "react";
-import { Image, ImageSource } from "expo-image";
-import LocationCard from "@/components/ui/LocationCard";
-import SearchRedIcon from '@/assets/images/searchRed.svg';
-import LocationSelect from "@/components/trip/LocationSelect";
-import DateSelect from "@/components/trip/DateSelect";
-import { changeToThreeLetter } from "@/utils/changeToThreeLetter";
-import dayjs from "dayjs";
-import SettingIcon from '@/assets/images/settingIcon.svg';
-import TypeSelect from "@/components/trip/TypeSelect";
-import UserDummy from "@/constants/UserDummy";
 import CreateIcon from '@/assets/images/createIcon.svg';
+import SearchRedIcon from '@/assets/images/searchRed.svg';
+import UserDummy from '@/constants/UserDummy';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import dayjs from "dayjs";
+import { Image } from "expo-image";
 import { router } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useEffect, useRef, useState } from "react";
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Chat() {
     const scrollRef = useRef<ScrollView>(null);
+
     const [searchKeyword, setSearchKeyword] = useState('');
 
-    const chatList = [
-        {
-            id: 1,
-            name: 'John Doe',
-            message: 'Hello, how are you?',
-            time: '2025-11-14 12:00:00',
-            userIcon: require('@/assets/images/userIcon.png'),
-        },
-    ]
+    const [chatList, setChatList] = useState<any>([])
+
+    useEffect(() => {
+        (async () => {
+            let savedChatList = await AsyncStorage.getItem('chatList')
+            savedChatList = savedChatList ? JSON.parse(savedChatList) : []
+
+
+            if(savedChatList && savedChatList?.length > 0) {
+                setChatList(savedChatList)
+            } else {
+                AsyncStorage.setItem('chatList', JSON.stringify([UserDummy[0], UserDummy[3], UserDummy[7], UserDummy[9]]))
+                setChatList([UserDummy[0], UserDummy[3], UserDummy[7], UserDummy[9]])
+            }
+        })()
+    }, [])
 
     return (
-        <View>
-            <ScrollView ref={scrollRef} style={{ position: 'relative', height: '110%', paddingTop: 80 }} contentContainerStyle={{ paddingBottom: 150 }}>
-                <View style={topStyles.view0}>
-                    <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={topStyles.text}>채팅</Text>
-                    </View>
-                    <TouchableOpacity onPress={() => { }} style={{ position: 'absolute', right: 24, top: -5 }}>
-                        <CreateIcon width={24} height={24} />
-                    </TouchableOpacity>
+        <SafeAreaView style={{ paddingTop: 10 }}>
+            <View style={[topStyles.view0, { zIndex: 1000 }]}>
+                <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                    <Text style={topStyles.text}>채팅</Text>
                 </View>
+            </View>
 
-                <View style={{ width: '100%', paddingHorizontal: 24, justifyContent: 'center', alignItems: 'center' }}>
-                    <View style={searchBarStyles.view}>
-                        <View style={[searchBarStyles.view2, searchBarStyles.viewPosition]} />
-                        <View style={[searchBarStyles.view3, searchBarStyles.viewPosition]} />
-                        <SearchRedIcon width={24} height={24} style={{ position: 'absolute', left: 24, top: 16 }} />
-                        <TextInput
-                            value={searchKeyword}
-                            onChangeText={setSearchKeyword}
-                            placeholder="Search Here"
-                            placeholderTextColor="#999"
-                            style={searchBarStyles.searchInput}
-                        />
-                    </View>
+            <View style={{ width: '100%', paddingHorizontal: 24, justifyContent: 'center', alignItems: 'center', zIndex: 1000 }}>
+                <View style={searchBarStyles.view}>
+                    <View style={[searchBarStyles.view2, searchBarStyles.viewPosition, { zIndex: 1 }]} pointerEvents="none" />
+                    <View style={[searchBarStyles.view3, searchBarStyles.viewPosition, { zIndex: 1 }]} pointerEvents="none" />
+                    <SearchRedIcon width={24} height={24} style={{ position: 'absolute', left: 24, top: 16, zIndex: 1, pointerEvents: 'none' }} />
+                    <TextInput
+                        value={searchKeyword}
+                        onChangeText={setSearchKeyword}
+                        placeholder="Search Here"
+                        placeholderTextColor="#999"
+                        style={[searchBarStyles.searchInput, { zIndex: 9999 }]}
+                        editable={true}
+                        autoCorrect={false}
+                        pointerEvents="auto"
+                    />
                 </View>
+            </View>
 
+            <ScrollView
+                ref={scrollRef}
+                style={{ position: 'relative', height: '110%', paddingTop: 50 }}
+                contentContainerStyle={{ paddingBottom: 150 }}
+            >
                 <View style={{ width: '100%', paddingHorizontal: 24, justifyContent: 'center', marginTop: 31, gap: 10 }}>
                     {
-                        chatList.map((chat, index) => (
+                        chatList.map((chat: any, index: number) => (
                             <TouchableOpacity onPress={() => router.push(`/chatDetail?id=${chat.id}`)} key={index} style={chatBoxStyles.view}>
                                 <View style={chatBoxStyles.view2}>
                                     <View style={[chatBoxStyles.view3, chatBoxStyles.viewPosition]} />
                                     <View style={[chatBoxStyles.view4, chatBoxStyles.viewPosition]} />
                                 </View>
                                 {/* <Image style={chatBoxStyles.vectorIcon} source={chat.userIcon} /> */}
-                                <Text style={[chatBoxStyles.jennifer, chatBoxStyles.pm0234Typo]}>{chat.name}</Text>
-                                <Image style={[chatBoxStyles.icon, chatBoxStyles.iconPosition]} source={chat.userIcon} />
-                                <Text style={[chatBoxStyles.heyWillYou, chatBoxStyles.pm0234Typo]}>{chat.message}</Text>
-                                <Text style={[chatBoxStyles.pm0234, chatBoxStyles.iconPosition]}>{dayjs(chat.time).format('A HH:mm')}</Text>
+                                <Text style={[chatBoxStyles.jennifer, chatBoxStyles.pm0234Typo]}>{chat?.nickname}</Text>
+                                <Image style={[chatBoxStyles.icon, chatBoxStyles.iconPosition]} source={chat?.image} />
+                                <Text style={[chatBoxStyles.heyWillYou, chatBoxStyles.pm0234Typo]}>{chat?.message[0]?.text}</Text>
+                                <Text style={[chatBoxStyles.pm0234, chatBoxStyles.iconPosition]}>{dayjs(chat?.message[0]?.time).format('A HH:mm')}</Text>
                                 {/* <Component3 style={[chatBoxStyles.safeareaviewIcon, chatBoxStyles.iconLayout]} /> */}
                             </TouchableOpacity>
                         ))
                     }
                 </View>
             </ScrollView>
-        </View>
+        </SafeAreaView>
     );
 }
 
@@ -230,14 +234,15 @@ const searchBarStyles = StyleSheet.create({
         top: 0,
         left: 0,
         width: "100%",
-        height: "100%",
+        height: 55,
         borderRadius: 20,
         paddingLeft: 60,
         paddingRight: 20,
         fontSize: 14,
         fontWeight: "300",
         fontFamily: "Pretendard",
-        color: "#000"
+        color: "#000",
+        backgroundColor: "transparent"
     },
 });
 
