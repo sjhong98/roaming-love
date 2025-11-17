@@ -274,7 +274,7 @@ export default function Explore() {
     return (
         <View style={{ flex: 1, position: 'relative' }}>
 
-            <Animated.View style={{ paddingTop: 70, backgroundColor: '#fff', width: '100%', height: 140, zIndex: 1000, position: 'absolute', top: 0, left: 0, right: 0, transform: [{ translateY: headerTranslateY }], paddingBottom: 0 }}>
+            <Animated.View style={{ paddingTop: 70, backgroundColor: '#fff', width: '100%', height: 0, zIndex: 1000, position: 'absolute', top: 0, left: 0, right: 0, transform: [{ translateY: headerTranslateY }], paddingBottom: 0 }}>
                 <View style={topStyles.view0}>
                     <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={topStyles.text}>탐색하기</Text>
@@ -283,29 +283,12 @@ export default function Explore() {
                         </TouchableOpacity>
                     </View>
                 </View>
-
-                <View style={tabStyles.view}>
-                    <View style={tabStyles.child}>
-                        <View
-                            style={{ position: 'relative', width: '100%', height: 30, justifyContent: 'space-between', alignItems: 'center', marginTop: -30, flexDirection: 'row', paddingHorizontal: 80 }}
-                            onLayout={(event) => setTabContainerWidth(event.nativeEvent.layout.width)}
-                        >
-                            <TouchableOpacity activeOpacity={1} onPress={() => setActiveTab('recommend')}>
-                                <Text style={[tabStyles.text, tabStyles.textTypo]}>추천</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity activeOpacity={1} onPress={() => setActiveTab('follow')}>
-                                <Text style={[tabStyles.text2, tabStyles.textTypo]}>팔로우 중</Text>
-                            </TouchableOpacity>
-                            <Animated.View style={[tabStyles.item, { left: indicatorLeft, width: indicatorWidth }]} />
-                        </View>
-                    </View>
-                </View>
             </Animated.View>
 
             {/* <SafeAreaView style={{ flex: 1 }}> */}
             <Animated.ScrollView
                 ref={scrollRef}
-                style={{ flex: 1 }}
+                style={{ flex: 1, marginTop: -10 }}
                 contentContainerStyle={{ paddingBottom: 150, minHeight: Dimensions.get('window').height - 100, paddingTop: 135 }}
                 scrollEventThrottle={16}
                 onScroll={handleScroll}

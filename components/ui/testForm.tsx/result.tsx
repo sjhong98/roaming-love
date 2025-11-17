@@ -1,10 +1,11 @@
 import { Image, StyleSheet, Text, View, Animated } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useLocalSearchParams, useRouter } from "expo-router";
+import { router, useRouter } from "expo-router";
 import { default as ReAnimated, interpolate, useAnimatedStyle, withTiming } from "react-native-reanimated";
 import LiquidGlassButton from "@/components/LiquidGlassButton";
 import { Chapter, QAFormType } from "@/constants/QAForm";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const Result_Loading_Screen = () => {
     const translateY = useRef(new Animated.Value(0)).current;
@@ -115,8 +116,7 @@ const Result_Screen = () => {
                     text='다음 테스트'
                     backgroundColor="#FF5878"
                     onPress={() => {
-                        if (isFlipping) return;
-                        setIsFlipped(prev => !prev);
+                        router.push('/test2');
                     }}
                 />
 
@@ -127,7 +127,6 @@ const Result_Screen = () => {
 
 export default function TestResult() {
     const router = useRouter();
-    const { form } = useLocalSearchParams();
 
     const [step, setStep] = useState<number>(1);
     const [result, setResult] = useState<QAFormType | null>(null);
@@ -141,36 +140,70 @@ export default function TestResult() {
     }, [])
 
     useEffect(() => {
-        calculateResult()
+        loadFormAndCalculate();
     }, [])
 
-    const calculateResult =useCallback(() => {
-        let parsedForm: QAFormType = JSON.parse(form as string);
+    const loadFormAndCalculate = async () => {
+        try {
+            // AsyncStorage에서 form 데이터 읽기
+            const formData = await AsyncStorage.getItem('testFormData');
+            
+            if (!formData) {
+                console.error('Form 데이터가 없습니다.');
+                return;
+            }
 
-        parsedForm.chapters.forEach((chapter, chapterIndex) => {
-            chapter.questions.forEach((question, questionIndex) => {
-                question.answers.forEach((answer, answerIndex) => {
-                    if(answer.selected) {
-                        parsedForm.resultTypes[answer.type].score += answer.score;
-                    }
+            console.log('loaded form data length:', formData.length);
+            
+            calculateResult(formData);
+            
+            // 사용 후 AsyncStorage에서 삭제 (선택사항)
+            await AsyncStorage.removeItem('testFormData');
+        } catch (error) {
+            console.error('Form 데이터 로드 실패:', error);
+        }
+    }
+
+    const calculateResult = (formString: string) => {
+        if (!formString || formString.trim() === '') {
+            console.error('Form 문자열이 비어있습니다.');
+            return;
+        }
+
+        try {
+            let parsedForm: QAFormType = JSON.parse(formString);
+
+            // 모든 질문의 선택된 답변들의 score를 합산
+            parsedForm.chapters.forEach((chapter, chapterIndex) => {
+                chapter.questions.forEach((question, questionIndex) => {
+                    question.answers.forEach((answer, answerIndex) => {
+                        // 여러 개 선택된 답변들 모두 반영
+                        if(answer.selected === true) {ㄱ
+                            parsedForm.resultTypes[answer.type].score += answer.score;
+                        }
+                    })
                 })
             })
-        })
-        setResult(parsedForm);
-        
-        let maxScore = 0;
-        let maxScoreType = ''
-        Object.keys(parsedForm.resultTypes).forEach(type => {
-            const score = Math.max(...Object.values(parsedForm.resultTypes).map(type => type.score))
-            if(score > maxScore) {
-                maxScore = score;
-                maxScoreType = type;
-            }
-        })
-        setType(maxScoreType)
+            setResult(parsedForm);
+            
+            // 최고 점수를 가진 타입 찾기
+            let maxScore = 0;
+            let maxScoreType = ''
+            Object.keys(parsedForm.resultTypes).forEach(type => {
+                const score = parsedForm.resultTypes[type].score;
+                if(score > maxScore) {
+                    maxScore = score;
+                    maxScoreType = type;
+                }
+            })
+            setType(maxScoreType)
 
-        console.log('\n\n\n계산결과 : ', maxScoreType);
-    }, [])
+            console.log('\n\n\n계산결과 : ', maxScoreType, '점수:', maxScore);
+        } catch (error) {
+            console.error('JSON 파싱 에러:', error);
+            console.error('파싱 시도한 form 값:', formString);
+        }
+    }
 
     return (
         <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 4, backgroundColor: '#fff', position: 'relative' }}>

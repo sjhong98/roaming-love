@@ -140,7 +140,7 @@ export const Test1QAForm: QAFormType = {
         },
         {
           questionId: 'Q2',
-          question: '출발 전 일기예보: 여행기간 폭설 예측',
+          question: '🌨️ 출발 전 일기예보를 보니 폭설이 예측된다',
           minSelect: 1,
           maxSelect: 1,
           answers: [
@@ -150,7 +150,7 @@ export const Test1QAForm: QAFormType = {
         },
         {
           questionId: 'Q3',
-          question: '숙소를 예약할 때',
+          question: '🏠 숙소를 예약할 때 나는',
           minSelect: 1,
           maxSelect: 1,
           answers: [
@@ -162,13 +162,14 @@ export const Test1QAForm: QAFormType = {
         },
         {
           questionId: 'Q4',
-          question: '일정 계획 스타일',
+          question: '📆 일정을 계획할 때 나는',
           minSelect: 1,
           maxSelect: 1,
           answers: [
             { answer: '시간대별로 촘촘히 계획(예약多)', type: '아이코닉 포토', score: 1, selected: null },
-            { answer: '큰 틀만 정하고 현지에서 유연하게', type: '하이브리드형', score: 1, selected: null },
-            { answer: '가서 보고 끌리는 대로(즉흥)', type: '힐링산책가', score: 1, selected: null }
+            { answer: '큰 틀만 미리 정하고 현지가서 유연하게', type: '하이브리드형', score: 1, selected: null },
+            { answer: '숙소 외에는 아무것도 정하지 않고 간다', type: '힐링산책가', score: 1, selected: null },
+            { answer: 'SNS에서 본 핫한 식당과 카페를 알아보고 동선을 짠다.', type: '아이코닉 포토', score: 1, selected: null }
           ]
         }
       ]
@@ -176,42 +177,31 @@ export const Test1QAForm: QAFormType = {
     {
       chapter: 2,
       chapterDescription: 'Chapter 2',
-      chapterImage: require('@/assets/images/test1_3.png'),
-      imageWidth: 308,
-      imageHeight: 229,
+      chapterImage: require('@/assets/images/test1_2.png'),
+      imageWidth: 319,
+      imageHeight: 381,
       questions: [
         {
           questionId: 'Q5',
-          question: '체크인 방식',
-          minSelect: 1,
-          maxSelect: 1,
-          answers: [
-            { answer: '오프라인 셀프 체크인(키오스크)', type: '아이코닉 포토', score: 1, selected: null },
-            { answer: '온라인 체크인(모바일)', type: '하이브리드형', score: 1, selected: null },
-            { answer: '오프라인 카운터 대면 체크인', type: '힐링산책가', score: 1, selected: null },
-            { answer: '유료 사전 좌석 지정(사전 결제)', type: '자연액티브', score: 1, selected: null }
-          ]
-        },
-        {
-          questionId: 'Q6',
-          question: '좌석 선호',
+          question: '💺 비행기 좌석 선호은?',
           minSelect: 1,
           maxSelect: 1,
           answers: [
             { answer: '창가', type: '아이코닉 포토', score: 1, selected: null },
             { answer: '중간', type: '하이브리드형', score: 1, selected: null },
-            { answer: '복도', type: '힐링산책가', score: 1, selected: null }
+            { answer: '복도', type: '힐링산책가', score: 1, selected: null },
+            { answer: '상관없음', type: '하이브리드형', score: 1, selected: null }
           ]
         },
         {
-          questionId: 'Q7',
-          question: '탑승 줄 서기 타이밍',
+          questionId: 'Q6',
+          question: '🙂 탑승이 시작됐다. 나는',
           minSelect: 1,
           maxSelect: 1,
           answers: [
             { answer: '가장 먼저 줄 선다', type: '자연액티브', score: 1, selected: null },
-            { answer: '줄 생기면 바로 합류', type: '하이브리드형', score: 1, selected: null },
-            { answer: '줄이 짧아질 때까지 기다렸다 합류', type: '힐링산책가', score: 1, selected: null }
+            { answer: '줄 생기면 바로 합류한다', type: '하이브리드형', score: 1, selected: null },
+            { answer: '줄이 짧아질 때까지 기다렸다 합류한다', type: '힐링산책가', score: 1, selected: null }
           ]
         }
       ]
@@ -219,13 +209,13 @@ export const Test1QAForm: QAFormType = {
     {
       chapter: 3,
       chapterDescription: 'Chapter 3',  
-      chapterImage: require('@/assets/images/test1_1.png'),
+      chapterImage: require('@/assets/images/test1_2.png'),
       imageWidth: 319,
       imageHeight: 381,
       questions: [
         {
-          questionId: 'Q8',
-          question: '여행지에서 식당은 어디로 고를까요?',
+          questionId: 'Q7',
+          question: '🔎 여행지에서 식당은 어떻게 고를까',
           minSelect: 1,
           maxSelect: 1,
           answers: [
@@ -236,8 +226,8 @@ export const Test1QAForm: QAFormType = {
           ]
         },
         {
-          questionId: 'Q9',
-          question: '웨이팅 60분 인기맛집 vs 바로 먹을 수 있는 로컬식당',
+          questionId: 'Q8',
+          question: '🫕 웨이팅 60분 인기맛집 vs 바로 먹을 수 있는 로컬식당',
           minSelect: 1,
           maxSelect: 1,
           answers: [
@@ -250,13 +240,13 @@ export const Test1QAForm: QAFormType = {
     {
       chapter: 4,
       chapterDescription: 'Chapter 4',
-      chapterImage: require('@/assets/images/test1_1.png'),
+      chapterImage: require('@/assets/images/test1_2.png'),
       imageWidth: 319,
       imageHeight: 381,
       questions: [
         {
-          questionId: 'Q10',
-          question: '가장 가고 싶은 카페 스타일',
+          questionId: 'Q9',
+          question: '☕️ 가장 가고 싶은 카페 스타일은?',
           minSelect: 1,
           maxSelect: 1,
           answers: [
@@ -265,32 +255,21 @@ export const Test1QAForm: QAFormType = {
             { answer: '프랜차이즈(국가별 한정 메뉴 기대)', type: '전시감상가', score: 1, selected: null },
             { answer: '길 걷다 보이는 로컬 카페(즉흥 발견)', type: '힐링산책가', score: 1, selected: null }
           ]
-        },
-        {
-          questionId: 'Q11',
-          question: '카페에서의 시간 사용',
-          minSelect: 1,
-          maxSelect: 1,
-          answers: [
-            { answer: '사진/영상 촬영이 메인(연출·구도 중요)', type: '아이코닉 포토', score: 1, selected: null },
-            { answer: '대화·휴식 위주(사진은 기록 정도)', type: '힐링산책가', score: 1, selected: null },
-            { answer: '정보 정리/다음 동선 계획(계획 보강)', type: '전시감상가', score: 1, selected: null }
-          ]
         }
       ]
     },
     {
       chapter: 5,
       chapterDescription: 'Chapter 5',
-      chapterImage: require('@/assets/images/test1_1.png'),
+      chapterImage: require('@/assets/images/test1_2.png'),
       imageWidth: 319,
       imageHeight: 381,
       questions: [
         {
-          questionId: 'Q12',
-          question: '이번 여행에서 무엇을 즐기고 싶으세요?',
+          questionId: 'Q10',
+          question: '😆 이번 여행에서 \'무엇\'을 즐기고 싶으세요?',
           minSelect: 1,
-          maxSelect: 2,
+          maxSelect: null,
           answers: [
             { answer: '사진 잘 찍고 예쁘게 기록하기', type: '아이코닉 포토', score: 2, selected: null },
             { answer: '유명 관광지는 꼭 가보기', type: '아이코닉 포토', score: 2, selected: null },
@@ -300,8 +279,8 @@ export const Test1QAForm: QAFormType = {
           ]
         },
         {
-          questionId: 'Q13',
-          question: '사진에 대해 어느 쪽에 가까우세요?',
+          questionId: 'Q11',
+          question: '📸 사진에 대해 어느 쪽에 가까우세요?',
           minSelect: 1,
           maxSelect: 1,
           answers: [
@@ -312,8 +291,8 @@ export const Test1QAForm: QAFormType = {
           ]
         },
         {
-          questionId: 'Q14',
-          question: '유명 관광지는 어떻게 생각하세요?',
+          questionId: 'Q12',
+          question: '🗽 유명 관광지는 어떻게 생각하세요?',
           minSelect: 1,
           maxSelect: 1,
           answers: [
@@ -323,8 +302,8 @@ export const Test1QAForm: QAFormType = {
           ]
         },
         {
-          questionId: 'Q15',
-          question: '박물관·미술관은 어떤가요?',
+          questionId: 'Q13',
+          question: '🗿 박물관·미술관은 어떤가요?',
           minSelect: 1,
           maxSelect: 1,
           answers: [
@@ -334,8 +313,8 @@ export const Test1QAForm: QAFormType = {
           ]
         },
         {
-          questionId: 'Q16',
-          question: '로컬 산책·동네 구경은요?',
+          questionId: 'Q14',
+          question: '🚶‍♀️ 로컬 산책·동네 구경은요?',
           minSelect: 1,
           maxSelect: 1,
           answers: [
@@ -345,41 +324,20 @@ export const Test1QAForm: QAFormType = {
           ]
         },
         {
-          questionId: 'Q17',
-          question: '액티비티/패키지는 어느 정도가 좋아요?',
+          questionId: 'Q15',
+          question: '🏄 액티비티/패키지는 어느 정도가 좋아요?',
           minSelect: 1,
           maxSelect: 1,
           answers: [
             { answer: '서핑·하이킹 등 체험을 적극적으로 하고 싶어요', type: '자연액티브', score: 2, selected: null },
             { answer: '1~2개만 가볍게 체험하면 충분해요', type: '하이브리드형', score: 1, selected: null },
-            { answer: '체험보다는 관람/휴식이 좋아요', type: '전시감상가', score: 1, selected: null }
+            { answer: '체험보다는 관람/휴식이 좋아요', type: '전시감상가', score: 1, selected: null },
+            // { answer: '기타 (꼭해야해)', type: '자연액티브', score: 1, selected: null }
           ]
         },
         {
-          questionId: 'Q18',
-          question: '계획형 vs 즉흥형 — 내 스타일에 가장 가까운 문장을 골라주세요.',
-          minSelect: 1,
-          maxSelect: 1,
-          answers: [
-            { answer: '나는 예약과 시간 관리가 철저한 계획형으로 여행한다.', type: '아이코닉 포토', score: 1, selected: null },
-            { answer: '나는 큰 틀만 정해두고 현지에서 유연하게 조정하는 형태로 여행한다.', type: '하이브리드형', score: 1, selected: null },
-            { answer: '나는 로컬 분위기와 우연을 즐기는 즉흥형으로 여행한다.', type: '힐링산책가', score: 1, selected: null }
-          ]
-        },
-        {
-          questionId: 'Q19',
-          question: '길을 잃으면 어떻게 하시나요?',
-          minSelect: 1,
-          maxSelect: 1,
-          answers: [
-            { answer: '불안이 커져 즉시 도움/택시로 복귀한다', type: '아이코닉 포토', score: 1, selected: null },
-            { answer: '지도를 확인하고 표지판을 따라 침착히 찾는다', type: '하이브리드형', score: 1, selected: null },
-            { answer: '골목을 탐험하며 새로운 스폿을 발견하는 편이다', type: '힐링산책가', score: 1, selected: null }
-          ]
-        },
-        {
-          questionId: 'Q20',
-          question: '야간 활동 제안',
+          questionId: 'Q16',
+          question: '🌃 야간 활동은?',
           minSelect: 1,
           maxSelect: 1,
           answers: [
@@ -389,8 +347,8 @@ export const Test1QAForm: QAFormType = {
           ]
         },
         {
-          questionId: 'Q21',
-          question: '교통수단 선택(도보 20분 vs 대중교통 환승 2회 vs 택시)',
+          questionId: 'Q17',
+          question: '🚃 교통수단 선택',
           minSelect: 1,
           maxSelect: 1,
           answers: [
@@ -400,8 +358,8 @@ export const Test1QAForm: QAFormType = {
           ]
         },
         {
-          questionId: 'Q22',
-          question: '쇼핑/기념품',
+          questionId: 'Q18',
+          question: '🛍️ 쇼핑/기념품은?',
           minSelect: 1,
           maxSelect: 1,
           answers: [
@@ -409,19 +367,32 @@ export const Test1QAForm: QAFormType = {
             { answer: '동네 마켓·플리마켓 위주', type: '힐링산책가', score: 1, selected: null },
             { answer: '여행은 무겁게 싫다(기념품 최소)', type: '자연액티브', score: 1, selected: null }
           ]
+        },
+        {
+          questionId: 'Q19',
+          question: '💸 여행 예산 중 가장 아깝지 않은 지출은?',
+          minSelect: 1,
+          maxSelect: 1,
+          answers: [
+            { answer: '현지 교통비나 로컬 식당에서의 경험', type: '힐링산책가', score: 1, selected: null },
+            { answer: '박물관 입장권 / 투어 비용', type: '전시감상가', score: 1, selected: null },
+            { answer: '푹신한 침구와 룸서비스가 있는 럭셔리 숙소 비용', type: '전시감상가', score: 1, selected: null },
+            { answer: '예쁜 옷이나 악세서리, 기념품 구매 비용', type: '아이코닉 포토', score: 1, selected: null },
+            { answer: '대중교통 패스 / 할인된 투어 상품 비용', type: '하이브리드형', score: 1, selected: null }
+          ]
         }
       ]
     },
     {
       chapter: 6,
       chapterDescription: 'Chapter 6',
-      chapterImage: require('@/assets/images/test1_1.png'),
+      chapterImage: require('@/assets/images/test1_2.png'),
       imageWidth: 319,
       imageHeight: 381,
       questions: [
         {
-          questionId: 'Q23',
-          question: '피하고 싶은 것(복수 선택)',
+          questionId: 'Q20',
+          question: '😬 피하고 싶은 것(복수 선택)',
           minSelect: 0,
           maxSelect: null,
           answers: [
@@ -442,26 +413,17 @@ export const Test1QAForm: QAFormType = {
           ]
         },
         {
-          questionId: 'Q24',
-          question: '걷기 허용량(일평균)',
-          minSelect: 1,
-          maxSelect: 1,
-          answers: [
-            { answer: '10,000보 이하', type: '전시감상가', score: 1, selected: null },
-            { answer: '10,000보 - 20,000보', type: '힐링산책가', score: 1, selected: null },
-            { answer: '20,000보 이상', type: '자연액티브', score: 1, selected: null }
-          ]
-        },
-        {
-          questionId: 'Q25',
-          question: '지금 끌리는 여행 이미지를 골라주세요.',
+          questionId: 'Q21',
+          question: '💞 나에게 여행의 최고의 활동은?',
           minSelect: 1,
           maxSelect: 2,
           answers: [
-            { answer: 'A: 전망대/랜드마크 야경(아이코닉·포토)', type: '아이코닉 포토', score: 2, selected: null },
-            { answer: 'B: 갤러리 화이트 큐브/오디오가이드(전시)', type: '전시감상가', score: 2, selected: null },
-            { answer: 'C: 골목 카페/벽화/시장(로컬 라이프)', type: '힐링산책가', score: 2, selected: null },
-            { answer: 'D: 산 능선/해변 액티비티(자연/액티브)', type: '자연액티브', score: 2, selected: null }
+            { answer: '그 나라의 현지 시장이나 골목을 탐험하는 것', type: '힐링산책가', score: 2, selected: null },
+            { answer: '유명한 건축물 앞에서 설명을 들으며 감상하는 것', type: '전시감상가', score: 2, selected: null },
+            { answer: '침대나 수영장에서 하루종일 멍 대리는 것', type: '힐링산책가', score: 2, selected: null },
+            { answer: '유명한 식당에 가서 사진찍고 맛보는 것', type: '아이코닉 포토', score: 2, selected: null },
+            { answer: '유명한 관광명소를 짧게라도 다 둘러보는 것', type: '아이코닉 포토', score: 2, selected: null },
+            { answer: '자연 속에서 액티비티를 즐기는 것', type: '자연액티브', score: 2, selected: null }
           ]
         }
       ]
@@ -471,13 +433,13 @@ export const Test1QAForm: QAFormType = {
 
 export const Test2QAForm: QAFormType = {
   testDescription: '연애 성향 테스트',
-  testImage: require('@/assets/images/icon.png'),
+  testImage: require('@/assets/images/test2_1.png'),
   resultTypes: {},
   chapters: [
     {
       chapter: 1,
-      chapterDescription: 'A 관계 목표·경계',
-      chapterImage: require('@/assets/images/test1_1.png'),
+      chapterDescription: '❤️ 관계 목표에 대해 알려주세요',
+      chapterImage: require('@/assets/images/test1_2.png'),
       imageWidth: 319,
       imageHeight: 381,
       questions: [
@@ -508,7 +470,7 @@ export const Test2QAForm: QAFormType = {
         },
         {
           questionId: 'Q3',
-          question: '스킨십은 이런 속도가 편하다.',
+          question: '안정적인 관계를 위해 개인적인 불편함이나 희생을 감수할 수 있다.',
           minSelect: 1,
           maxSelect: 1,
           answers: [
@@ -538,9 +500,9 @@ export const Test2QAForm: QAFormType = {
           minSelect: 0,
           maxSelect: 3,
           answers: [
-            { answer: '과음과 잦은 음주를 한다.', type: '', score: 0, selected: null },
-            { answer: '흡연을 한다.', type: '', score: 0, selected: null },
-            { answer: '위생 관념이 부족하다.', type: '', score: 0, selected: null },
+            { answer: '과음과 잦은 음주', type: '', score: 0, selected: null },
+            { answer: '흡연', type: '', score: 0, selected: null },
+            { answer: '위생 관념 부족', type: '', score: 0, selected: null },
             { answer: '동성/이성 친구가 많다', type: '', score: 0, selected: null },
             { answer: '장거리 연애', type: '', score: 0, selected: null },
             { answer: '정치·종교 극단 성향을 드러낸다.', type: '', score: 0, selected: null },
@@ -554,7 +516,7 @@ export const Test2QAForm: QAFormType = {
     },
     {
       chapter: 2,
-      chapterDescription: 'B 소통·연락',
+      chapterDescription: '🧡 소통, 연락에 대해서 어떻게 생각하세요?',
       chapterImage: require('@/assets/images/test1_2.png'),
       imageWidth: 319,
       imageHeight: 381,
@@ -599,33 +561,36 @@ export const Test2QAForm: QAFormType = {
         },
         {
           questionId: 'Q9',
-          question: '통화·보이스톡은 이렇게 선호한다.',
+          question: '연인과의 관계가 끝날까 봐 두렵거나, 버림받는 것에 대한 공포감이 크다.',
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '자주 한다.', type: '', score: 0, selected: null },
-            { answer: '가끔 한다.', type: '', score: 0, selected: null },
-            { answer: '거의 하지 않는다.', type: '', score: 0, selected: null }
+            { answer: '1 전혀 아니다', type: '', score: 0, selected: null },
+            { answer: '2 조금 그렇다', type: '', score: 0, selected: null },
+            { answer: '3 보통이다', type: '', score: 0, selected: null },
+            { answer: '4 대체로 그렇다', type: '', score: 0, selected: null },
+            { answer: '5 매우 그렇다', type: '', score: 0, selected: null }
           ]
         },
         {
           questionId: 'Q10',
-          question: '연락 스타일은 주로 이렇다',
-          minSelect: 0,
-          maxSelect: null,
+          question: '연인에게 나의 깊은 사적인 비밀이나 고민을 털어놓는 것이 편하다.',
+          minSelect: 1,
+          maxSelect: 1,
           answers: [
-            { answer: '감정과 생각위주로 길게 나눈다.', type: '', score: 0, selected: null },
-            { answer: '일상을 거의 모두 공유한다.', type: '', score: 0, selected: null },
-            { answer: '핵심만 간결하게 주고받는다.', type: '', score: 0, selected: null },
-            { answer: '상황에 맞춰 유연하게 조절한다.', type: '', score: 0, selected: null }
+            { answer: '1 전혀 아니다', type: '', score: 0, selected: null },
+            { answer: '2 조금 그렇다', type: '', score: 0, selected: null },
+            { answer: '3 보통이다', type: '', score: 0, selected: null },
+            { answer: '4 대체로 그렇다', type: '', score: 0, selected: null },
+            { answer: '5 매우 그렇다', type: '', score: 0, selected: null }
           ]
         }
       ]
     },
     {
       chapter: 3,
-      chapterDescription: 'C 갈등·합의',
-      chapterImage: require('@/assets/images/test1_3.png'),
+      chapterDescription: '💛애인과 갈등이 생겼다. 어떻게 해결하나요?',
+      chapterImage: require('@/assets/images/test1_2.png'),
       imageWidth: 319,
       imageHeight: 381,
       questions: [
@@ -643,14 +608,15 @@ export const Test2QAForm: QAFormType = {
         },
         {
           questionId: 'Q12',
-          question: '논쟁 중 언어 사용은 이렇게 지킨다.',
+          question: '연인의 감정 기복이 심하거나 감정적 부담이 크면 관계를 지속하기 어렵다.',
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '비난·일반화를 금지한다.', type: '', score: 0, selected: null },
-            { answer: '감정 표현의 자유를 우선한다.', type: '', score: 0, selected: null },
-            { answer: '상황에 따라 원칙을 조정한다.', type: '', score: 0, selected: null },
-            { answer: '큰 원칙을 두지 않는다.', type: '', score: 0, selected: null }
+            { answer: '1 전혀 아니다', type: '', score: 0, selected: null },
+            { answer: '2 조금 그렇다', type: '', score: 0, selected: null },
+            { answer: '3 보통이다', type: '', score: 0, selected: null },
+            { answer: '4 대체로 그렇다', type: '', score: 0, selected: null },
+            { answer: '5 매우 그렇다', type: '', score: 0, selected: null }
           ]
         },
         {
@@ -694,8 +660,8 @@ export const Test2QAForm: QAFormType = {
     },
     {
       chapter: 4,
-      chapterDescription: 'D 데이트·주도성',
-      chapterImage: require('@/assets/images/test1_1.png'),
+      chapterDescription: '💚 데이트 선호 방식에 대해 알아볼게요',
+      chapterImage: require('@/assets/images/test1_2.png'),
       imageWidth: 319,
       imageHeight: 381,
       questions: [
@@ -765,7 +731,7 @@ export const Test2QAForm: QAFormType = {
     },
     {
       chapter: 5,
-      chapterDescription: 'E 라이프스타일',
+      chapterDescription: '🩵 당신의 라이프 스타일은?',
       chapterImage: require('@/assets/images/test1_2.png'),
       imageWidth: 319,
       imageHeight: 381,
@@ -777,8 +743,7 @@ export const Test2QAForm: QAFormType = {
           maxSelect: 1,
           answers: [
             { answer: '아침형으로 생활한다.', type: '', score: 0, selected: null },
-            { answer: '중간형으로 생활한다.', type: '', score: 0, selected: null },
-            { answer: '저녁형으로 생활한다.', type: '', score: 0, selected: null }
+            { answer: '유연하게 상황에 따라 조정', type: '', score: 0, selected: null }
           ]
         },
         {
@@ -787,7 +752,6 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '집에서 홀로 회복한다.', type: '', score: 0, selected: null },
             { answer: '취미·여가를 즐긴다.', type: '', score: 0, selected: null },
             { answer: '친구와 약속을 잡는다.', type: '', score: 0, selected: null },
             { answer: '즉흥 약속을 즐긴다/그때 그때 다르다.', type: '', score: 0, selected: null },

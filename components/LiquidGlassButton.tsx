@@ -60,7 +60,7 @@ const styles = StyleSheet.create({
     width: 334
   },
   tint: {
-    boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.1)",
+    // boxShadow: "0px 0px 2px rgba(0, 0, 0, 0.1)",
     elevation: 2,
     backgroundColor: "transparent",
     borderRadius: 1000

@@ -3,7 +3,8 @@ import { QAFormAnswerType, QAFormType } from "@/constants/QAForm";
 import { Image } from "expo-image";
 import { useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Animated, SafeAreaView, Text, TouchableOpacity, View, StyleSheet } from "react-native";
+import { Animated, SafeAreaView, Text, TouchableOpacity, View, StyleSheet, Dimensions, ScrollView } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ProgressBar = ({ progress, totalSteps }: { progress: number, totalSteps: number }) => {
     const [animatedWidth] = useState(new Animated.Value(0));
@@ -61,17 +62,18 @@ const TestChapterStartScreen = ({ chapterDescription, chapterImage, imageWidth, 
 }
 
 
-const TestQuestionScreen = ({ question, answers, onChange }: {
+const TestQuestionScreen = ({ question, answers, maxSelect, onChange }: {
     question: string,
     answers: QAFormAnswerType[],
+    maxSelect: number | null,
     onChange: (index: number) => void
 }) => {
     return (
-        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', paddingHorizontal: 34, gap: 116, marginTop: -200 }}>
-            <Text style={test1_3_style.text}>
+        <View style={{ height: Dimensions.get('window').height * 0.9, overflow: 'visible', alignItems: 'center', paddingHorizontal: 34, gap: 0, paddingTop: 30 }}>
+            <Text style={[test1_3_style.text, { height: 'auto' }]}>
                 {question}
             </Text>
-            <View style={test1_3_style.view}>
+            <ScrollView style={test1_3_style.view} contentContainerStyle={{ gap: 17, paddingTop: 60, paddingBottom: 180 }}>
                 {answers.map((answer, index) => {
                     const isSelected = answer.selected === true;
                     return (
@@ -80,13 +82,13 @@ const TestQuestionScreen = ({ question, answers, onChange }: {
                             style={[test1_3_style.rectangleGroup]}
                             onPress={() => onChange(index)}
                         >
-                            <View style={[test1_3_style.groupChild, { backgroundColor: isSelected ? '#FF2D55' : '#efeff0' }]}>
+                            <View style={[test1_3_style.groupChild, { backgroundColor: isSelected ? '#FF2D55' : '#efeff0', overflow: 'hidden', paddingHorizontal: 20 }]}>
                                 <Text style={[test1_3_style.textTypo, { color: isSelected ? '#fff' : '#999' }]}>{answer.answer}</Text>
                             </View>
                         </TouchableOpacity>
                     )
                 })}
-            </View>
+            </ScrollView>
         </View>
     )
 }
@@ -102,11 +104,12 @@ export const TestForm = ({ form, setForm }:
     const [currentQuestion, setCurrentQuestion] = useState<number>(0);
     const totalStepCount = form.chapters.reduce((acc, section) => acc + section.questions.length, 0) + form.chapters.length + 1;
 
-    const handleSelectForm = ({ section, questionId, answerIndex }:
+    const handleSelectForm = ({ section, questionId, answerIndex, maxSelect }:
         {
             section: number,
             questionId: string,
-            answerIndex: number
+            answerIndex: number,
+            maxSelect: number | null
         }) => {
         let _QAForm = [...form.chapters];
 
@@ -114,7 +117,49 @@ export const TestForm = ({ form, setForm }:
         let currentQuestionIndex = _QAForm[currentSectionIndex]?.questions.findIndex(questionItem => questionItem.questionId === questionId);
         let currentAnswer = _QAForm[currentSectionIndex].questions[currentQuestionIndex].answers;
 
-        currentAnswer = currentAnswer?.map((answerItem, index) => answerIndex === index ? { ...answerItem, selected: true } : { ...answerItem, selected: false });
+        // 현재 선택된 답변 개수 확인
+        const selectedCount = currentAnswer.filter((answer: QAFormAnswerType) => answer.selected === true).length;
+        const clickedAnswer = currentAnswer[answerIndex];
+        const isCurrentlySelected = clickedAnswer.selected === true;
+
+        // 다중 선택 로직
+        if (isCurrentlySelected) {
+            // 이미 선택된 답변이면 토글 (해제)
+            currentAnswer = currentAnswer.map((answerItem: QAFormAnswerType, index: number) => 
+                answerIndex === index 
+                    ? { ...answerItem, selected: false } 
+                    : answerItem
+            );
+        } else {
+            // 선택되지 않은 답변이면
+            if (maxSelect === null) {
+                // 무제한 선택 가능
+                currentAnswer = currentAnswer.map((answerItem: QAFormAnswerType, index: number) => 
+                    answerIndex === index 
+                        ? { ...answerItem, selected: true } 
+                        : answerItem
+                );
+            } else if (maxSelect >= 2) {
+                // 최대 선택 개수가 2 이상인 경우
+                if (selectedCount < maxSelect) {
+                    // 아직 선택 가능한 개수가 남아있으면 선택
+                    currentAnswer = currentAnswer.map((answerItem: QAFormAnswerType, index: number) => 
+                        answerIndex === index 
+                            ? { ...answerItem, selected: true } 
+                            : answerItem
+                    );
+                }
+                // 선택 개수가 이미 maxSelect에 도달했으면 아무것도 하지 않음
+            } else {
+                // maxSelect가 1인 경우 (단일 선택)
+                currentAnswer = currentAnswer.map((answerItem: QAFormAnswerType, index: number) => 
+                    answerIndex === index 
+                        ? { ...answerItem, selected: true } 
+                        : { ...answerItem, selected: false }
+                );
+            }
+        }
+
         _QAForm[currentSectionIndex].questions[currentQuestionIndex].answers = currentAnswer;
 
         setForm({ ...form, chapters: _QAForm });
@@ -134,18 +179,27 @@ export const TestForm = ({ form, setForm }:
             <TestQuestionScreen
                 question={form.chapters[currentChapter - 1].questions[currentQuestion - 1].question}
                 answers={form.chapters[currentChapter - 1].questions[currentQuestion - 1].answers}
+                maxSelect={form.chapters[currentChapter - 1].questions[currentQuestion - 1].maxSelect}
                 onChange={(index: number) => handleSelectForm({
                     section: currentChapter,
                     questionId: form.chapters[currentChapter - 1].questions[currentQuestion - 1].questionId,
-                    answerIndex: index
+                    answerIndex: index,
+                    maxSelect: form.chapters[currentChapter - 1].questions[currentQuestion - 1].maxSelect
                 })}
             />
         )
     }, [form.chapters, currentChapter, currentQuestion])
 
-    const handleNext = useCallback(() => {
+    const handleNext = async () => {
         if (step === totalStepCount) {
-            router.push(`/test1Result?form=${JSON.stringify(form)}`)
+            console.log('sending form', form)
+            // AsyncStorage에 form 데이터 저장
+            try {
+                await AsyncStorage.setItem('testFormData', JSON.stringify(form));
+                router.push('/test1Result');
+            } catch (error) {
+                console.error('Form 데이터 저장 실패:', error);
+            }
         } else {
             if (currentQuestion === form.chapters[currentChapter - 1].questions.length) {
                 setCurrentChapter(currentChapter + 1);
@@ -160,9 +214,8 @@ export const TestForm = ({ form, setForm }:
                 setStep(prev => prev + 1)
                 console.log('테스트 시작')
             }
-
         }
-    }, [step, totalStepCount, router, currentChapter, currentQuestion, form.chapters])
+    }
 
     return (
         <SafeAreaView style={styles.safeareaview}>
@@ -211,7 +264,7 @@ const progressBarStyle = StyleSheet.create({
         width: 0 // 초기값은 0, 애니메이션으로 조절됨
     },
     text: {
-        width: 30,
+        width: 'auto',
         height: 17,
         fontSize: 14,
         fontWeight: "700",
@@ -271,7 +324,6 @@ const test1_3_style = StyleSheet.create({
     },
     view: {
         width: "100%",
-        gap: 17
     },
     rectangleParent: {
         width: "100%"

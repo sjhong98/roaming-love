@@ -232,12 +232,12 @@ export default function Main() {
 
                     {/* 테스트 버튼 */}
                     <Animated.View style={[styles.vectorIconContainer, { opacity: otherElementsOpacity }]}>
-                        <TouchableOpacity style={[styles.vectorIconLayout, { marginRight: -25, position: 'relative', alignItems: 'center', justifyContent: 'center', gap: Dimensions.get('window').width * 0.02 }]}>
+                        <TouchableOpacity onPress={() => router.push('/test1')} style={[styles.vectorIconLayout, { marginRight: -25, position: 'relative', alignItems: 'center', justifyContent: 'center', gap: Dimensions.get('window').width * 0.02 }]}>
                             <Image source={require('@/assets/images/liquidButton.png')} style={[styles.vectorIcon, styles.vectorIconLayout, { position: 'absolute', top: 0, left: 0 }]} />
                             <Image source={require('@/assets/images/travelTest.png')} style={{ width: 74, height: 74 }} />
                             <Image source={require('@/assets/images/travelTestTitle.png')} style={{ width: Dimensions.get('window').width * 0.2, height: 17 }} contentFit="contain" />
                         </TouchableOpacity>
-                        <TouchableOpacity style={[styles.vectorIconLayout, { marginLeft: -25, position: 'relative', alignItems: 'center', justifyContent: 'center', gap: Dimensions.get('window').width * 0.02 }]}>
+                        <TouchableOpacity onPress={() => router.push('/test2')} style={[styles.vectorIconLayout, { marginLeft: -25, position: 'relative', alignItems: 'center', justifyContent: 'center', gap: Dimensions.get('window').width * 0.02 }]}>
                             <Image source={require('@/assets/images/liquidButton.png')} style={[styles.vectorIcon, styles.vectorIconLayout, { position: 'absolute', top: 0, left: 0 }]} />
                             <Image source={require('@/assets/images/relationshipTest.png')} style={{ width: 78, height: 70 }} />
                             <Image source={require('@/assets/images/relationshipTestTitle.png')} style={{ width: Dimensions.get('window').width * 0.2, height: 17 }} contentFit="contain" />

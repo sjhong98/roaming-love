@@ -28,9 +28,11 @@ export default function RootLayout() {
         <Stack.Screen name="guestLogin" options={{ headerShown: false, title: '게스트로그인' }} />
         <Stack.Screen name="test1" options={{ headerShown: false, title: '테스트1' }} />
         <Stack.Screen name="test1Result" options={{ headerShown: false, title: '테스트1결과' }} />
+        <Stack.Screen name="test2" options={{ headerShown: false, title: '테스트2' }} />
+        <Stack.Screen name="test2Result" options={{ headerShown: false, title: '테스트2결과' }} />
         <Stack.Screen name="chatDetail" options={{ headerShown: false, title: '채팅상세' }} />
         <Stack.Screen name="userProfile" options={{ headerShown: false, title: '유저프로필' }} />
-        <Stack.Screen name="createPost" options={{ headerShown: false, title: '게시글작성' }} />
+        <Stack.Screen name="createPost" options={{ headerShown: false, title: '게시글작성' }} />  
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>
