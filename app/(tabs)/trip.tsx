@@ -1,18 +1,16 @@
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import CalendarInactiveIcon from '@/assets/images/calendarLightGray.svg';
+import CalendarActiveIcon from '@/assets/images/calendarDarkGray.svg';
 import ChangeEachOtherIcon from '@/assets/images/changeEachOther.svg';
-import CalendarIcon from '@/assets/images/calendarRed.svg';
-import { useEffect, useRef, useState } from "react";
-import { Image, ImageSource } from "expo-image";
-import LocationCard from "@/components/ui/LocationCard";
-import SearchRedIcon from '@/assets/images/searchRed.svg';
-import LocationSelect from "@/components/trip/LocationSelect";
 import DateSelect from "@/components/trip/DateSelect";
+import LocationSelect from "@/components/trip/LocationSelect";
+import TypeSelect from "@/components/trip/TypeSelect";
+import LocationCard from "@/components/ui/LocationCard";
+import UserDummy from "@/constants/UserDummy";
 import { changeToThreeLetter } from "@/utils/changeToThreeLetter";
 import dayjs from "dayjs";
-import SettingIcon from '@/assets/images/settingIcon.svg';
-import TypeSelect from "@/components/trip/TypeSelect";
-import UserDummy from "@/constants/UserDummy";
+import { Image, ImageSource } from "expo-image";
+import { useEffect, useRef, useState } from "react";
+import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type UserCardItem = {
     type: 'user';
@@ -41,19 +39,26 @@ export default function Trip() {
     const [dateSelectOpen, setDateSelectOpen] = useState(false);
     const [searchResult, setSearchResult] = useState<boolean>(false);
     const [filteredUserList, setFilteredUserList] = useState<any[]>([]);
+
     const scrollRef = useRef<ScrollView>(null);
 
     const [selectedForm, setSelectedForm] = useState<{
         location: string | undefined;
+        dateType: 'date' | 'day';
         dateRange: DateRange;
+        period: 'weekend' | '2days' | '3days' | '4days' | '5days' | '1week+';
+        month: string | undefined;
         tripType: string | undefined;
         loveType: string | undefined;
     }>({
         location: undefined,
+        dateType: 'date',
         dateRange: {
             startDate: null,
             endDate: null,
         },
+        period: 'weekend',
+        month: undefined,
         tripType: undefined,
         loveType: undefined,
     });
@@ -135,15 +140,17 @@ export default function Trip() {
     }, [locationSelectOpen]);
 
     const handleSearch = () => {
-        if (!selectedForm.location || !selectedForm.dateRange.startDate || !selectedForm.dateRange.endDate || !selectedForm.tripType || !selectedForm.loveType) return;
+        if (!selectedForm.location || (selectedForm.dateType === 'date' && (!selectedForm.dateRange.startDate || !selectedForm.dateRange.endDate)) || (selectedForm.dateType === 'day' && (!selectedForm.period || !selectedForm.month)) || !selectedForm.tripType || !selectedForm.loveType) return;
 
         setSearchResult(true);
 
         const filteredUserList = UserDummy.filter((user) => {
             return user.favoriteLocation.includes(selectedForm.location ?? '')
-                && (dayjs(user.date.startDate).isSame(dayjs(selectedForm.dateRange.startDate), 'day') && dayjs(user.date.endDate).isSame(dayjs(selectedForm.dateRange.endDate), 'day'))
                 && user.tripType === selectedForm.tripType
                 && user.loveType === selectedForm.loveType
+                && (selectedForm.dateType === 'date' ? dayjs(user.date.startDate).isSame(dayjs(selectedForm.dateRange.startDate), 'day') && dayjs(user.date.endDate).isSame(dayjs(selectedForm.dateRange.endDate), 'day') : true)
+                && (selectedForm.dateType === 'day' ? user.period.includes(selectedForm.period) : true)
+                && (selectedForm.dateType === 'day' ? user.month.includes(selectedForm.month ?? 'none') : true)
         });
         setFilteredUserList(filteredUserList);
     }
@@ -152,17 +159,30 @@ export default function Trip() {
     return !searchResult ? (
         <View>
             <ScrollView ref={scrollRef} style={{ position: 'relative', height: '110%', paddingTop: 80 }} contentContainerStyle={{ paddingBottom: 150 }}>
-                <View style={topStyles.view0}>
+                <View style={[topStyles.view0]}>
                     <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={topStyles.text}>검색</Text>
                     </View>
-                    <Text style={[topStyles.text2, topStyles.textTypo1]}>날짜 지정</Text>
-                    <Text style={[topStyles.text3, topStyles.textTypo1]}>일수 지정</Text>
+                    <View style={{ width: '100%', height: 80, position: 'absolute', zIndex: 1000 }} />
+                    <TouchableOpacity
+                        onPress={() => setSelectedForm({ ...selectedForm, dateType: 'date' })}
+                        style={{ zIndex: 1001 }}
+                    // hitSlop={{ top: 50, bottom: 50, left: 50, right: 50 }}
+                    >
+                        <Text style={[topStyles.text2, topStyles.textTypo1, selectedForm.dateType === 'date' ? { color: '#E30247' } : { color: '#999' }]}>날짜 지정</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        onPress={() => setSelectedForm({ ...selectedForm, dateType: 'day' })}
+                        style={{ zIndex: 1001 }}
+                    // hitSlop={{ top: 50, bottom: 50, left: 50, right: 50 }}
+                    >
+                        <Text style={[topStyles.text3, topStyles.textTypo1, selectedForm.dateType === 'day' ? { color: '#E30247' } : { color: '#999' }]}>일수 지정</Text>
+                    </TouchableOpacity>
                 </View>
                 {!locationSelectOpen ? (
-                    <TouchableOpacity onPress={() => setLocationSelectOpen(true)} activeOpacity={1} style={topStyles.view}>
+                    <TouchableOpacity onPress={() => setLocationSelectOpen(true)} activeOpacity={1} style={[topStyles.view]}>
                         <View style={{ width: '100%', paddingHorizontal: 24, justifyContent: 'center', alignItems: 'center' }}>
-                            <View style={topStyles.view2} />
+                            <View style={[topStyles.view2, { height: selectedForm.dateType === 'date' ? 130 : 130 }]} />
                         </View>
                         <ChangeEachOtherIcon style={[topStyles.child, topStyles.childPosition, { marginTop: 2 }]} width={347} />
                         <Text style={[topStyles.sel, topStyles.toTypo]}>SEL</Text>
@@ -172,13 +192,17 @@ export default function Trip() {
                         <View style={{ position: 'absolute', right: '11%', top: 160, width: 140, justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={[topStyles.text5, selectedForm.location ? { color: '#333' } : '']}>{!selectedForm.location ? '도착지' : selectedForm.location}</Text>
                         </View>
-                        <View style={{ width: '100%', paddingHorizontal: 24, justifyContent: 'center', alignItems: 'center'}}>
-                            <View style={topStyles.divider} />
-                        </View>
-                        <View style={[topStyles.group, { width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 5 }]}>
-                            <CalendarIcon style={[topStyles.vectorIcon2, { position: 'relative', marginTop: -2 }]} width={18} height={14} />
-                            <Text style={[topStyles.text6, topStyles.textTypo, { position: 'relative' }]}>{selectedForm.dateRange.startDate && selectedForm.dateRange.endDate ? `${dayjs(selectedForm.dateRange.startDate).format('YYYY.MM.DD')} ~ ${dayjs(selectedForm.dateRange.endDate).format('YYYY.MM.DD')}` : '가는 날 ~ 오는 날'}</Text>
-                        </View>
+                        {/* {tab === 'date' &&
+                            <View style={{ width: '100%', paddingHorizontal: 24, justifyContent: 'center', alignItems: 'center' }}>
+                                <View style={topStyles.divider} />
+                            </View>
+                        } */}
+                        {/* {tab === 'date' &&
+                            <View style={[topStyles.group, { width: '100%', justifyContent: 'center', alignItems: 'center', flexDirection: 'row', gap: 5 }]}>
+                                <CalendarIcon style={[topStyles.vectorIcon2, { position: 'relative', marginTop: -2 }]} width={18} height={14} />
+                                <Text style={[topStyles.text6, topStyles.textTypo, { position: 'relative' }]}>{selectedForm.dateRange.startDate && selectedForm.dateRange.endDate ? `${dayjs(selectedForm.dateRange.startDate).format('YYYY.MM.DD')} ~ ${dayjs(selectedForm.dateRange.endDate).format('YYYY.MM.DD')}` : '가는 날 ~ 오는 날'}</Text>
+                            </View>
+                        } */}
                     </TouchableOpacity>
                 ) : (
                     <LocationSelect
@@ -188,23 +212,82 @@ export default function Trip() {
                     />
                 )}
 
-                {!dateSelectOpen ? (
-                    <TouchableOpacity onPress={() => setDateSelectOpen(true)} activeOpacity={1} style={{ width: '100%', paddingHorizontal: 24, position: 'relative', marginTop: 20 }}>
-                        <View style={selectDateStyles.view}>
-                            <View style={[selectDateStyles.view2, selectDateStyles.viewPosition]} />
-                            <View style={[selectDateStyles.view3, selectDateStyles.viewPosition]} />
-                            <Text style={[selectDateStyles.text, selectDateStyles.textTypo]}>날짜</Text>
-                            <Text style={[selectDateStyles.safeareaviewText, selectDateStyles.textTypo]}>{selectedForm.dateRange.endDate ? `${dayjs(selectedForm.dateRange.endDate).diff(dayjs(selectedForm.dateRange.startDate), 'day') + 1}일` : '일수'}</Text>
-                        </View>
-                    </TouchableOpacity>
-                ) : (
-                    <DateSelect
-                        setDateSelectOpen={setDateSelectOpen}
-                        dateRange={selectedForm.dateRange}
-                        setDateRange={(dateRange: DateRange) => setSelectedForm({ ...selectedForm, dateRange })}
-                    />
-                )}
+                {
+                    !dateSelectOpen ? (
+                        <TouchableOpacity onPress={() => setDateSelectOpen(true)} activeOpacity={1} style={{ width: '100%', paddingHorizontal: 24, position: 'relative', marginTop: -10 }}>
+                            <View style={selectDateStyles.view}>
+                                <View style={[selectDateStyles.view2, selectDateStyles.viewPosition]} />
+                                <View style={[selectDateStyles.view3, selectDateStyles.viewPosition]} />
+                                <Text style={[selectDateStyles.text, selectDateStyles.textTypo]}>{selectedForm.dateType === 'date' ? '날짜' : '일수'}</Text>
+                                <Text style={[selectDateStyles.safeareaviewText, selectDateStyles.textTypo]}>{selectedForm.dateRange.endDate ? `${dayjs(selectedForm.dateRange.endDate).diff(dayjs(selectedForm.dateRange.startDate), 'day') + 1}일` : '일수'}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    ) : selectedForm.dateType === 'date' ? (
+                        <DateSelect
+                            setDateSelectOpen={setDateSelectOpen}
+                            dateRange={selectedForm.dateRange}
+                            setDateRange={(dateRange: DateRange) => setSelectedForm({ ...selectedForm, dateRange })}
+                        />
+                    ) : (
+                        <View style={{ width: '100%', paddingHorizontal: 24, position: 'relative', marginTop: -10 }}>
+                            <View style={{ boxShadow: "0px 5px 9.1px rgba(219, 79, 79, 0.1)", width: '100%', paddingHorizontal: 21, paddingVertical: 27, borderRadius: 20 }}>
+                                <Text style={{ color: '#999' }}>여행 기간을 선택하세요.</Text>
+                                <View style={{ flexDirection: 'row', gap: 10, marginTop: 20 }}>
+                                    <TouchableOpacity onPress={() => setSelectedForm({ ...selectedForm, period: 'weekend' })} style={{ width: '30%', justifyContent: 'center', alignItems: 'center', paddingVertical: 13, borderRadius: 15, borderWidth: selectedForm.period === 'weekend' ? 1.5 : 1, borderColor: selectedForm.period === 'weekend' ? '#444' : '#bebebe', backgroundColor: selectedForm.period === 'weekend' ? '#d9d9d9' : '#fff' }}><Text>주말</Text></TouchableOpacity>
+                                    <TouchableOpacity onPress={() => setSelectedForm({ ...selectedForm, period: '2days' })} style={{ width: '30%', justifyContent: 'center', alignItems: 'center', paddingVertical: 13, borderRadius: 15, borderWidth: selectedForm.period === '2days' ? 1.5 : 1, borderColor: selectedForm.period === '2days' ? '#444' : '#bebebe', backgroundColor: selectedForm.period === '2days' ? '#d9d9d9' : '#fff' }}><Text>2일</Text></TouchableOpacity>
+                                    <TouchableOpacity onPress={() => setSelectedForm({ ...selectedForm, period: '3days' })} style={{ width: '30%', justifyContent: 'center', alignItems: 'center', paddingVertical: 13, borderRadius: 15, borderWidth: selectedForm.period === '3days' ? 1.5 : 1, borderColor: selectedForm.period === '3days' ? '#444' : '#bebebe', backgroundColor: selectedForm.period === '3days' ? '#d9d9d9' : '#fff' }}><Text>3일</Text></TouchableOpacity>
+                                </View>
+                                <View style={{ flexDirection: 'row', gap: 10, marginTop: 20 }}>
+                                    <TouchableOpacity onPress={() => setSelectedForm({ ...selectedForm, period: '4days' })} style={{ width: '30%', justifyContent: 'center', alignItems: 'center', paddingVertical: 13, borderRadius: 15, borderWidth: selectedForm.period === '4days' ? 1.5 : 1, borderColor: selectedForm.period === '4days' ? '#444' : '#bebebe', backgroundColor: selectedForm.period === '4days' ? '#d9d9d9' : '#fff' }}><Text>4일</Text></TouchableOpacity>
+                                    <TouchableOpacity onPress={() => setSelectedForm({ ...selectedForm, period: '5days' })} style={{ width: '30%', justifyContent: 'center', alignItems: 'center', paddingVertical: 13, borderRadius: 15, borderWidth: selectedForm.period === '5days' ? 1.5 : 1, borderColor: selectedForm.period === '5days' ? '#444' : '#bebebe', backgroundColor: selectedForm.period === '5days' ? '#d9d9d9' : '#fff' }}><Text>5일</Text></TouchableOpacity>
+                                    <TouchableOpacity onPress={() => setSelectedForm({ ...selectedForm, period: '1week+' })} style={{ width: '30%', justifyContent: 'center', alignItems: 'center', paddingVertical: 13, borderRadius: 15, borderWidth: selectedForm.period === '1week+' ? 1.5 : 1, borderColor: selectedForm.period === '1week+' ? '#444' : '#bebebe', backgroundColor: selectedForm.period === '1week+' ? '#d9d9d9' : '#fff' }}><Text>일주일+</Text></TouchableOpacity>
+                                </View>
 
+                                <Text style={{ color: '#999', marginTop: 41 }}>여행 날짜를 선택하세요.</Text>
+                                <ScrollView
+                                    horizontal
+                                    showsHorizontalScrollIndicator={false}
+                                    style={{ width: Dimensions.get('window').width - 48, height: 133, marginTop: 20, marginLeft: -24 }}
+                                    contentContainerStyle={{ gap: 10, paddingHorizontal: 24 }}
+                                >
+                                    {['2025/11', '2025/12', '2026/01', '2026/02', '2026/03', '2026/04', '2026/05', '2026/06', '2026/07', '2026/08', '2026/09', '2026/10', '2026/11', '2026/12'].map((item, index) => {
+                                        const [year, month] = item.split('/');
+                                        return (
+                                            <TouchableOpacity key={index} onPress={() => setSelectedForm({ ...selectedForm, month: item })} style={{ width: 110, justifyContent: 'center', alignItems: 'center', paddingVertical: 13, borderRadius: 15, borderWidth: selectedForm.month === item ? 1.5 : 1, borderColor: selectedForm.month === item ? '#444' : '#bebebe', height: 133, backgroundColor: selectedForm.month === item ? '#d9d9d9' : '#fff' }}>
+                                                {selectedForm.month === item ?
+                                                    <CalendarActiveIcon width={24} height={24} /> :
+                                                    <CalendarInactiveIcon width={24} height={24} />
+                                                }
+                                                <Text style={{ marginTop: 14 }}>{month}</Text>
+                                                <Text style={{ marginTop: 3, fontWeight: 300, color: '#999' }}>{year}</Text>
+                                            </TouchableOpacity>
+                                        )
+                                    })}
+                                    <View style={{ width: '30%', justifyContent: 'center', alignItems: 'center', paddingVertical: 13, borderRadius: 15, borderWidth: 1, borderColor: '#bebebe', height: 133 }}>
+                                        <CalendarInactiveIcon width={24} height={24} />
+                                        <Text style={{ marginTop: 14 }}>4월</Text>
+                                        <Text style={{ marginTop: 3, fontWeight: 300, color: '#999' }}>2025</Text>
+                                    </View>
+                                </ScrollView>
+
+                                <TouchableOpacity
+                                    style={[
+                                        styles.confirmButton,
+                                        (!selectedForm.month || !selectedForm.period) && styles.confirmButtonDisabled,
+                                    ]}
+                                    onPress={() => {
+                                        if (!selectedForm.month || !selectedForm.period) return;
+                                        setDateSelectOpen(false);
+                                    }}
+                                    disabled={!selectedForm.month || !selectedForm.period}
+                                    activeOpacity={0.8}
+                                >
+                                    <Text style={styles.confirmButtonText}>다음</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    )
+                }
                 <TypeSelect
                     tripType={selectedForm.tripType}
                     loveType={selectedForm.loveType}
@@ -218,8 +301,15 @@ export default function Trip() {
                 <View style={{ position: 'relative', marginTop: 20, width: '100%', height: 50, paddingHorizontal: 20 }}>
                     <TouchableOpacity
                         onPress={handleSearch}
-                        disabled={!selectedForm.location || !selectedForm.dateRange.startDate || !selectedForm.dateRange.endDate || !selectedForm.tripType || !selectedForm.loveType}
-                        style={{ width: '100%', height: 50, backgroundColor: '#FF2D55', borderRadius: 10, justifyContent: 'center', alignItems: 'center', opacity: !selectedForm.location || !selectedForm.dateRange.startDate || !selectedForm.dateRange.endDate || !selectedForm.tripType || !selectedForm.loveType ? 0.5 : 1 }}
+                        disabled={
+                            !selectedForm.location
+                            || (selectedForm.dateType === 'date' && (!selectedForm.dateRange.startDate || !selectedForm.dateRange.endDate))
+                            || (selectedForm.dateType === 'day' && (!selectedForm.period || !selectedForm.month))
+                            || !selectedForm.tripType 
+                            || !selectedForm.loveType
+                        }
+                        style={{ width: '100%', height: 50, backgroundColor: '#FF2D55', borderRadius: 10, justifyContent: 'center', alignItems: 'center', 
+                            opacity: !selectedForm.location || (selectedForm.dateType === 'date' && (!selectedForm.dateRange.startDate || !selectedForm.dateRange.endDate)) || (selectedForm.dateType === 'day' && (!selectedForm.period || !selectedForm.month)) || !selectedForm.tripType || !selectedForm.loveType ? 0.5 : 1 }}
                     >
                         <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>검색</Text>
                     </TouchableOpacity>
@@ -326,6 +416,29 @@ export default function Trip() {
         </View>
     )
 }
+
+const styles = StyleSheet.create({
+    confirmButton: {
+        backgroundColor: '#FF2D55',
+        // paddingHorizontal: 32,
+        paddingVertical: 8,
+        borderRadius: 10,
+        width: 88,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginLeft: 'auto',
+        marginTop: 40
+    },
+    confirmButtonDisabled: {
+        backgroundColor: '#FFD1DD',
+    },
+    confirmButtonText: {
+        color: '#FFF',
+        fontSize: 14,
+        fontWeight: '700',
+        fontFamily: "NanumSquare Neo",
+    },
+})
 
 const userCardStyles2 = StyleSheet.create({
     safeareaview: {
@@ -624,8 +737,8 @@ const topStyles = StyleSheet.create({
     view: {
         width: "100%",
         height: 240,
-        flex: 1,
-        position: 'relative'
+        // flex: 1,
+        position: 'relative',
     },
     text: {
         fontSize: 20,
@@ -638,11 +751,9 @@ const topStyles = StyleSheet.create({
     },
     text2: {
         marginLeft: -120.5,
-        color: "#e40046"
     },
     text3: {
         marginLeft: 49.5,
-        color: "#999"
     },
     view2: {
         top: 79,
@@ -650,7 +761,6 @@ const topStyles = StyleSheet.create({
         elevation: 7.4,
         borderRadius: 20,
         backgroundColor: "#fff",
-        height: 161,
         width: '100%',
         position: "absolute"
     },

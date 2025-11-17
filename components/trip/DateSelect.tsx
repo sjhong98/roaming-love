@@ -164,7 +164,7 @@ export default function DateSelect({
     }, [currentMonth, currentYear]);
 
     return (
-        <View style={{ width: '100%', paddingHorizontal: 24, position: 'relative', marginTop: 20 }}>
+        <View style={{ width: '100%', paddingHorizontal: 24, position: 'relative', marginTop: -10 }}>
             <View style={styles.view}>
                 <View style={styles.view2}>
                     <View style={[styles.view3, styles.viewPosition]} />
