@@ -1,21 +1,26 @@
 import CommentIcon from '@/assets/images/commentIcon.svg';
 import HeartInactiveIcon from '@/assets/images/heartIcon.svg';
+import HeartActiveIcon from '@/assets/images/heartActive.svg';
 import SearchRedIcon from '@/assets/images/searchRed.svg';
 import supabase from "@/db";
+import useUser from '@/hooks/use-user';
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Animated, Dimensions, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Explore() {
+    const { user } = useUser();
     const scrollRef = useRef<ScrollView>(null);
 
     const [activeTab, setActiveTab] = useState('recommend');
     const [isCustomRefreshing, setIsCustomRefreshing] = useState(false);
     const [tabContainerWidth, setTabContainerWidth] = useState(0);
-    const [postList, setPostList] = useState([{ id: 1 }, { id: 2 }, { id: 3 }, { id: 4 }, { id: 5 }, { id: 6 }, { id: 7 }, { id: 8 }, { id: 9 }, { id: 10 }]);
+    const [postList, setPostList] = useState([]);
     const [isPulled, setIsPulled] = useState(false);
+    const [imageAspectRatios, setImageAspectRatios] = useState<Map<number, number>>(new Map());
+    const likeAnimations = useRef<Map<number, Animated.Value>>(new Map());
     const indicatorLeft = useRef(new Animated.Value(80)).current;
     const indicatorWidth = useRef(new Animated.Value(29)).current;
     const HEADER_HEIGHT = 120;
@@ -46,9 +51,38 @@ export default function Explore() {
         extrapolate: 'clamp'
     });
 
+    const fetchPostList = async () => {
+        if (!user) return;
+
+        const { data, error } = await supabase
+            .from('post')
+            .select('*, user:user(*), comment:post_comment(*), like:post_like(*)')
+            .order('created_at', { ascending: false })
+        if (error) {
+            console.error('게시글 목록 가져오기 실패:', error);
+            return;
+        }
+
+        // like count를 계산하여 추가
+        const postsWithCount = (data || []).map((post: any) => {
+            const didILike = post.like.some((like: any) => like.user_pk === user?.pk);
+            return {
+                ...post,
+                likeCount: Array.isArray(post.like) ? post.like.length : 0,
+                didILike
+            }
+        });
+        console.log('postsWithCount', postsWithCount);
+        setPostList(postsWithCount as any);
+    }
+
     useEffect(() => {
-        console.log('isPulled', isPulled);
-    }, [isPulled]);
+        if (user === undefined) return;
+
+        fetchPostList();
+    }, [user])
+
+
 
     useEffect(() => {
         if (!isCustomRefreshing) return;
@@ -91,7 +125,6 @@ export default function Explore() {
     };
 
     useEffect(() => {
-        console.log('isCustomRefreshing', isCustomRefreshing);
         if (isCustomRefreshing) {
             Animated.timing(pullDistance.current, {
                 toValue: 135,
@@ -152,6 +185,75 @@ export default function Explore() {
         }
     };
 
+    const getLikeAnimation = (postPk: number): Animated.Value => {
+        if (!likeAnimations.current.has(postPk)) {
+            likeAnimations.current.set(postPk, new Animated.Value(1));
+        }
+        return likeAnimations.current.get(postPk)!;
+    };
+
+    const triggerPopAnimation = (postPk: number) => {
+        const animValue = getLikeAnimation(postPk);
+        Animated.sequence([
+            Animated.timing(animValue, {
+                toValue: 1.3,
+                duration: 150,
+                useNativeDriver: true,
+            }),
+            Animated.timing(animValue, {
+                toValue: 1,
+                duration: 150,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    };
+
+    const handleLike = async (postPk: number, didILike: boolean) => {
+        console.log('postPk', postPk);
+        // Pop 애니메이션 트리거
+        triggerPopAnimation(postPk);
+
+        if (didILike) {
+            // 좋아요 취소
+            await supabase
+                .from('post_like')
+                .delete()
+                .eq('post_pk', postPk)
+                .eq('user_pk', user?.pk);
+            let newPostList: any = postList.map((item: any) => item.pk === postPk ? { ...item, didILike: false, likeCount: item?.likeCount - 1 } : item);
+            setPostList(newPostList);
+        } else {
+            // 좋아요 추가
+            await supabase
+                .from('post_like')
+                .insert({
+                    post_pk: postPk,
+                    user_pk: user?.pk,
+                });
+            let newPostList: any = postList.map((item: any) => item.pk === postPk ? { ...item, didILike: true, likeCount: item?.likeCount + 1 } : item);
+            setPostList(newPostList);
+        }
+    }
+
+    const handleImageLoad = (postPk: number, event: any) => {
+        console.log('Image load event:', event);
+        console.log('Image load event.source:', event.source);
+        // expo-image의 onLoad 이벤트 구조 확인
+        const source = event.source || event.nativeEvent?.source || event;
+        const width = source.width;
+        const height = source.height;
+        console.log('Image dimensions:', { width, height, postPk });
+        if (width && height) {
+            const aspectRatio = height / width;
+            console.log('Calculated aspect ratio:', aspectRatio);
+            setImageAspectRatios(prev => {
+                const newMap = new Map(prev);
+                newMap.set(postPk, aspectRatio);
+                return newMap;
+            });
+        }
+    }
+
 
     return (
         <View style={{ flex: 1, position: 'relative' }}>
@@ -160,7 +262,7 @@ export default function Explore() {
                 <View style={topStyles.view0}>
                     <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={topStyles.text}>탐색하기</Text>
-                        <TouchableOpacity onPress={() => { }} style={{ marginRight: -115, marginTop: -1 }}>
+                        <TouchableOpacity onPress={() => router.push('/exploreSearch')} style={{ marginRight: -115, marginTop: -1 }}>
                             <SearchRedIcon width={24} height={24} />
                         </TouchableOpacity>
                     </View>
@@ -208,31 +310,93 @@ export default function Explore() {
                 </Animated.View>
                 <Animated.View style={{ width: '100%', height: paddingTop }} />
                 {
-                    postList.map((item, index) => (
-                        <View key={index} style={{ width: '100%', minHeight: 95, position: 'relative', borderColor: "#b3b3b3", borderBottomWidth: 0.5, paddingTop: 10 }}>
-                            <View key={index} style={postStyles.view}>
-                                <View style={postStyles.child} />
-                                <View style={[postStyles.view2, postStyles.itemPosition]}>
-                                    {/* <Image source={{ uri: item.image }} style={[postStyles.item, postStyles.itemPosition]} resizeMode="cover" /> */}
-                                    <Text style={[postStyles.text, postStyles.textTypo]}>닉네임</Text>
-                                    <Text style={[postStyles.text2, postStyles.textTypo]}>안녕하세요! 졸업을 축하드립니다</Text>
+                    postList.map((item: any, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            activeOpacity={1}
+                            onPress={() => router.push(`/exploreDetail?postPk=${item?.pk}`)}
+                            style={{ width: '100%', position: 'relative', borderColor: "#b3b3b3", borderBottomWidth: 0.5, paddingTop: 10, paddingLeft: 21, paddingRight: 13, flexDirection: 'row', gap: 13, paddingBottom: 10, zIndex: 1 }}
+                        >
+                            <View style={{ width: 45 }}>
+                                <Image source={require('@/assets/images/userIcon.png')} style={[postStyles.item, postStyles.itemPosition]} resizeMode="cover" />
+                            </View>
+                            <View style={{ width: '100%' }}>
+                                <View style={[postStyles.view2, { height: 'auto', width: '100%', position: 'relative' }]}>
+                                    <Text style={[postStyles.text, postStyles.textTypo]}>{item?.user?.nickname}</Text>
+                                    <Text style={[postStyles.text2, postStyles.textTypo]}>{item?.content}</Text>
+                                    {item?.image ? (
+                                        item?.image?.split('|SPLIT|')?.length === 1 ?
+                                            (<Image
+                                                source={{ uri: item?.image?.split('|SPLIT|')?.[0] }}
+                                                style={{
+                                                    width: Dimensions.get('window').width - 93,
+                                                    height: imageAspectRatios.has(item?.pk)
+                                                        ? (Dimensions.get('window').width - 93) * imageAspectRatios.get(item?.pk)!
+                                                        : 200, // 임시 높이 (로드 전까지)
+                                                    borderRadius: 10,
+                                                    marginTop: 9
+                                                }}
+                                                contentFit="cover"
+                                                onLoad={(event) => handleImageLoad(item?.pk, event)}
+                                                onError={(error) => console.log('Image load error:', error)}
+                                            />) : (
+                                                <ScrollView
+                                                    horizontal
+                                                    showsHorizontalScrollIndicator={false}
+                                                    style={{ width: Dimensions.get('window').width, gap: 10, marginLeft: -79 }}
+                                                    contentContainerStyle={{ gap: 12, paddingLeft: 79, paddingRight: 13 }}
+                                                    onStartShouldSetResponder={() => true}
+                                                    onMoveShouldSetResponder={() => true}
+                                                >
+                                                    {item?.image?.split('|SPLIT|')?.map((image: string, index: number) => (
+                                                        <Image
+                                                            key={index}
+                                                            source={{ uri: image }}
+                                                            style={{
+                                                                width: Dimensions.get('window').width - 93,
+                                                                height: imageAspectRatios.has(item?.pk)
+                                                                    ? (Dimensions.get('window').width - 93) * imageAspectRatios.get(item?.pk)!
+                                                                    : 200, // 임시 높이 (로드 전까지)
+                                                                borderRadius: 10,
+                                                                marginTop: 9
+                                                            }}
+                                                            contentFit="cover"
+                                                        />
+                                                    ))}
+                                                </ScrollView>
+
+                                            )
+                                    ) : (
+                                        <View style={{ width: '100%', height: 0 }} />
+                                    )}
                                 </View>
-                                <View style={postStyles.bookmarkParent}>
+                                <View style={[postStyles.bookmarkParent, { marginTop: 13 }]}>
                                     <View style={[postStyles.heart, postStyles.heartLayout]}>
                                         <View style={{ position: 'relative', flexDirection: 'row', alignItems: 'center', gap: 8, minWidth: 40 }}>
-                                            <HeartInactiveIcon style={[postStyles.icon,]} />
-                                            <Text style={{ fontSize: 12, fontWeight: '300', color: '#000', fontFamily: 'Pretendard', marginLeft: -4 }}>1000</Text>
+                                            <Animated.View style={{ transform: [{ scale: getLikeAnimation(item?.pk) }] }}>
+                                                {item?.didILike ? (
+                                                    <TouchableOpacity activeOpacity={1} onPress={() => handleLike(item?.pk, true)}>
+                                                        <HeartActiveIcon />
+                                                    </TouchableOpacity>
+                                                ) : (
+                                                    <TouchableOpacity activeOpacity={1} onPress={() => handleLike(item?.pk, false)}>
+                                                        <HeartInactiveIcon />
+                                                    </TouchableOpacity>
+                                                )}
+                                            </Animated.View>
+
+                                            <Text style={{ fontSize: 12, fontWeight: '300', color: '#000', fontFamily: 'Pretendard', marginLeft: -4 }}>{item?.likeCount === 0 ? '' : item?.likeCount?.toLocaleString()}</Text>
                                         </View>
                                     </View>
                                     <View style={[postStyles.bookmark, postStyles.heartLayout]}>
                                         <View style={{ position: 'relative', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                                             <CommentIcon style={[postStyles.icon2, { marginTop: -2 }]} />
-                                            <Text style={{ fontSize: 12, fontWeight: '300', color: '#000', fontFamily: 'Pretendard', marginBottom: -1, marginLeft: -4 }}></Text>
+                                            <Text style={{ fontSize: 12, fontWeight: '300', color: '#000', fontFamily: 'Pretendard', marginBottom: -1, marginLeft: -4 }}>{item?.comment?.length === 0 ? '' : item?.comment?.length?.toLocaleString()}</Text>
                                         </View>
                                     </View>
                                 </View>
                             </View>
-                        </View>
+                        </TouchableOpacity>
                     ))
                 }
             </Animated.ScrollView>
@@ -259,14 +423,12 @@ const postStyles = StyleSheet.create({
         color: "#000",
         fontFamily: "SF Pro",
         lineHeight: 22,
-        left: 58,
-        position: "absolute"
     },
     heartLayout: {
         // overflow: "hidden",
         width: 20,
         height: 20,
-        top: 0,
+        bottom: 2,
         position: "absolute"
     },
     iconLayout: {
@@ -274,7 +436,6 @@ const postStyles = StyleSheet.create({
         maxHeight: "100%",
         maxWidth: "100%",
         overflow: "hidden",
-        position: "absolute"
     },
     view: {
         width: "100%",
@@ -288,8 +449,7 @@ const postStyles = StyleSheet.create({
         position: "absolute"
     },
     view2: {
-        left: 21,
-        width: 251
+        width: '100%'
     },
     item: {
         width: 45,
@@ -299,23 +459,17 @@ const postStyles = StyleSheet.create({
     text: {
         fontSize: 15,
         fontWeight: "600",
-        top: 0,
         textAlign: "left",
         color: "#000",
         fontFamily: "SF Pro",
         lineHeight: 22,
-        left: 58
     },
     text2: {
-        top: 23,
         fontSize: 14
     },
     bookmarkParent: {
-        top: 54,
-        left: 79,
-        width: 305,
+        width: '100%',
         height: 20,
-        position: "absolute"
     },
     bookmark: {
         left: 60

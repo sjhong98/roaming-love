@@ -65,7 +65,7 @@ export default function TabLayout() {
 
   const renderTab = useCallback(
     ({ key, title, href, Icon }: (typeof TABS)[number]) => {
-      const isFocused = pathname === href || pathname.startsWith(`${href}/`);
+      const isFocused = pathname === href || pathname.startsWith(`${href}`);
 
       return (
         <Pressable

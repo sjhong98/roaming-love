@@ -1,11 +1,13 @@
 import Login from "@/components/main/Login";
 import Splash from "@/components/main/Splash";
+import useUser from "@/hooks/use-user";
 import { router, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 export default function Index() {
+  const { user } = useUser();
   const [isSplashScreen, setIsSplashScreen] = useState(true);
   const screenHeight = Dimensions.get('window').height;
 
@@ -14,17 +16,23 @@ export default function Index() {
 
   const customEasing = Easing.bezier(0.06, 0.68, 0.39, 1.01);
 
-  useEffect(() => {
-    setTimeout(() => {
-      router.push('/(tabs)/main')
-    }, 100);
-  }, [])
-
   // useEffect(() => {
   //   setTimeout(() => {
-  //     setIsSplashScreen(false);
-  //   }, 1500);
-  // }, []);
+  //     router.push('/(tabs)/main')
+  //   }, 100);
+  // }, [])
+
+  useEffect(() => {
+    if(user === undefined) return;
+
+    setTimeout(() => {
+      if (user) {
+        router.replace('/(tabs)/main')
+      } else {
+        setIsSplashScreen(false);
+      }
+    }, 1500);
+  }, [user]);
 
   useEffect(() => {
     if (!isSplashScreen) {

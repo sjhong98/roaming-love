@@ -4,6 +4,7 @@ import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
+import { AnyRecord } from 'react-native-reanimated/lib/typescript/css/types';
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -82,11 +83,36 @@ export default function LoginScreen() {
                             if (sessionData.user) {
                                 console.log('로그인 성공:', sessionData.user);
 
-                                const userInfo = {
+                                let userInfo: AnyRecord = {
                                     name: sessionData.user.user_metadata?.name,
                                     email: sessionData.user.email,
                                     id: sessionData.user.id,
                                     platform: 'auth',
+                                }
+
+                                const userFromDb = await supabase
+                                    .from('user')
+                                    .select('*')
+                                    .eq('id', userInfo.email)
+                                    .single();
+
+                                    console.log('userFromDb', userFromDb)
+
+                                if (userFromDb && userFromDb.data) {
+                                    userInfo.pk = userFromDb.data.pk;
+                                } else {
+                                    const { data: insertedUser, error: insertError } = await supabase
+                                    .from('user')
+                                    .insert({
+                                        nickname: userInfo.name,
+                                        // email: userInfo.email,
+                                        id: userInfo.email,
+                                        platform: userInfo.platform,
+                                    })
+                                    .select()
+                                    .single();
+
+                                    userInfo.pk = insertedUser.pk;
                                 }
                                 
                                 // AsyncStorageAdapter를 사용하여 사용자 정보 저장

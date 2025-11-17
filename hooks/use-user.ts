@@ -2,7 +2,7 @@ import { AsyncStorageAdapter } from "@/db";
 import { useEffect, useState } from "react";
 
 export default function useUser() {
-    const [user, setUser] = useState<any>(null);
+    const [user, setUser] = useState<any>(undefined);
 
     // supabase-auth 로 인증된 사용자 정보 가져오기
     // const getAuthUser = async () => {
@@ -49,7 +49,8 @@ export default function useUser() {
             // } else setUser(authUser);
 
             const userInfo = await getUserInfoFromStorage();
-            setUser(userInfo);
+            if(userInfo) setUser(userInfo);
+            else setUser(null);
         })()
     }, []);
 
