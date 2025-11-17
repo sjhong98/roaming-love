@@ -1,14 +1,13 @@
 import CommentIcon from '@/assets/images/commentIcon.svg';
-import HeartInactiveIcon from '@/assets/images/heartIcon.svg';
 import HeartActiveIcon from '@/assets/images/heartActive.svg';
+import HeartInactiveIcon from '@/assets/images/heartIcon.svg';
 import SearchRedIcon from '@/assets/images/searchRed.svg';
 import supabase from "@/db";
 import useUser from '@/hooks/use-user';
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { use, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { ActivityIndicator, Animated, Dimensions, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Explore() {
     const { user } = useUser();
@@ -19,7 +18,9 @@ export default function Explore() {
     const [tabContainerWidth, setTabContainerWidth] = useState(0);
     const [postList, setPostList] = useState([]);
     const [isPulled, setIsPulled] = useState(false);
+    const [isLoading, setIsLoading] = useState(true);
     const [imageAspectRatios, setImageAspectRatios] = useState<Map<number, number>>(new Map());
+    const [imageLoadingStates, setImageLoadingStates] = useState<Map<number, boolean>>(new Map());
     const likeAnimations = useRef<Map<number, Animated.Value>>(new Map());
     const indicatorLeft = useRef(new Animated.Value(80)).current;
     const indicatorWidth = useRef(new Animated.Value(29)).current;
@@ -54,12 +55,14 @@ export default function Explore() {
     const fetchPostList = async () => {
         if (!user) return;
 
+        setIsLoading(true);
         const { data, error } = await supabase
             .from('post')
             .select('*, user:user(*), comment:post_comment(*), like:post_like(*)')
             .order('created_at', { ascending: false })
         if (error) {
             console.error('게시글 목록 가져오기 실패:', error);
+            setIsLoading(false);
             return;
         }
 
@@ -74,6 +77,7 @@ export default function Explore() {
         });
         console.log('postsWithCount', postsWithCount);
         setPostList(postsWithCount as any);
+        setIsLoading(false);
     }
 
     useEffect(() => {
@@ -87,11 +91,9 @@ export default function Explore() {
     useEffect(() => {
         if (!isCustomRefreshing) return;
 
-        const timeout = setTimeout(() => {
+        fetchPostList().finally(() => {
             setIsCustomRefreshing(false);
-        }, 2000);
-
-        return () => clearTimeout(timeout);
+        });
     }, [isCustomRefreshing]);
 
     useEffect(() => {
@@ -235,6 +237,14 @@ export default function Explore() {
         }
     }
 
+    const handleImageLoadStart = (postPk: number) => {
+        setImageLoadingStates(prev => {
+            const newMap = new Map(prev);
+            newMap.set(postPk, true);
+            return newMap;
+        });
+    }
+
     const handleImageLoad = (postPk: number, event: any) => {
         console.log('Image load event:', event);
         console.log('Image load event.source:', event.source);
@@ -243,6 +253,13 @@ export default function Explore() {
         const width = source.width;
         const height = source.height;
         console.log('Image dimensions:', { width, height, postPk });
+        // 이미지 로드 완료
+        setImageLoadingStates(prev => {
+            const newMap = new Map(prev);
+            newMap.set(postPk, false);
+            return newMap;
+        });
+
         if (width && height) {
             const aspectRatio = height / width;
             console.log('Calculated aspect ratio:', aspectRatio);
@@ -309,7 +326,12 @@ export default function Explore() {
                     <ActivityIndicator size="small" color="#FF2D55" />
                 </Animated.View>
                 <Animated.View style={{ width: '100%', height: paddingTop }} />
-                {
+                {isLoading ? (
+                    // 포스트 패치 이전 skeleton
+                    Array.from({ length: 3 }).map((_, index) => (
+                        <PostSkeleton key={index} />
+                    ))
+                ) : (
                     postList.map((item: any, index) => (
                         <TouchableOpacity
                             key={index}
@@ -326,20 +348,16 @@ export default function Explore() {
                                     <Text style={[postStyles.text2, postStyles.textTypo]}>{item?.content}</Text>
                                     {item?.image ? (
                                         item?.image?.split('|SPLIT|')?.length === 1 ?
-                                            (<Image
-                                                source={{ uri: item?.image?.split('|SPLIT|')?.[0] }}
-                                                style={{
-                                                    width: Dimensions.get('window').width - 93,
-                                                    height: imageAspectRatios.has(item?.pk)
-                                                        ? (Dimensions.get('window').width - 93) * imageAspectRatios.get(item?.pk)!
-                                                        : 200, // 임시 높이 (로드 전까지)
-                                                    borderRadius: 10,
-                                                    marginTop: 9
-                                                }}
-                                                contentFit="cover"
-                                                onLoad={(event) => handleImageLoad(item?.pk, event)}
-                                                onError={(error) => console.log('Image load error:', error)}
-                                            />) : (
+                                            (
+                                                <>
+                                                    <ImageWrapper
+                                                        postPk={item?.pk}
+                                                        imageUri={item?.image?.split('|SPLIT|')?.[0]}
+                                                        aspectRatio={imageAspectRatios.get(item?.pk)}
+                                                        handleImageLoad={handleImageLoad}
+                                                    />
+                                                </>
+                                            ) : (
                                                 <ScrollView
                                                     horizontal
                                                     showsHorizontalScrollIndicator={false}
@@ -348,21 +366,33 @@ export default function Explore() {
                                                     onStartShouldSetResponder={() => true}
                                                     onMoveShouldSetResponder={() => true}
                                                 >
-                                                    {item?.image?.split('|SPLIT|')?.map((image: string, index: number) => (
-                                                        <Image
-                                                            key={index}
-                                                            source={{ uri: image }}
-                                                            style={{
-                                                                width: Dimensions.get('window').width - 93,
-                                                                height: imageAspectRatios.has(item?.pk)
-                                                                    ? (Dimensions.get('window').width - 93) * imageAspectRatios.get(item?.pk)!
-                                                                    : 200, // 임시 높이 (로드 전까지)
-                                                                borderRadius: 10,
-                                                                marginTop: 9
-                                                            }}
-                                                            contentFit="cover"
-                                                        />
-                                                    ))}
+                                                    {item?.image?.split('|SPLIT|')?.map((image: string, index: number) => {
+                                                        if (index === 0) {
+                                                            return (
+                                                                <ImageWrapper
+                                                                    key={index}
+                                                                    postPk={item?.pk}
+                                                                    imageUri={image}
+                                                                    aspectRatio={imageAspectRatios.get(item?.pk)}
+                                                                    handleImageLoad={handleImageLoad}
+                                                                />
+                                                            );
+                                                        }
+                                                        const aspectRatio = imageAspectRatios.get(item?.pk);
+                                                        return (
+                                                            <Image
+                                                                key={index}
+                                                                source={{ uri: image }}
+                                                                style={{
+                                                                    width: Dimensions.get('window').width - 93,
+                                                                    height: aspectRatio ? (Dimensions.get('window').width - 93) * aspectRatio : 200,
+                                                                    borderRadius: 10,
+                                                                    marginTop: 9
+                                                                }}
+                                                                contentFit="cover"
+                                                            />
+                                                        );
+                                                    })}
                                                 </ScrollView>
 
                                             )
@@ -398,7 +428,7 @@ export default function Explore() {
                             </View>
                         </TouchableOpacity>
                     ))
-                }
+                )}
             </Animated.ScrollView>
             {/* </SafeAreaView> */}
 
@@ -567,6 +597,222 @@ const tabStyles = StyleSheet.create({
     }
 });
 
+// Image Wrapper Component
+const ImageWrapper = ({
+    postPk,
+    imageUri,
+    aspectRatio,
+    handleImageLoad
+}: {
+    postPk: number;
+    imageUri: string;
+    aspectRatio?: number;
+    handleImageLoad: (postPk: number, event: any) => void;
+}) => {
+    const [isLoading, setIsLoading] = useState(true);
+    const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const hasLoadedRef = useRef(false);
+    const isLoadStartCalledRef = useRef(false);
+    const actualAspectRatio = aspectRatio || 200 / (Dimensions.get('window').width - 93); // 기본값
+
+    // imageUri가 변경될 때만 리셋
+    useEffect(() => {
+        hasLoadedRef.current = false;
+        isLoadStartCalledRef.current = false;
+        setIsLoading(true);
+
+        // 타임아웃 설정
+        if (loadTimeoutRef.current) {
+            clearTimeout(loadTimeoutRef.current);
+        }
+        loadTimeoutRef.current = setTimeout(() => {
+            if (!hasLoadedRef.current) {
+                setIsLoading(false);
+            }
+        }, 10000);
+
+        return () => {
+            if (loadTimeoutRef.current) {
+                clearTimeout(loadTimeoutRef.current);
+            }
+        };
+    }, [imageUri]);
+
+    const handleLoadStart = () => {
+        // 이미 호출되었거나 로드 완료되었으면 무시
+        if (isLoadStartCalledRef.current || hasLoadedRef.current) {
+            return;
+        }
+
+        console.log('onLoadStart called for postPk:', postPk);
+        isLoadStartCalledRef.current = true;
+        setIsLoading(true);
+
+        if (loadTimeoutRef.current) {
+            clearTimeout(loadTimeoutRef.current);
+        }
+        // 타임아웃 재설정
+        loadTimeoutRef.current = setTimeout(() => {
+            if (!hasLoadedRef.current) {
+                setIsLoading(false);
+            }
+        }, 10000);
+    };
+
+    const handleLoad = (event: any) => {
+        // 이미 로드 완료되었으면 무시
+        if (hasLoadedRef.current) {
+            return;
+        }
+
+        console.log('onLoad called for postPk:', postPk, 'event:', event);
+        hasLoadedRef.current = true;
+        setIsLoading(false);
+
+        if (loadTimeoutRef.current) {
+            clearTimeout(loadTimeoutRef.current);
+        }
+        handleImageLoad(postPk, event);
+    };
+
+    const handleError = (error: any) => {
+        console.log('Image load error:', error);
+        hasLoadedRef.current = true;
+        setIsLoading(false);
+
+        if (loadTimeoutRef.current) {
+            clearTimeout(loadTimeoutRef.current);
+        }
+    };
+
+    return (
+        <View style={{ position: 'relative' }}>
+            {isLoading && (
+                <View style={{
+                    position: 'absolute',
+                    top: 9,
+                    left: 0,
+                    width: Dimensions.get('window').width - 93,
+                    height: (Dimensions.get('window').width - 93) * actualAspectRatio,
+                    borderRadius: 10,
+                    backgroundColor: '#f0f0f0',
+                    zIndex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}>
+                    <ActivityIndicator size="small" color="#999" />
+                </View>
+            )}
+            <Image
+                source={{ uri: imageUri }}
+                style={{
+                    width: Dimensions.get('window').width - 93,
+                    height: aspectRatio ? (Dimensions.get('window').width - 93) * aspectRatio : 200,
+                    borderRadius: 10,
+                    marginTop: 9,
+                    opacity: isLoading ? 0 : 1
+                }}
+                contentFit="cover"
+                onLoadStart={handleLoadStart}
+                onLoad={handleLoad}
+                onError={handleError}
+                onStartShouldSetResponder={() => true}
+                onMoveShouldSetResponder={() => true}
+            />
+        </View>
+    );
+};
+
+// Post Skeleton Component
+const PostSkeleton = () => {
+    const shimmerAnimation = useRef(new Animated.Value(0)).current;
+
+    useEffect(() => {
+        Animated.loop(
+            Animated.sequence([
+                Animated.timing(shimmerAnimation, {
+                    toValue: 1,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(shimmerAnimation, {
+                    toValue: 0,
+                    duration: 1000,
+                    useNativeDriver: true,
+                }),
+            ])
+        ).start();
+    }, []);
+
+    const opacity = shimmerAnimation.interpolate({
+        inputRange: [0, 1],
+        outputRange: [0.3, 0.7],
+    });
+
+    return (
+        <View style={{ width: '100%', position: 'relative', borderColor: "#b3b3b3", borderBottomWidth: 0.5, paddingTop: 10, paddingLeft: 21, paddingRight: 13, flexDirection: 'row', gap: 13, paddingBottom: 10 }}>
+            <View style={{ width: 45 }}>
+                <Animated.View style={{
+                    width: 45,
+                    height: 45,
+                    borderRadius: 100,
+                    backgroundColor: '#e0e0e0',
+                    opacity
+                }} />
+            </View>
+            <View style={{ width: '100%', flex: 1 }}>
+                <Animated.View style={{
+                    width: 80,
+                    height: 18,
+                    backgroundColor: '#e0e0e0',
+                    borderRadius: 4,
+                    marginBottom: 8,
+                    opacity
+                }} />
+                <Animated.View style={{
+                    width: '100%',
+                    height: 16,
+                    backgroundColor: '#e0e0e0',
+                    borderRadius: 4,
+                    marginBottom: 4,
+                    opacity
+                }} />
+                <Animated.View style={{
+                    width: '70%',
+                    height: 16,
+                    backgroundColor: '#e0e0e0',
+                    borderRadius: 4,
+                    marginBottom: 9,
+                    opacity
+                }} />
+                <Animated.View style={{
+                    width: Dimensions.get('window').width - 93,
+                    height: 200,
+                    backgroundColor: '#e0e0e0',
+                    borderRadius: 10,
+                    marginTop: 9,
+                    opacity
+                }} />
+                <View style={{ flexDirection: 'row', marginTop: 13, gap: 20 }}>
+                    <Animated.View style={{
+                        width: 40,
+                        height: 16,
+                        backgroundColor: '#e0e0e0',
+                        borderRadius: 4,
+                        opacity
+                    }} />
+                    <Animated.View style={{
+                        width: 40,
+                        height: 16,
+                        backgroundColor: '#e0e0e0',
+                        borderRadius: 4,
+                        opacity
+                    }} />
+                </View>
+            </View>
+        </View>
+    );
+};
 
 const topStyles = StyleSheet.create({
     parent: {

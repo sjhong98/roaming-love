@@ -137,7 +137,7 @@ export default function ExploreDetail() {
             <SafeAreaView style={{ width: '100%', position: 'relative', paddingTop: 10, paddingBottom: 0 }}>
                 <View style={[topStyles.view0, { paddingHorizontal: 21 }]}>
                     <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                        <TouchableOpacity onPress={() => { }} style={{ position: 'absolute', left: 0, top: 0 }}>
+                        <TouchableOpacity onPress={() => router.back()} style={{ position: 'absolute', left: 0, top: 0 }}>
                             <ArrowLeftIcon width={24} height={24} />
                         </TouchableOpacity>
                         <Text style={topStyles.text}>게시물</Text>
