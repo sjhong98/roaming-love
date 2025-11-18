@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
   contentWrapper: {
     flex: 1,
     zIndex: 1000,
+    position: 'relative',
   },
   tabBar: {
     flexDirection: 'row',

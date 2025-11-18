@@ -12,7 +12,30 @@ export default function LocationSelect({ setLocationSelectOpen, location, setLoc
     const [searchKeyword, setSearchKeyword] = useState<string>('');
 
     const continentalList = [
-        '전체', '미주', '유럽', '오세아니아', '아시아', '동남아시아', '동아시아',
+        {
+            title: '전체',
+            image: require('@/assets/images/location/hawaii.png'),
+        },
+        {
+            title: '미주',
+            image: require('@/assets/images/location/newyork.png'),
+        },
+        {
+            title: '유럽',
+            image: require('@/assets/images/location/paris.png'),
+        },
+        {
+            title: '오세아니아',
+            image: require('@/assets/images/location/sydney.png'),
+        },
+        {
+            title: '아시아',
+            image: require('@/assets/images/location/tokyo.png'),
+        },
+        {
+            title: '동남아시아',
+            image: require('@/assets/images/location/singapore.png'),
+        },
     ]
 
     const popularLocationRows = [
@@ -84,14 +107,15 @@ export default function LocationSelect({ setLocationSelectOpen, location, setLoc
                     <>
                         <ScrollView horizontal showsHorizontalScrollIndicator={false} style={locationSelectStyles.recommendationRow} contentContainerStyle={locationSelectStyles.recommendationCardContainer}>
                             {continentalList.map((continental, index) => (
-                                <TouchableOpacity key={index} style={locationSelectStyles.recommendationCard} onPress={() => {
-                                    if (continental === '전체') {
+                                <TouchableOpacity key={index} activeOpacity={1} style={[locationSelectStyles.recommendationCard, { overflow: 'hidden' }]} onPress={() => {
+                                    if (continental.title === '전체') {
                                         setSelectedContinental(null)
                                     } else {
-                                        setSelectedContinental(continental)
+                                        setSelectedContinental(continental.title)
                                     }
                                 }}>
-                                    <Text>{continental}</Text>
+                                    <Image source={continental.image} style={{ width: 90, height: 90, zIndex: 1 }} />
+                                    <Text style={{ zIndex: 999, position: 'absolute', top: '40%', left: 0, right: 0, bottom: 0, textAlign: 'center', justifyContent: 'center', alignItems: 'center', color: '#fff', fontWeight: 900, fontSize: 20 }}>{continental.title}</Text>
                                 </TouchableOpacity>
                             ))}
                         </ScrollView>
@@ -305,6 +329,7 @@ const locationSelectStyles = StyleSheet.create({
         backgroundColor: "#fff",
         alignItems: "center",
         justifyContent: "center",
+        position: 'relative',
     },
     chipText: {
         fontSize: 12,

@@ -1,4 +1,4 @@
-import { Animated, Dimensions, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, ActivityIndicator } from "react-native";
+import { Animated, Dimensions, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, ActivityIndicator, Platform } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import ChangeEachOtherIcon from '@/assets/images/changeEachOther.svg';
 import CalendarIcon from '@/assets/images/calendarRed.svg';
@@ -260,7 +260,8 @@ export default function CreatePost() {
     }
 
     return (
-        <KeyboardAvoidingView style={{ flex: 1 }}>
+        <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+
             <SafeAreaView style={{ flex: 1 }}>
                 <View style={headerStyles.view}>
                     <TouchableOpacity onPress={() => router.back()} disabled={uploading}>
@@ -297,7 +298,8 @@ export default function CreatePost() {
                             color: '#000',
                             backgroundColor: 'transparent',
                             textAlignVertical: 'top',
-                            marginTop: 10
+                            marginTop: 10,
+                            paddingBottom: 200
                         }}
                     />
                 </View>
@@ -309,7 +311,8 @@ export default function CreatePost() {
                     </ScrollView>
                 )}
             </SafeAreaView>
-            <View style={{ width: '100%', height: 49, position: 'absolute', bottom: 0, paddingHorizontal: 17, paddingVertical: 11, borderColor: "#b3b3b3", borderTopWidth: 0.5, backgroundColor: '#fff' }}>
+
+            <View style={{ width: '100%', height: 49, position: 'relative', marginTop: 'auto', paddingHorizontal: 17, paddingVertical: 11, borderColor: "#b3b3b3", borderTopWidth: 0.5, backgroundColor: '#fff' }}>
                 <TouchableOpacity onPress={handlePickImage} style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}>
                     <View style={[uploadImageStyles.image, uploadImageStyles.iconPosition]}>
                         <ImageIcon style={[uploadImageStyles.icon, uploadImageStyles.iconPosition]} />

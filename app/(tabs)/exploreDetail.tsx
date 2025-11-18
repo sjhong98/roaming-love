@@ -7,7 +7,7 @@ import useUser from '@/hooks/use-user';
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import { use, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Animated, Dimensions, KeyboardAvoidingView, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Animated, Dimensions, KeyboardAvoidingView, NativeScrollEvent, NativeSyntheticEvent, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import dayjs from 'dayjs';
 import ArrowLeftIcon from '@/assets/images/arrowGray.svg';
@@ -134,19 +134,21 @@ export default function ExploreDetail() {
 
     return (
         <>
-            <SafeAreaView style={{ width: '100%', position: 'relative', paddingTop: 10, paddingBottom: 0 }}>
-                <View style={[topStyles.view0, { paddingHorizontal: 21 }]}>
-                    <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                        <TouchableOpacity onPress={() => router.back()} style={{ position: 'absolute', left: 0, top: 0 }}>
-                            <ArrowLeftIcon width={24} height={24} />
-                        </TouchableOpacity>
-                        <Text style={topStyles.text}>게시물</Text>
+            <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
+                <SafeAreaView style={{ width: '100%', position: 'relative', paddingTop: 10, paddingBottom: 0 }}>
+                    <View style={[topStyles.view0, { paddingHorizontal: 21 }]}>
+                        <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                            <TouchableOpacity onPress={() => router.back()} style={{ position: 'absolute', left: 0, top: 0 }}>
+                                <ArrowLeftIcon width={24} height={24} />
+                            </TouchableOpacity>
+                            <Text style={topStyles.text}>게시물</Text>
+                        </View>
                     </View>
-                </View>
+                </SafeAreaView>
 
                 <ScrollView
                     style={{ width: '100%' }}
-                    contentContainerStyle={{ paddingLeft: 21, paddingRight: 13, paddingBottom: 100 }}
+                    contentContainerStyle={{ paddingLeft: 21, paddingRight: 13, paddingBottom: 300 }}
                 >
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 13 }}>
                         <Image source={postDetail?.user?.image ? { uri: postDetail?.user?.image } : require('@/assets/images/userIcon.png')} style={{ width: 45, height: 45, borderRadius: 100 }} resizeMode="cover" />
@@ -154,7 +156,7 @@ export default function ExploreDetail() {
                     </View>
                     <View style={{ width: '100%', marginTop: 13 }}>
                         <View style={[postStyles.view2, { height: 'auto', width: '100%', position: 'relative' }]}>
-                            <Text style={[postStyles.text2, postStyles.textTypo ]}>{postDetail?.content}</Text>
+                            <Text style={[postStyles.text2, postStyles.textTypo]}>{postDetail?.content}</Text>
                             {postDetail?.image ? (
                                 postDetail?.image?.split('|SPLIT|')?.length === 1 ?
                                     (<Image
@@ -232,10 +234,10 @@ export default function ExploreDetail() {
 
                     <View style={{ width: '100%', height: 20 }} />
 
-                    <View style={{ gap: 10}}>
+                    <View style={{ gap: 10 }}>
                         {
                             postDetail?.comment?.map((comment: any, index: number) => (
-                                <View key={index} style={[commentStyles.view, { marginTop: 5}]}>
+                                <View key={index} style={[commentStyles.view, { marginTop: 5 }]}>
                                     <Image source={comment?.user?.image ? { uri: comment?.user?.image } : require('@/assets/images/userIcon.png')} style={[commentStyles.child, { borderRadius: 100 }]} resizeMode="cover" />
                                     <Text style={[commentStyles.text, commentStyles.textTypo]}>{comment?.user?.nickname || comment?.user?.name}</Text>
                                     <Text style={[commentStyles.text2, commentStyles.textTypo, { width: Dimensions.get('window').width - 82, position: 'relative' }]}>{comment?.content}</Text>
@@ -244,23 +246,23 @@ export default function ExploreDetail() {
                         }
                     </View>
                 </ScrollView>
-            </SafeAreaView>
 
-            <KeyboardAvoidingView style={{ position: 'absolute', bottom: 0, height: 49, width: '100%', flexDirection: 'row', gap: 6, paddingVertical: 7, paddingHorizontal: 11, backgroundColor: '#FFF' }}>
-                <Image source={user?.image ? { uri: user?.image } : require('@/assets/images/userIcon.png')} style={{ width: 35, height: 35, borderRadius: 100 }} resizeMode="cover" />
-                <View style={styles.item}>
-                    <TextInput
-                        style={[styles.text, { color: commentText ? '#000' : '#999' }]}
-                        placeholder="답글 게시하기"
-                        placeholderTextColor="#999"
-                        value={commentText}
-                        onChangeText={setCommentText}
-                        multiline={false}
-                    />
+                <View style={{ position: 'relative', height: 49, width: '100%', flexDirection: 'row', gap: 6, paddingVertical: 7, paddingHorizontal: 11, backgroundColor: '#FFF' }}>
+                    <Image source={user?.image ? { uri: user?.image } : require('@/assets/images/userIcon.png')} style={{ width: 35, height: 35, borderRadius: 100 }} resizeMode="cover" />
+                    <View style={styles.item}>
+                        <TextInput
+                            style={[styles.text, { color: commentText ? '#000' : '#999' }]}
+                            placeholder="답글 게시하기"
+                            placeholderTextColor="#999"
+                            value={commentText}
+                            onChangeText={setCommentText}
+                            multiline={false}
+                        />
+                    </View>
+                    <TouchableOpacity onPress={uploadComment} style={{ height: 32, justifyContent: 'center', alignItems: 'center', marginLeft: -2, marginBottom: -2 }}>
+                        <SendIcon width={24} height={24} />
+                    </TouchableOpacity>
                 </View>
-                <TouchableOpacity onPress={uploadComment} style={{ height: 32, justifyContent: 'center', alignItems: 'center', marginLeft: -2, marginBottom: -2 }}>
-                    <SendIcon width={24} height={24} />
-                </TouchableOpacity>
             </KeyboardAvoidingView>
         </>
     );
@@ -407,7 +409,7 @@ const topStyles = StyleSheet.create({
     },
     view0: {
         width: "100%",
-        height: 50,
+        height: 20,
         position: 'relative'
     },
     view: {

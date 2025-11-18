@@ -493,7 +493,7 @@ export default function Trip() {
                                 {item.type === 'user' ? (
                                     <View style={[userCardStyles.view]}>
                                         <View style={userCardStyles.view2} />
-                                        <View style={[userCardStyles.vectorParent, userCardStyles.vectorLayout, { paddingRight: 10}]}>
+                                        <View style={[userCardStyles.vectorParent, userCardStyles.vectorLayout, { paddingRight: 20}]}>
                                             <Image source={item.image} style={[userCardStyles.vectorIcon, userCardStyles.vectorLayout, { borderRadius: 100 }]} />
                                             <Text style={userCardStyles.text}>{item.nickname}</Text>
                                             <Text style={[userCardStyles.safeareaviewText]}>{item.introduction}</Text>
@@ -526,7 +526,7 @@ export default function Trip() {
                                 {item.type === 'user' ? (
                                     <View style={userCardStyles.view}>
                                         <View style={userCardStyles.view2} />
-                                        <View style={[userCardStyles.vectorParent, userCardStyles.vectorLayout, { paddingRight: 10}]}>
+                                        <View style={[userCardStyles.vectorParent, userCardStyles.vectorLayout, { paddingRight: 20}]}>
                                             <Image source={item.image} style={[userCardStyles.vectorIcon, userCardStyles.vectorLayout, { borderRadius: 100 }]} />
                                             <Text style={userCardStyles.text}>{item.nickname}</Text>
                                             <Text style={userCardStyles.safeareaviewText}>{item.introduction}</Text>
