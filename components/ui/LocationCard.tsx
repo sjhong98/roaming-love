@@ -4,6 +4,7 @@ import { Image, ImageSource } from "expo-image";
 import HeartActiveIcon from "@/assets/images/heartActive.svg";
 import HeartInactiveIcon from "@/assets/images/heartIcon.svg";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import useUser from "@/hooks/use-user";
 
 export const LOCATION_CARD_MARKER_SIZE = 32;
 export const LOCATION_CARD_FONT_SIZE = 18;
@@ -28,23 +29,27 @@ const LocationCard = forwardRef<View, LocationCardProps>(function LocationCard(
     },
     ref
 ) {
+    const { user } = useUser();
+
     const [like, setLike] = useState(false);
     const heartScale = useState(new Animated.Value(1))[0];
 
 
     useEffect(() => {
         const checkLike = async () => {
-            let result: any = await AsyncStorage.getItem('locationLikes');
-            if(result) {
+            if (!user) return;
+
+            let result: any = await AsyncStorage.getItem(`${user?.pk}_locationLikes`);
+            if (result) {
                 result = JSON.parse(result);
 
-                if(result.includes(name)) {
+                if (result.includes(name)) {
                     setLike(true);
                 } else {
                     setLike(false);
                 }
             } else {
-                AsyncStorage.setItem('locationLikes', JSON.stringify([]));
+                AsyncStorage.setItem(`${user?.pk}_locationLikes`, JSON.stringify([]));
             }
         };
 
@@ -63,6 +68,8 @@ const LocationCard = forwardRef<View, LocationCardProps>(function LocationCard(
     }, [name])
 
     const handleHeartPress = async () => {
+        if (!user) return;
+
         // 팝 애니메이션 효과
         Animated.sequence([
             Animated.timing(heartScale, {
@@ -80,17 +87,17 @@ const LocationCard = forwardRef<View, LocationCardProps>(function LocationCard(
 
         const newLikeState = !like;
         setLike(newLikeState);
-        await AsyncStorage.setItem(name, JSON.stringify(newLikeState));
 
-        let result: any = await AsyncStorage.getItem('locationLikes');
-        if(result) {
+        let result: any = await AsyncStorage.getItem(`${user?.pk}_locationLikes`);
+
+        if (result) {
             result = JSON.parse(result);
-            if(result.includes(name)) {
+            if (result.includes(name)) {
                 result = result.filter((item: string) => item !== name);
             } else {
                 result.push(name);
             }
-            await AsyncStorage.setItem('locationLikes', JSON.stringify(result));
+            await AsyncStorage.setItem(`${user?.pk}_locationLikes`, JSON.stringify(result));
         }
     };
 
@@ -98,7 +105,7 @@ const LocationCard = forwardRef<View, LocationCardProps>(function LocationCard(
         <View ref={ref} style={[styles.container, containerStyle]}>
             <Image source={image} style={styles.image} contentFit="cover" />
             {showHeart ? (
-                <TouchableOpacity 
+                <TouchableOpacity
                     onPress={handleHeartPress}
                     activeOpacity={1}
                     style={styles.heartContainer}

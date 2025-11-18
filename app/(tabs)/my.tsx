@@ -12,6 +12,7 @@ import ArrowLeftIcon from '@/assets/images/arrowGray.svg';
 
 export default function My() {
     const { user } = useUser();
+
     const [tripType, setTripType] = useState<string | undefined>(undefined);
     const [loveType, setLoveType] = useState<string | undefined>(undefined);
     const [profileImage, setProfileImage] = useState<string | null>(null);
@@ -19,15 +20,18 @@ export default function My() {
     const [profileNicknameAdjusted, setProfileNicknameAdjusted] = useState<boolean>(false);
     const [profileIntroduction, setProfileIntroduction] = useState<string>('');
     const [profileIntroductionAdjusted, setProfileIntroductionAdjusted] = useState<boolean>(false);
+
     const nicknameInputRef = useRef<TextInput>(null);
     const introductionInputRef = useRef<TextInput>(null);
 
     useEffect(() => {
         (async () => {
-            AsyncStorage.getItem('tripType').then((value) => {
+            if (!user) return;
+
+            AsyncStorage.getItem(`${user?.pk}_tripType`).then((value) => {
                 if (value) setTripType(value);
             });
-            AsyncStorage.getItem('loveType').then((value) => {
+            AsyncStorage.getItem(`${user?.pk}_loveType`).then((value) => {
                 if (value) setLoveType(value);
             });
             if (user?.image) {
@@ -188,11 +192,11 @@ export default function My() {
                     <View style={{ flexDirection: 'row', gap: 10 }}>
                         <View style={{ backgroundColor: '#FF5878', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ color: '#fff', fontSize: 14, fontWeight: 400 }}>여행 타입</Text>
-                            <Text style={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>{tripType || '여행 타입 없음'}</Text>
+                            <Text style={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>{tripType || '타입 없음'}</Text>
                         </View>
                         <View style={{ backgroundColor: '#FF5878', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}>
                             <Text style={{ color: '#fff', fontSize: 14, fontWeight: 400 }}>연애 타입</Text>
-                            <Text style={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>{loveType || '연애 타입 없음'}</Text>
+                            <Text style={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>{loveType || '타입 없음'}</Text>
                         </View>
                     </View>
                 </View>

@@ -332,7 +332,6 @@ export const Test1QAForm: QAFormType = {
             { answer: '서핑·하이킹 등 체험을 적극적으로 하고 싶어요', type: '자연액티브', score: 2, selected: null },
             { answer: '1~2개만 가볍게 체험하면 충분해요', type: '하이브리드형', score: 1, selected: null },
             { answer: '체험보다는 관람/휴식이 좋아요', type: '전시감상가', score: 1, selected: null },
-            // { answer: '기타 (꼭해야해)', type: '자연액티브', score: 1, selected: null }
           ]
         },
         {
@@ -409,7 +408,6 @@ export const Test1QAForm: QAFormType = {
             { answer: '정치/종교 색채 강한 장소·이벤트', type: '전시감상가', score: 1, selected: null },
             { answer: '사진·촬영 위주 코스', type: '힐링산책가', score: 1, selected: null },
             { answer: '쇼핑 위주 코스', type: '자연액티브', score: 1, selected: null },
-            { answer: '기타(직접 입력)', type: '하이브리드형', score: 1, selected: null }
           ]
         },
         {

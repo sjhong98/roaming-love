@@ -1,6 +1,7 @@
 import CreateIcon from '@/assets/images/createIcon.svg';
 import SearchRedIcon from '@/assets/images/searchRed.svg';
 import UserDummy from '@/constants/UserDummy';
+import useUser from '@/hooks/use-user';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import dayjs from "dayjs";
 import { Image } from "expo-image";
@@ -10,26 +11,28 @@ import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Chat() {
+    const { user } = useUser();
+
     const scrollRef = useRef<ScrollView>(null);
 
     const [searchKeyword, setSearchKeyword] = useState('');
-
     const [chatList, setChatList] = useState<any>([])
 
     useEffect(() => {
         (async () => {
-            let savedChatList = await AsyncStorage.getItem('chatList')
-            savedChatList = savedChatList ? JSON.parse(savedChatList) : []
+            if(!user) return;
 
+            let savedChatList = await AsyncStorage.getItem(`${user?.pk}_chatList`)
+            savedChatList = savedChatList ? JSON.parse(savedChatList) : []
 
             if(savedChatList && savedChatList?.length > 0) {
                 setChatList(savedChatList)
             } else {
-                AsyncStorage.setItem('chatList', JSON.stringify([UserDummy[0], UserDummy[3], UserDummy[7], UserDummy[9]]))
+                AsyncStorage.setItem(`${user?.pk}_chatList`, JSON.stringify([UserDummy[0], UserDummy[3], UserDummy[7], UserDummy[9]]))
                 setChatList([UserDummy[0], UserDummy[3], UserDummy[7], UserDummy[9]])
             }
         })()
-    }, [])
+    }, [user])
 
     return (
         <SafeAreaView style={{ paddingTop: 10 }}>

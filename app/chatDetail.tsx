@@ -1,6 +1,7 @@
 import ArrowGray from '@/assets/images/arrowGray.svg';
 import SendIcon from '@/assets/images/sendIcon.svg';
 import UserDummy from "@/constants/UserDummy";
+import useUser from '@/hooks/use-user';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
@@ -9,6 +10,7 @@ import { Dimensions, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInp
 
 export default function ChatDetail() {
     const { id } = useLocalSearchParams()
+    const { user } = useUser();
 
     const chatObj: any = UserDummy.find(user => user.id === Number(id))
 
@@ -17,35 +19,41 @@ export default function ChatDetail() {
 
     useEffect(() => {
         (async () => {
-            let chatDate = await AsyncStorage.getItem(`chat_${id}`)
+            if(!user) return;
+
+            let chatDate = await AsyncStorage.getItem(`${user?.pk}_chat_${id}`)
             chatDate = chatDate ? JSON.parse(chatDate) : null
             if(!chatDate) {
                 chatDate = chatObj.message
             }
             setMessageList(chatDate)
         })()
-    }, [id])
+    }, [id, user])
 
     const handleSendMessage = () => {
+        if(!user) return;
+
         const newMessageList = [...messageList, { text: inputMessage, time: new Date().toISOString(), isUser: true }]
         setMessageList(newMessageList)
-        AsyncStorage.setItem(`chat_${id}`, JSON.stringify(newMessageList))
+        AsyncStorage.setItem(`${user?.pk}_chat_${id}`, JSON.stringify(newMessageList))
         setInputMessage('')
     }
 
     useEffect(() => {
         (async () => {  
-            let savedChatList: any = await AsyncStorage.getItem('chatList')
+            if(!user) return;
+
+            let savedChatList: any = await AsyncStorage.getItem(`${user?.pk}_chatList`)
             savedChatList = savedChatList ? JSON.parse(savedChatList) : []
 
             console.log('savedChatList', savedChatList);
 
             if(!savedChatList?.find((chat: any) => chat.id === Number(id))) {
                 savedChatList.unshift(chatObj)
-                AsyncStorage.setItem('chatList', JSON.stringify(savedChatList))
+                AsyncStorage.setItem(`${user?.pk}_chatList`, JSON.stringify(savedChatList))
             }
         })()
-    }, [])
+    }, [user])
 
     return (
         <KeyboardAvoidingView style={{ flex: 1 }}>

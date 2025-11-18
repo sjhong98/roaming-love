@@ -5,6 +5,7 @@ import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Animated, SafeAreaView, Text, TouchableOpacity, View, StyleSheet, Dimensions, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import useUser from "@/hooks/use-user";
 
 const ProgressBar = ({ progress, totalSteps }: { progress: number, totalSteps: number }) => {
     const [animatedWidth] = useState(new Animated.Value(0));
@@ -99,6 +100,7 @@ export const TestForm = ({ form, setForm }:
         setForm: (form: QAFormType) => void
     }) => {
     const { testType } = useLocalSearchParams();
+    const { user } = useUser();
 
     const router = useRouter()
     const [step, setStep] = useState(1);
@@ -240,11 +242,13 @@ export const TestForm = ({ form, setForm }:
     }
 
     const handleNext = async () => {
+        if(!user) return;
+
         if (step === totalStepCount) {
             console.log('sending form', form)
             // AsyncStorage에 form 데이터 저장
             try {
-                await AsyncStorage.setItem('testFormData', JSON.stringify(form));
+                await AsyncStorage.setItem(`${user?.pk}_testFormData`, JSON.stringify(form));
                 router.push({
                     pathname: '/test1Result',
                     params: {

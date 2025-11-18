@@ -13,8 +13,10 @@ import LocationCard, { LOCATION_CARD_FONT_SIZE, LOCATION_CARD_MARKER_SIZE } from
 import TypeSelect from "@/components/trip/TypeSelect";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LocationDetailOverlay from "@/components/ui/LocationDetailOverlay";
+import useUser from "@/hooks/use-user";
 
 export default function Main() {
+    const { user } = useUser();
     const router = useRouter();
     const [selectedTab, setSelectedTab] = useState('best');
     const [selectedLocationIndex, setSelectedLocationIndex] = useState<number | null>(null);
@@ -26,18 +28,20 @@ export default function Main() {
     const [filteredLocationList, setFilteredLocationList] = useState<any[]>([]);
 
     useEffect(() => {
+        if(!user) return;
+
         if (selectedTab === 'best') {
             setFilteredLocationList(Locations);
         } else {
             (async () => {
-                let result: any = await AsyncStorage.getItem('locationLikes');
+                let result: any = await AsyncStorage.getItem(`${user?.pk}_locationLikes`);
                 if (result) {
                     result = JSON.parse(result);
                     setFilteredLocationList(Locations.filter((item: any) => result.includes(item.name)));
                 }
             })()
         }
-    }, [selectedTab])
+    }, [selectedTab, user])
 
     // 선택된 타입에 따라 필터링된 사용자 목록
     const filteredUsers = useMemo(() => {

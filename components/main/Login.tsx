@@ -1,4 +1,5 @@
 import supabase, { AsyncStorageAdapter } from "@/db";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
@@ -25,7 +26,7 @@ export default function Login() {
             return;
         }
 
-        const { data, error } = await supabase.from('user').select('*').eq('nickname', loginForm.email).eq('password', loginForm.password).single()
+        const { data, error } = await supabase.from('user').select('*').eq('id', loginForm.email).eq('password', loginForm.password).single()
         if (error) {
             Alert.alert('오류', error.message || '알 수 없는 오류가 발생했습니다.')
             return;
@@ -37,11 +38,15 @@ export default function Login() {
         }
 
         const userInfo = {
-            name: data.nickname,
+            pk: data.pk,
+            name: data.name,
             email: data.email,
             id: data.id,
             platform: data.platform,
+            image: data.image,
+            introduction: data.introduction
         }
+
         await AsyncStorageAdapter.setItem('userInfo', JSON.stringify(userInfo))
         router.replace('/(tabs)/main')
     }
@@ -175,10 +180,10 @@ const GuestLoginBox = ({ onBack }: GuestLoginBoxProps) => {
 
         const fullName = `${guestLoginForm.lastName}${guestLoginForm.firstName}`;
         const { data, error } = await supabase.from('user').insert({
-            nickname: fullName,
+            name: fullName,
             platform: 'guest',
             password: guestLoginForm.password,
-            id: '',
+            id: guestLoginForm.email,
         }).select().single()
 
         if (error) {

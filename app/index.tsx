@@ -25,9 +25,10 @@ export default function Index() {
   // }, [])
 
   useEffect(() => {
-    console.log('login', login)
     if (login) {
-      setIsSplashScreen(false)
+      setTimeout(() => {
+        setIsSplashScreen(false)
+      }, 500);
     } else {
       setTimeout(() => {
         if (user) {

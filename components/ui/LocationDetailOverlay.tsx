@@ -7,6 +7,7 @@ import Rating from "@/components/ui/Rating";
 import TypeSelect from "@/components/trip/TypeSelect";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import useUser from "@/hooks/use-user";
 
 type LocationItem = {
     name: string;
@@ -45,6 +46,8 @@ export default function LocationDetailOverlay({
     filteredUsers,
     cardContainerWidth,
 }: LocationDetailOverlayProps) {
+    const { user } = useUser();
+
     const screenWidth = Dimensions.get('window').width;
     const headerMaxHeight = 412;
     const headerMinHeight = 138;
@@ -58,8 +61,9 @@ export default function LocationDetailOverlay({
 
     useEffect(() => {
         const checkLike = async () => {
-            console.log('checking')
-            let result: any = await AsyncStorage.getItem('locationLikes');
+            if (!user) return;
+
+            let result: any = await AsyncStorage.getItem(`${user?.pk}_locationLikes`);
             if (result) {
                 result = JSON.parse(result);
             }
@@ -75,7 +79,9 @@ export default function LocationDetailOverlay({
     }, [location.name])
 
     const handleLike = async () => {
-        let result: any = await AsyncStorage.getItem('locationLikes');
+        if (!user) return;
+
+        let result: any = await AsyncStorage.getItem(`${user?.pk}_locationLikes`);
         if (result) {
             result = JSON.parse(result);
             if (result.includes(location.name)) {
@@ -83,7 +89,7 @@ export default function LocationDetailOverlay({
             } else {
                 result.push(location.name);
             }
-            await AsyncStorage.setItem('locationLikes', JSON.stringify(result));
+            await AsyncStorage.setItem(`${user?.pk}_locationLikes`, JSON.stringify(result));
             setLike(!like)
         }
     }

@@ -64,7 +64,7 @@ export default function LoginScreen() {
                     const fragment = parsedUrl.hash;
                     if (fragment) {
                         const params = new URLSearchParams(fragment.substring(1));
-                        const accessToken = params.get('access_token');
+                        const accessToken = params.get('asccess_token');
                         const refreshToken = params.get('refresh_token');
 
                         if (accessToken && refreshToken) {
@@ -97,15 +97,13 @@ export default function LoginScreen() {
                                     .eq('id', userInfo.email)
                                     .single();
 
-                                    console.log('userFromDb', userFromDb)
-
                                 if (userFromDb && userFromDb.data) {
-                                    userInfo.pk = userFromDb.data.pk;
+                                    userInfo = userFromDb.data;
                                 } else {
                                     const { data: insertedUser, error: insertError } = await supabase
                                     .from('user')
                                     .insert({
-                                        nickname: userInfo.name,
+                                        name: userInfo.name,
                                         // email: userInfo.email,
                                         id: userInfo.email,
                                         platform: userInfo.platform,

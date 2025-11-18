@@ -6,6 +6,8 @@ import { default as ReAnimated, interpolate, useAnimatedStyle, withTiming } from
 import LiquidGlassButton from "@/components/LiquidGlassButton";
 import { Chapter, QAFormType } from "@/constants/QAForm";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import useUser from "@/hooks/use-user";
+import supabase from "@/db";
 
 const Result_Loading_Screen = () => {
     const translateY = useRef(new Animated.Value(0)).current;
@@ -141,6 +143,7 @@ const Result_Screen = ({ testType, type }: { testType: string, type: string }) =
 }
 
 export default function TestResult() {
+    const { user } = useUser();
     const { testType } = useLocalSearchParams();
 
     const router = useRouter();
@@ -158,14 +161,26 @@ export default function TestResult() {
 
     useEffect(() => {
         loadFormAndCalculate();
-    }, [])
+    }, [user])
 
     const loadFormAndCalculate = async () => {
         try {
-            // AsyncStorage에서 form 데이터 읽기
-            const formData = await AsyncStorage.getItem('testFormData');
+            if(!user) return;
 
-            if (!formData) {
+            // AsyncStorage에서 form 데이터 읽기
+            const formData = await AsyncStorage.getItem(`${user?.pk}_testFormData`);
+
+            if(testType === 'trip') {
+                supabase.from('user').update({
+                    trip_type: type
+                }).eq('pk', user.pk);
+            } else {
+                supabase.from('user').update({
+                    love_type: type
+                }).eq('pk', user.pk);
+            }
+
+            if (!formData || !user) {
                 // console.error('Form 데이터가 없습니다.');
                 return;
             }
@@ -175,7 +190,7 @@ export default function TestResult() {
             calculateResult(formData);
 
             // 사용 후 AsyncStorage에서 삭제 (선택사항)
-            await AsyncStorage.removeItem('testFormData');
+            await AsyncStorage.removeItem(`${user?.pk}_testFormData`);
         } catch (error) {
             console.error('Form 데이터 로드 실패:', error);
         }
@@ -183,11 +198,13 @@ export default function TestResult() {
 
     const calculateResult = (formString: string) => {
         if (!formString || formString.trim() === '') {
-            // console.error('Form 문자열이 비어있습니다.');
+            console.log('Form 문자열이 비어있습니다.');
             return;
         }
 
         try {
+            if(!user) return;
+            
             let parsedForm: QAFormType = JSON.parse(formString);
 
             // 모든 질문의 선택된 답변들의 score를 합산
@@ -221,8 +238,9 @@ export default function TestResult() {
                     maxScoreType = type;
                 }
             })
+            console.log('\n\n\n\n계산결과: ', maxScoreType)
             setType(maxScoreType)
-            AsyncStorage.setItem(testType as string + 'Type', maxScoreType);
+            AsyncStorage.setItem(`${user?.pk}_` + testType as string + 'Type', maxScoreType);
 
             console.log('\n\n\n계산결과 : ', maxScoreType, '점수:', maxScore);
         } catch (error) {
