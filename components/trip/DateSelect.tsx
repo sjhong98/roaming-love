@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { useEffect, useMemo, useState } from "react";
 
 type DayCell = {
@@ -168,7 +168,6 @@ export default function DateSelect({
             <View style={styles.view}>
                 <View style={styles.view2}>
                     <View style={[styles.view3, styles.viewPosition]} />
-                    <View style={[styles.view4, styles.viewPosition]} />
                 </View>
                 <View style={{ paddingHorizontal: 16, paddingVertical: 29 }}>
                     <Text style={styles.text}>여행 날짜는 언제인가요?</Text>
@@ -273,28 +272,30 @@ const styles = StyleSheet.create({
         width: '100%',
         top: 0,
         position: "absolute",
-        height: 450
+        height: Dimensions.get('window').width * 1.13,
     },
     view: {
         width: "100%",
-        height: 450,
+        height: Dimensions.get('window').width * 1.13,
         flex: 1
     },
     view2: {
         width: '100%',
         top: 0,
         position: "absolute",
-        height: 450,
+        height: Dimensions.get('window').width * 1.13,
     },
     view3: {
         boxShadow: "0px 0px 15px rgba(0, 0, 0, 0.15)",
         elevation: 9.1,
-        backgroundColor: "#fff"
+        backgroundColor: "#fff",
+        height: 450,
     },
     view4: {
-        backgroundColor: "rgba(255, 255, 255, 0)",
+        // backgroundColor: "rgba(255, 255, 255, 0)",
         borderStyle: "solid",
         borderColor: "#999",
+        height: Dimensions.get('window').height - 140,
     },
     text: {
         fontSize: 20,

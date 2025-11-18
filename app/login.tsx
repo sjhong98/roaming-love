@@ -64,7 +64,7 @@ export default function LoginScreen() {
                     const fragment = parsedUrl.hash;
                     if (fragment) {
                         const params = new URLSearchParams(fragment.substring(1));
-                        const accessToken = params.get('asccess_token');
+                        const accessToken = params.get('access_token');
                         const refreshToken = params.get('refresh_token');
 
                         if (accessToken && refreshToken) {
@@ -122,7 +122,7 @@ export default function LoginScreen() {
                                 router.replace('/(tabs)/main');
                             }
                         } else {
-                            throw new Error('토큰을 찾을 수 없습니다');
+                            throw new Error('토큰을 찾을 수 없습니다!');
                         }
                     }
                 } else if (result.type === 'cancel') {

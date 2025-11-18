@@ -54,7 +54,7 @@ export default function LocationSelect({ setLocationSelectOpen, location, setLoc
     }
 
     return (
-        <TouchableOpacity activeOpacity={1} style={locationSelectStyles.overlayTouchable}>
+        <TouchableOpacity activeOpacity={1} style={[locationSelectStyles.overlayTouchable, { zIndex: 1000 }]}>
             <View style={locationSelectStyles.overlayCard}>
                 <Text style={locationSelectStyles.overlayTitle}>여행지를 알려주세요</Text>
                 <View style={locationSelectStyles.searchSection}>

@@ -230,7 +230,7 @@ export default function Main() {
                     <View style={styles.child} />
 
                     {/* 로고 */}
-                    <Animated.View style={{ opacity: otherElementsOpacity }}>
+                    <Animated.View style={{ opacity: otherElementsOpacity, marginTop: Dimensions.get('window').height < 700 ? -35 : 0 }}>
                         <>
                             <View style={{ position: 'absolute', top: 51, width: '100%', alignItems: 'center' }}>
                                 <Image source={require('@/assets/images/blackLogo.png')} style={{ width: 49, height: 42 }} />
@@ -242,7 +242,7 @@ export default function Main() {
                     </Animated.View>
 
                     {/* 탭 */}
-                    <Animated.View style={{ opacity: otherElementsOpacity }}>
+                    <Animated.View style={{ opacity: otherElementsOpacity, marginTop: Dimensions.get('window').height < 700 ? -35 : 0 }}>
                         <>
                             <View style={{ backgroundColor: '#F76480', width: 18, height: 18, position: 'absolute', top: 181, left: selectedTab === 'best' ? 60 : 174, borderRadius: 100 }} />
                             <TouchableOpacity onPress={() => setSelectedTab('best')}>
@@ -255,7 +255,7 @@ export default function Main() {
                     </Animated.View>
 
                     {/* 여행지 카드 */}
-                    <Animated.View style={{ width: '100%', position: 'absolute', top: 228, height: 301, opacity: otherElementsOpacity }}>
+                    <Animated.View style={{ width: '100%', position: 'absolute', bottom: Dimensions.get('window').height > 900 ? '34%' : Dimensions.get('window').height < 700 ? '15%' : '26%', height: 301, opacity: otherElementsOpacity }}>
                         <ScrollView
                             horizontal
                             style={{ width: '100%', height: 301, paddingLeft: 41, paddingVertical: 20, overflow: 'visible' }}
@@ -285,7 +285,7 @@ export default function Main() {
                     </Animated.View>
 
                     {/* 테스트 버튼 */}
-                    <Animated.View style={[styles.vectorIconContainer, { opacity: otherElementsOpacity }]}>
+                    <Animated.View style={[styles.vectorIconContainer, { opacity: otherElementsOpacity, bottom: Dimensions.get('window').height < 700 ? -82 : -20 }]}>
                         <TouchableOpacity onPress={() => router.push(`/test1?testType=trip`)} style={[styles.vectorIconLayout, { marginRight: -25, position: 'relative', alignItems: 'center', justifyContent: 'center', gap: Dimensions.get('window').width * 0.02 }]}>
                             <Image source={require('@/assets/images/liquidButton.png')} style={[styles.vectorIcon, styles.vectorIconLayout, { position: 'absolute', top: 0, left: 0 }]} />
                             <Image source={require('@/assets/images/travelTest.png')} style={{ width: 74, height: 74 }} />
@@ -583,9 +583,7 @@ const styles = StyleSheet.create({
     },
     view: {
         width: "100%",
-        // overflow: "hidden",
-        height: 874,
-        // backgroundColor: "#faf4f2",
+        height: Dimensions.get('window').height - 140,
     },
     child: {
         left: -153,
@@ -709,7 +707,6 @@ const styles = StyleSheet.create({
     vectorIconContainer: {
         width: '100%',
         position: 'absolute',
-        top: 552,
         flexDirection: 'row',
         justifyContent: 'center',
         alignItems: 'center',
