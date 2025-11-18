@@ -6,7 +6,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Dimensions, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Dimensions, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 
 export default function ChatDetail() {
     const { id } = useLocalSearchParams()
@@ -176,7 +177,6 @@ const bottomStyles = StyleSheet.create({
         width: "100%",
         fontSize: 12,
         fontWeight: "300",
-        fontFamily: "NanumSquare Neo",
         color: "#000"
     },
     plusCircle: {
@@ -243,7 +243,6 @@ const headerStyles = StyleSheet.create({
         left: "50%",
         fontSize: 20,
         fontWeight: "700",
-        fontFamily: "NanumSquare Neo OTF",
         color: "#000",
         textAlign: "center",
         position: "absolute"

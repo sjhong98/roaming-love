@@ -1,6 +1,7 @@
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { ActivityIndicator, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
+import { CustomText as Text } from '@/components/CustomText';
 
 export default function AuthCallback() {
     const router = useRouter();

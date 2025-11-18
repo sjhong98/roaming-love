@@ -1,7 +1,8 @@
 import * as Haptics from 'expo-haptics';
 import { Slot, usePathname, useRouter } from 'expo-router';
 import React, { useCallback } from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { CustomText as Text } from '@/components/CustomText';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HomeIcon, TripIcon, ExploreIcon, ChatIcon, MyIcon } from '@/components/ui/TabIcons';

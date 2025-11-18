@@ -3,7 +3,8 @@ import { QAFormAnswerType, QAFormType } from "@/constants/QAForm";
 import { Image } from "expo-image";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Animated, SafeAreaView, Text, TouchableOpacity, View, StyleSheet, Dimensions, ScrollView } from "react-native";
+import { Animated, SafeAreaView, TouchableOpacity, View, StyleSheet, Dimensions, ScrollView } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useUser from "@/hooks/use-user";
 
@@ -336,7 +337,6 @@ const progressBarStyle = StyleSheet.create({
         height: 17,
         fontSize: 14,
         fontWeight: "700",
-        fontFamily: "Pretendard",
         color: "#b3b3b3",
         textAlign: "center",
         position: 'absolute',
@@ -351,7 +351,6 @@ const test1_1_style = StyleSheet.create({
         // top: '50%',
         fontSize: 30,
         fontWeight: "700",
-        fontFamily: "Pretendard",
         textAlign: "left",
         display: "flex",
         width: 320,
@@ -372,7 +371,6 @@ const test1_2_style = StyleSheet.create({
         height: 'auto',
         fontSize: 30,
         fontWeight: "700",
-        fontFamily: "Pretendard",
         color: "#000",
         textAlign: "left"
     },
@@ -386,7 +384,6 @@ const test1_3_style = StyleSheet.create({
     },
     textTypo: {
         color: "#999",
-        fontFamily: "Pretendard",
         fontWeight: "700",
         fontSize: 17,
     },
@@ -407,7 +404,6 @@ const test1_3_style = StyleSheet.create({
         width: '100%',
         fontSize: 30,
         fontWeight: "700",
-        fontFamily: "Pretendard",
         color: "#000",
     },
     rectangleGroup: {

@@ -1,4 +1,5 @@
-import { Image, StyleSheet, Text, View, Animated } from "react-native";
+import { Image, StyleSheet, View, Animated } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { router, useLocalSearchParams, useRouter } from "expo-router";
@@ -262,7 +263,6 @@ const test1_result_1_style = StyleSheet.create({
         height: 36,
         fontSize: 30,
         fontWeight: "700",
-        fontFamily: "Pretendard",
         color: "#000",
         textAlign: "center"
     },

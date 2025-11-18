@@ -1,4 +1,5 @@
-import { Animated, Dimensions, KeyboardAvoidingView, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, ActivityIndicator, Platform } from "react-native";
+import { Animated, Dimensions, KeyboardAvoidingView, ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert, ActivityIndicator, Platform } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 import { SafeAreaView } from "react-native-safe-area-context";
 import ChangeEachOtherIcon from '@/assets/images/changeEachOther.svg';
 import CalendarIcon from '@/assets/images/calendarRed.svg';
@@ -294,7 +295,6 @@ export default function CreatePost() {
                             padding: 0,
                             fontSize: 15,
                             lineHeight: 22,
-                            fontFamily: 'Pretendard',
                             color: '#000',
                             backgroundColor: 'transparent',
                             textAlignVertical: 'top',
@@ -343,7 +343,6 @@ const uploadImageStyles = StyleSheet.create({
         fontSize: 10,
         lineHeight: 12,
         fontWeight: "600",
-        fontFamily: "Pretendard",
         color: "#999",
         textAlign: "center",
     },
@@ -368,7 +367,6 @@ const headerStyles = StyleSheet.create({
     textTypo: {
         textAlign: "left",
         color: "#000",
-        fontFamily: "Pretendard",
         fontWeight: "500",
         lineHeight: 22,
     },
@@ -393,7 +391,6 @@ const headerStyles = StyleSheet.create({
         fontSize: 15,
         textAlign: "left",
         color: "#000",
-        fontFamily: "Pretendard",
         fontWeight: "500",
         lineHeight: 22
     },

@@ -1,5 +1,6 @@
 import { Image, ImageSource } from "expo-image";
-import { Text, View, StyleSheet, Dimensions, TouchableOpacity, Animated } from "react-native";
+import { View, StyleSheet, Dimensions, TouchableOpacity, Animated } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 import BackArrowIcon from '@/assets/images/backArrow.svg';
 import HeartActiveIcon from '@/assets/images/heartActive.svg';
 import HeartInactiveIcon from '@/assets/images/heartIcon.svg';
@@ -230,7 +231,6 @@ const userCardStyles = StyleSheet.create({
     textTypo: {
         textAlign: "left",
         color: "#000",
-        fontFamily: "NanumSquare Neo",
         fontSize: 14,
         width: 133,
         left: "50%",
@@ -240,7 +240,6 @@ const userCardStyles = StyleSheet.create({
     text3Typo: {
         textAlign: "center",
         color: "#000",
-        fontFamily: "NanumSquare Neo",
         position: "absolute"
     },
     view4Position: {
@@ -356,7 +355,6 @@ const locationTopStyles = StyleSheet.create({
         fontSize: 12,
         lineHeight: 22,
         fontWeight: "300",
-        fontFamily: "NanumSquare Neo",
         color: "#000",
         textAlign: "left"
     }

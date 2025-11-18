@@ -1,5 +1,6 @@
 import { forwardRef, useEffect, useState } from "react";
-import { StyleProp, StyleSheet, Text, View, ViewStyle, TouchableOpacity, Animated } from "react-native";
+import { StyleProp, StyleSheet, View, ViewStyle, TouchableOpacity, Animated } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 import { Image, ImageSource } from "expo-image";
 import HeartActiveIcon from "@/assets/images/heartActive.svg";
 import HeartInactiveIcon from "@/assets/images/heartIcon.svg";

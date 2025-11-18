@@ -1,6 +1,7 @@
 import SettingIcon from '@/assets/images/settingIcon.svg';
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 import RadioInactiveIcon from '@/assets/images/radioInactive.svg';
 import RadioActiveIcon from '@/assets/images/radioActive.svg';
 
@@ -196,7 +197,6 @@ const tripTypeDetail = StyleSheet.create({
     textTypo: {
         textAlign: "left",
         color: "#000",
-        fontFamily: "NanumSquare Neo OTF",
         position: "absolute"
     },
     childLayout: {
@@ -228,7 +228,6 @@ const tripTypeDetail = StyleSheet.create({
         top: "10.92%",
         fontSize: 14,
         color: "#000",
-        fontFamily: "NanumSquare Neo OTF",
         left: "6.86%"
     },
     safeareaviewText: {
@@ -257,7 +256,6 @@ const tripTypeDetail = StyleSheet.create({
     text2: {
         fontSize: 14,
         color: "#000",
-        fontFamily: "NanumSquare Neo OTF",
         left: "0%",
         top: "0%"
     },
@@ -265,28 +263,24 @@ const tripTypeDetail = StyleSheet.create({
         top: "22.45%",
         fontSize: 14,
         color: "#000",
-        fontFamily: "NanumSquare Neo OTF",
         left: "0%"
     },
     text4: {
         top: "44.9%",
         fontSize: 14,
         color: "#000",
-        fontFamily: "NanumSquare Neo OTF",
         left: "0%"
     },
     text5: {
         top: "67.35%",
         fontSize: 14,
         color: "#000",
-        fontFamily: "NanumSquare Neo OTF",
         left: "0%"
     },
     text6: {
         top: "89.8%",
         fontSize: 14,
         color: "#000",
-        fontFamily: "NanumSquare Neo OTF",
         left: "0%"
     },
     view3: {
@@ -342,7 +336,6 @@ const filterStyles = StyleSheet.create({
     },
     textTypo: {
         textAlign: "left",
-        fontFamily: "NanumSquare Neo OTF",
         left: 12,
         position: "absolute"
     },

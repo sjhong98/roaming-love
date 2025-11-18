@@ -12,7 +12,8 @@ import { changeToThreeLetter } from "@/utils/changeToThreeLetter";
 import dayjs from "dayjs";
 import { Image, ImageSource } from "expo-image";
 import { useEffect, useRef, useState, useMemo } from "react";
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View, Animated, Easing } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, TouchableOpacity, View, Animated, Easing } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -709,7 +710,6 @@ const styles = StyleSheet.create({
         color: '#FFF',
         fontSize: 14,
         fontWeight: '700',
-        fontFamily: "NanumSquare Neo",
     },
 })
 
@@ -730,7 +730,6 @@ const userCardStyles2 = StyleSheet.create({
         fontSize: 14,
         textAlign: "left",
         color: "#000",
-        fontFamily: "NanumSquare Neo",
         left: "50%",
         position: "absolute"
     },
@@ -739,7 +738,6 @@ const userCardStyles2 = StyleSheet.create({
         fontSize: 13,
         textAlign: "left",
         color: "#000",
-        fontFamily: "NanumSquare Neo",
         position: "absolute"
     },
     view4Layout: {
@@ -775,7 +773,6 @@ const userCardStyles2 = StyleSheet.create({
         fontSize: 20,
         textAlign: "left",
         color: "#000",
-        fontFamily: "NanumSquare Neo",
         fontWeight: "800",
         marginLeft: -66.5,
         width: 133,
@@ -854,7 +851,6 @@ const selectDateStyles = StyleSheet.create({
         height: 55
     },
     textTypo: {
-        fontFamily: "Pretendard",
         fontWeight: "300",
         fontSize: 13,
         top: 20,
@@ -897,7 +893,6 @@ const userCardStyles = StyleSheet.create({
         fontWeight: "300",
         textAlign: "left",
         color: "#000",
-        fontFamily: "NanumSquare Neo OTF",
         top: 0,
         position: "absolute"
     },
@@ -938,7 +933,6 @@ const userCardStyles = StyleSheet.create({
         fontWeight: "700",
         textAlign: "left",
         color: "#000",
-        fontFamily: "NanumSquare Neo OTF",
         left: 53,
         position: "absolute"
     },
@@ -948,7 +942,6 @@ const userCardStyles = StyleSheet.create({
         color: "#444",
         fontWeight: "300",
         textAlign: "left",
-        fontFamily: "NanumSquare Neo OTF",
         left: 53,
         position: "absolute"
     },
@@ -975,7 +968,6 @@ const topStyles = StyleSheet.create({
         fontSize: 17,
         top: 37,
         textAlign: "center",
-        fontFamily: "NanumSquare Neo OTF",
         fontWeight: "700",
         left: "50%",
         position: "absolute"
@@ -986,7 +978,6 @@ const topStyles = StyleSheet.create({
     },
     toTypo: {
         textAlign: "left",
-        fontFamily: "Pretendard",
         fontWeight: "300",
         fontSize: 40,
         top: 111,
@@ -999,7 +990,6 @@ const topStyles = StyleSheet.create({
     textTypo: {
         fontSize: 13,
         textAlign: "left",
-        fontFamily: "Pretendard",
         fontWeight: "300",
         position: "absolute"
     },
@@ -1017,7 +1007,6 @@ const topStyles = StyleSheet.create({
     text: {
         fontSize: 20,
         textAlign: "center",
-        fontFamily: "NanumSquare Neo OTF",
         fontWeight: "700",
         color: "#000",
         top: 0,

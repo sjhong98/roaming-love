@@ -7,7 +7,8 @@ import dayjs from "dayjs";
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function Chat() {
@@ -104,7 +105,6 @@ const chatBoxStyles = StyleSheet.create({
     },
     pm0234Typo: {
         textAlign: "left",
-        fontFamily: "Pretendard"
     },
     iconPosition: {
         top: "16.67%",
@@ -158,7 +158,6 @@ const chatBoxStyles = StyleSheet.create({
         color: "#000",
         left: "25.95%",
         textAlign: "left",
-        fontFamily: "Pretendard",
         position: "absolute",
         top: "19.05%"
     },
@@ -179,7 +178,6 @@ const chatBoxStyles = StyleSheet.create({
         color: "#000",
         left: "25.95%",
         textAlign: "left",
-        fontFamily: "Pretendard",
         position: "absolute"
     },
     pm0234: {
@@ -187,7 +185,6 @@ const chatBoxStyles = StyleSheet.create({
         fontSize: 12,
         fontWeight: "200",
         textAlign: "left",
-        fontFamily: "Pretendard",
         top: "16.67%",
         color: "#999"
     },
@@ -243,7 +240,6 @@ const searchBarStyles = StyleSheet.create({
         paddingRight: 20,
         fontSize: 14,
         fontWeight: "300",
-        fontFamily: "Pretendard",
         color: "#000",
         backgroundColor: "transparent"
     },
@@ -257,7 +253,6 @@ const topStyles = StyleSheet.create({
         fontSize: 17,
         top: 37,
         textAlign: "center",
-        fontFamily: "NanumSquare Neo OTF",
         fontWeight: "700",
         left: "50%",
         position: "absolute"
@@ -268,7 +263,6 @@ const topStyles = StyleSheet.create({
     },
     toTypo: {
         textAlign: "left",
-        fontFamily: "Pretendard",
         fontWeight: "300",
         fontSize: 40,
         top: 111,
@@ -281,7 +275,6 @@ const topStyles = StyleSheet.create({
     textTypo: {
         fontSize: 13,
         textAlign: "left",
-        fontFamily: "Pretendard",
         fontWeight: "300",
         position: "absolute"
     },
@@ -299,7 +292,6 @@ const topStyles = StyleSheet.create({
     text: {
         fontSize: 20,
         textAlign: "center",
-        fontFamily: "NanumSquare Neo OTF",
         fontWeight: "700",
         color: "#000",
         top: 0,

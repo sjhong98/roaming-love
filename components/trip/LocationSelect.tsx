@@ -1,4 +1,5 @@
-import { Dimensions, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Dimensions, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 import { SafeAreaView } from "react-native-safe-area-context";
 import ChangeEachOtherIcon from '@/assets/images/changeEachOther.svg';
 import CalendarIcon from '@/assets/images/calendarRed.svg';
@@ -275,7 +276,6 @@ const locationSelectStyles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "700",
         color: "#141414",
-        fontFamily: "NanumSquare Neo",
         marginBottom: 24,
     },
     searchSection: {},
@@ -283,7 +283,6 @@ const locationSelectStyles = StyleSheet.create({
         fontSize: 14,
         fontWeight: "700",
         color: "#141414",
-        fontFamily: "NanumSquare Neo",
     },
     searchBar: {
         flexDirection: "row",
@@ -303,7 +302,6 @@ const locationSelectStyles = StyleSheet.create({
         fontSize: 14,
         fontWeight: "300",
         color: "#141414",
-        fontFamily: "NanumSquare Neo",
         paddingVertical: 0,
     },
     divider: {
@@ -335,7 +333,6 @@ const locationSelectStyles = StyleSheet.create({
         fontSize: 12,
         fontWeight: "300",
         color: "#000",
-        fontFamily: "NanumSquare Neo",
     },
     recommendationRow: {
         marginTop: 24,

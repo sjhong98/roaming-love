@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { StyleSheet, TouchableOpacity, TouchableOpacityProps, View } from 'react-native';
+import { CustomText as Text } from '@/components/CustomText';
 
 interface LiquidGlassButtonProps extends TouchableOpacityProps {
   text: string;
@@ -42,7 +43,6 @@ const styles = StyleSheet.create({
   },
   symbolTypo: {
     textAlign: "center",
-    fontFamily: "SF Pro",
     fontSize: 17
   },
   buttonLiquidGlassText: {

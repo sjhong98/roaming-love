@@ -1,6 +1,7 @@
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { Dimensions, StyleSheet, Text, View } from "react-native";
+import { Dimensions, StyleSheet, View } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 
 export default function Splash() {
     return (
@@ -35,7 +36,6 @@ const splashScreenStyles = StyleSheet.create({
     roamingLove: {
         fontSize: 35,
         fontWeight: "700",
-        fontFamily: "Pretendard",
         color: "#e60047",
         textAlign: "center",
         display: "flex",

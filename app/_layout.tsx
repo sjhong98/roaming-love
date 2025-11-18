@@ -4,7 +4,6 @@ import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from 'expo-web-browser';
 import 'react-native-reanimated';
 import { useFonts } from 'expo-font';
-import { Text } from 'react-native';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -18,14 +17,18 @@ export const unstable_settings = {
 export default function RootLayout() {
   const colorScheme = useColorScheme();
 
+  // OTF 폰트를 weight별로 로드
   const [loaded] = useFonts({
-    NanumNeo: require('../assets/fonts/NanumSquareNeo-Variable.ttf'),
+    'NanumSquareNeo-Light': require('../assets/fonts/NanumSquareNeoOTF-Lt.otf'),
+    'NanumSquareNeo-Regular': require('../assets/fonts/NanumSquareNeoOTF-Rg.otf'),
+    'NanumSquareNeo-Bold': require('../assets/fonts/NanumSquareNeoOTF-Bd.otf'),
+    'NanumSquareNeo-ExtraBold': require('../assets/fonts/NanumSquareNeoOTF-Eb.otf'),
+    'NanumSquareNeo-Heavy': require('../assets/fonts/NanumSquareNeoOTF-Hv.otf'),
   });
 
-  if(!loaded) return null;
+  // CustomText 컴포넌트를 사용하므로 Text.defaultProps 설정은 불필요합니다
 
-  (Text as any).defaultProps = (Text as any).defaultProps || {};
-  (Text as any).defaultProps.style = { fontFamily: 'NanumNeo' };
+  if(!loaded) return null;
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

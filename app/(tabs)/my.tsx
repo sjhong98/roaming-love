@@ -6,7 +6,8 @@ import { Image } from "expo-image";
 import * as ImagePicker from 'expo-image-picker';
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from "react";
-import { Alert, Text, TextInput, TouchableOpacity, View, StyleSheet } from "react-native";
+import { Alert, TextInput, TouchableOpacity, View, StyleSheet } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ArrowLeftIcon from '@/assets/images/arrowGray.svg';
 
@@ -279,7 +280,6 @@ const topStyles = StyleSheet.create({
         fontSize: 17,
         top: 37,
         textAlign: "center",
-        fontFamily: "NanumSquare Neo OTF",
         fontWeight: "700",
         left: "50%",
         position: "absolute"
@@ -290,7 +290,6 @@ const topStyles = StyleSheet.create({
     },
     toTypo: {
         textAlign: "left",
-        fontFamily: "Pretendard",
         fontWeight: "300",
         fontSize: 40,
         top: 111,
@@ -303,7 +302,6 @@ const topStyles = StyleSheet.create({
     textTypo: {
         fontSize: 13,
         textAlign: "left",
-        fontFamily: "Pretendard",
         fontWeight: "300",
         position: "absolute"
     },
@@ -321,7 +319,6 @@ const topStyles = StyleSheet.create({
     text: {
         fontSize: 20,
         textAlign: "center",
-        fontFamily: "NanumSquare Neo OTF",
         fontWeight: "700",
         color: "#000",
         top: 0,

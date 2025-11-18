@@ -1,4 +1,5 @@
-import { Dimensions, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Dimensions, StyleSheet, TouchableOpacity, View } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 import { useEffect, useMemo, useState } from "react";
 
 type DayCell = {
@@ -300,7 +301,6 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 20,
         fontWeight: "700",
-        fontFamily: "NanumSquare Neo",
         color: "#141414",
         textAlign: "left",
         marginBottom: 16,
@@ -331,7 +331,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: '700',
         color: '#141414',
-        fontFamily: "NanumSquare Neo",
     },
     weekRow: {
         flexDirection: 'row',
@@ -344,7 +343,6 @@ const styles = StyleSheet.create({
         fontSize: 12,
         fontWeight: '600',
         color: '#999',
-        fontFamily: "NanumSquare Neo",
     },
     dayCell: {
         flex: 1,
@@ -385,7 +383,6 @@ const styles = StyleSheet.create({
     dayText: {
         fontSize: 14,
         color: '#141414',
-        fontFamily: "NanumSquare Neo",
         fontWeight: '500',
     },
     dayTextInactive: {
@@ -413,7 +410,6 @@ const styles = StyleSheet.create({
     resetText: {
         fontSize: 14,
         color: '#999',
-        fontFamily: "NanumSquare Neo",
         textDecorationLine: 'underline',
     },
     confirmButton: {
@@ -429,6 +425,5 @@ const styles = StyleSheet.create({
         color: '#FFF',
         fontSize: 14,
         fontWeight: '700',
-        fontFamily: "NanumSquare Neo",
     },
 });

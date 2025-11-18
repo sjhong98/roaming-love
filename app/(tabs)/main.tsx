@@ -1,5 +1,6 @@
 import { Image } from "expo-image";
-import { Text, View, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Animated, Modal, Pressable, Easing } from "react-native";
+import { View, StyleSheet, Dimensions, ScrollView, TouchableOpacity, Animated, Modal, Pressable, Easing } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 import { SafeAreaView } from "react-native-safe-area-context";
 import HeartActiveIcon from '@/assets/images/heartActive.svg';
 import HeartInactiveIcon from '@/assets/images/heartInactive.svg';
@@ -388,7 +389,6 @@ const filterStyles = StyleSheet.create({
     },
     textTypo: {
         textAlign: "left",
-        fontFamily: "NanumSquare Neo OTF",
         left: 12,
         position: "absolute"
     },
@@ -447,7 +447,6 @@ const styles = StyleSheet.create({
     },
     newTypo: {
         textAlign: "left",
-        fontFamily: "Pretendard",
         fontWeight: "700",
         fontSize: 20,
         top: 203,
@@ -536,7 +535,6 @@ const styles = StyleSheet.create({
         width: 35,
         textAlign: "center",
         color: "#000",
-        fontFamily: "Pretendard",
         position: "absolute"
     },
     myTypo: {
@@ -547,11 +545,9 @@ const styles = StyleSheet.create({
         top: 847,
         textAlign: "center",
         color: "#000",
-        fontFamily: "Pretendard",
         position: "absolute"
     },
     textTypo: {
-        fontFamily: "IM_Hyemin",
         fontSize: 14,
         top: 731,
         textAlign: "center",
@@ -567,7 +563,6 @@ const styles = StyleSheet.create({
         position: "absolute"
     },
     tokyoJapanTypo: {
-        fontFamily: "SF Pro",
         fontWeight: "500",
         fontSize: 17,
         textAlign: "left",
@@ -619,7 +614,6 @@ const styles = StyleSheet.create({
         },
         textShadowRadius: 10,
         textAlign: "left",
-        fontFamily: "Pretendard",
         fontWeight: "700",
         fontSize: 20,
         top: 203
@@ -627,7 +621,6 @@ const styles = StyleSheet.create({
     new: {
         left: 142,
         textAlign: "left",
-        fontFamily: "Pretendard",
         fontWeight: "700",
         fontSize: 20,
         top: 203
@@ -737,7 +730,6 @@ const styles = StyleSheet.create({
         marginLeft: -103,
         top: 93,
         fontSize: 32,
-        fontFamily: "GowunBatang-Bold",
         textAlign: "center",
         left: "50%",
         color: "#000",

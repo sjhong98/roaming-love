@@ -1,7 +1,8 @@
 import useUser from "@/hooks/use-user";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 
 export default function Main() {
     const router = useRouter();

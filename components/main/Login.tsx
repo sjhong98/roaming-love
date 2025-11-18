@@ -5,7 +5,8 @@ import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
 import { useState } from "react";
-import { Alert, Dimensions, Platform, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { Alert, Dimensions, Platform, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Login() {
@@ -334,7 +335,6 @@ const styles = StyleSheet.create({
     labelTextTypo: {
         lineHeight: 20,
         fontSize: 14,
-        fontFamily: "Inter-Medium",
         fontWeight: "500"
     },
     inputBorder: {
@@ -352,7 +352,6 @@ const styles = StyleSheet.create({
         overflow: "hidden"
     },
     forgotPasswordTypo: {
-        fontFamily: "Inter-SemiBold",
         fontWeight: "600",
         lineHeight: 17,
         letterSpacing: -0.1,
@@ -447,12 +446,10 @@ const styles = StyleSheet.create({
         letterSpacing: -0.6,
         lineHeight: 42,
         fontWeight: "700",
-        fontFamily: "Inter-Bold",
         color: "#111827",
         textAlign: "left"
     },
     enterYourEmail: {
-        fontFamily: "Inter-Medium",
         fontWeight: "500",
         lineHeight: 17,
         color: "#6c7278",
@@ -525,7 +522,6 @@ const styles = StyleSheet.create({
     labelText: {
         lineHeight: 20,
         fontSize: 14,
-        fontFamily: "Inter-Medium",
         fontWeight: "500",
         textAlign: "center",
         color: "#fff"
@@ -543,7 +539,6 @@ const styles = StyleSheet.create({
     },
     orLoginWith: {
         lineHeight: 18,
-        fontFamily: "Inter-Regular",
         color: "#6c7278",
         fontSize: 12,
         textAlign: "center"
@@ -612,7 +607,6 @@ const guestLoginStyles = StyleSheet.create({
     labelTextTypo: {
         lineHeight: 20,
         fontSize: 14,
-        fontFamily: "Inter-Medium",
         fontWeight: "500",
         letterSpacing: -0.1
     },
@@ -667,13 +661,11 @@ const guestLoginStyles = StyleSheet.create({
         letterSpacing: -0.6,
         lineHeight: 42,
         fontWeight: "700",
-        fontFamily: "Inter-Bold",
         color: "#111827",
         textAlign: "left"
     },
     createAnAccount: {
         color: "#6c7278",
-        fontFamily: "Inter-Medium",
         fontWeight: "500",
         lineHeight: 17,
         letterSpacing: -0.1,
@@ -733,7 +725,6 @@ const guestLoginStyles = StyleSheet.create({
     },
     login: {
         fontWeight: "600",
-        fontFamily: "Inter-SemiBold",
         color: "#4d81e7",
         lineHeight: 17,
         letterSpacing: -0.1,

@@ -2,7 +2,8 @@ import ArrowGray from '@/assets/images/arrowGray.svg';
 import UserDummy from "@/constants/UserDummy";
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 
 export default function UserProfile() {
     const { id } = useLocalSearchParams()
@@ -63,7 +64,6 @@ const styles = StyleSheet.create({
         position: "absolute"
     },
     textTypo: {
-        fontFamily: "Roboto-Regular",
         fontSize: 17,
         top: 0,
         textAlign: "center",
@@ -106,13 +106,11 @@ const styles = StyleSheet.create({
         height: 15,
         color: "#000",
         textAlign: "center",
-        fontFamily: "NanumSquare Neo",
         fontWeight: "800",
     },
     jennifer: {
         marginLeft: -40,
         top: 49,
-        fontFamily: "Pretendard",
         textAlign: "center",
         fontWeight: "800",
         left: "50%",
@@ -157,7 +155,6 @@ const styles = StyleSheet.create({
         top: 84,
         left: 128,
         textAlign: "left",
-        fontFamily: "NanumSquare Neo",
         fontSize: 20
     }
 });

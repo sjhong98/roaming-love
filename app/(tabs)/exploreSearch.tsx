@@ -7,7 +7,8 @@ import useUser from '@/hooks/use-user';
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { use, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Animated, Dimensions, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Animated, Dimensions, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import ArrowBack from '@/assets/images/arrowGray.svg';
 import SearchIcon from '@/assets/images/searchGray.svg';
@@ -216,13 +217,11 @@ export default function ExploreSearch() {
                                                     )}
                                                 </Animated.View>
 
-                                                <Text style={{ fontSize: 12, fontWeight: '300', color: '#000', fontFamily: 'Pretendard', marginLeft: -4 }}>{item?.likeCount === 0 ? '' : item?.likeCount?.toLocaleString()}</Text>
                                             </View>
                                         </View>
                                         <View style={[postStyles.bookmark, postStyles.heartLayout]}>
                                             <View style={{ position: 'relative', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                                                 <CommentIcon style={[postStyles.icon2, { marginTop: -2 }]} />
-                                                <Text style={{ fontSize: 12, fontWeight: '300', color: '#000', fontFamily: 'Pretendard', marginBottom: -1, marginLeft: -4 }}>{item?.comment?.length === 0 ? '' : item?.comment?.length?.toLocaleString()}</Text>
                                             </View>
                                         </View>
                                     </View>
@@ -258,7 +257,6 @@ const postStyles = StyleSheet.create({
     textTypo: {
         textAlign: "left",
         color: "#000",
-        fontFamily: "SF Pro",
         lineHeight: 22,
     },
     heartLayout: {
@@ -298,7 +296,6 @@ const postStyles = StyleSheet.create({
         fontWeight: "600",
         textAlign: "left",
         color: "#000",
-        fontFamily: "SF Pro",
         lineHeight: 22,
     },
     text2: {
@@ -379,7 +376,6 @@ const chipStyles = StyleSheet.create({
     tokyo: {
         fontSize: 12,
         fontWeight: "700",
-        fontFamily: "NanumSquare Neo OTF",
         color: "#444",
         textAlign: "center",
     }
@@ -468,7 +464,6 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 12,
         fontWeight: "700",
-        fontFamily: "NanumSquare Neo OTF",
         textAlign: "left"
     }
 });

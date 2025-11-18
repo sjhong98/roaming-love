@@ -3,7 +3,8 @@ import * as Linking from 'expo-linking';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import * as WebBrowser from 'expo-web-browser';
 import { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, StyleSheet, View } from 'react-native';
+import { CustomText as Text } from '@/components/CustomText';
 import { AnyRecord } from 'react-native-reanimated/lib/typescript/css/types';
 
 export default function LoginScreen() {

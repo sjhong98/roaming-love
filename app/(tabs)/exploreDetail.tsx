@@ -7,7 +7,8 @@ import useUser from '@/hooks/use-user';
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import { use, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Animated, Dimensions, KeyboardAvoidingView, NativeScrollEvent, NativeSyntheticEvent, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, PanResponder } from "react-native";
+import { ActivityIndicator, Animated, Dimensions, KeyboardAvoidingView, NativeScrollEvent, NativeSyntheticEvent, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View, PanResponder, Modal } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import dayjs from 'dayjs';
 import ArrowLeftIcon from '@/assets/images/arrowGray.svg';
@@ -256,13 +257,13 @@ export default function ExploreDetail() {
                                         )}
                                     </Animated.View>
 
-                                    <Text style={{ fontSize: 12, fontWeight: '300', color: '#000', fontFamily: 'Pretendard', marginLeft: -4 }}>{postDetail?.likeCount === 0 ? '' : postDetail?.likeCount?.toLocaleString()}</Text>
+                                    <Text style={{ fontSize: 12, fontWeight: '300', color: '#000', marginLeft: -4 }}>{postDetail?.likeCount === 0 ? '' : postDetail?.likeCount?.toLocaleString()}</Text>
                                 </View>
                             </View>
                             <View style={[postStyles.bookmark, postStyles.heartLayout]}>
                                 <View style={{ position: 'relative', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                                     <CommentIcon style={[postStyles.icon2, { marginTop: -2 }]} />
-                                    <Text style={{ fontSize: 12, fontWeight: '300', color: '#000', fontFamily: 'Pretendard', marginBottom: -1, marginLeft: -4 }}>{postDetail?.comment?.length === 0 ? '' : postDetail?.comment?.length?.toLocaleString()}</Text>
+                                    <Text style={{ fontSize: 12, fontWeight: '300', color: '#000', marginBottom: -1, marginLeft: -4 }}>{postDetail?.comment?.length === 0 ? '' : postDetail?.comment?.length?.toLocaleString()}</Text>
                                 </View>
                             </View>
                         </View>
@@ -276,8 +277,8 @@ export default function ExploreDetail() {
                             postDetail?.comment?.map((comment: any, index: number) => (
                                 <View key={index} style={[commentStyles.view, { marginTop: 5 }]}>
                                     <Image source={comment?.user?.image ? { uri: comment?.user?.image } : require('@/assets/images/userIcon.png')} style={[commentStyles.child, { borderRadius: 100 }]} resizeMode="cover" />
-                                    <Text style={[commentStyles.text, commentStyles.textTypo]}>{comment?.user?.nickname || comment?.user?.name}</Text>
-                                    <Text style={[commentStyles.text2, commentStyles.textTypo, { width: Dimensions.get('window').width - 82, position: 'relative' }]}>{comment?.content}</Text>
+                                    <Text style={[commentStyles.text, commentStyles.textTypo, { fontWeight: 700 }]}>{comment?.user?.nickname || comment?.user?.name}</Text>
+                                    <Text style={[commentStyles.text2, commentStyles.textTypo, { width: Dimensions.get('window').width - 82, position: 'relative', fontWeight: 400 }]}>{comment?.content}</Text>
                                 </View>
                             ))
                         }
@@ -399,8 +400,7 @@ const commentStyles = StyleSheet.create({
     },
     textTypo: {
         textAlign: "left",
-        fontFamily: "Pretendard",
-        fontWeight: "600",
+        // fontWeight: "600",
         lineHeight: 22,
         fontSize: 15,
         left: 47,
@@ -462,7 +462,6 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 12,
         fontWeight: "300",
-        fontFamily: "NanumSquare Neo",
         color: "#999",
         textAlign: "left",
     },
@@ -504,7 +503,6 @@ const topStyles = StyleSheet.create({
         fontSize: 17,
         top: 37,
         textAlign: "center",
-        fontFamily: "NanumSquare Neo OTF",
         fontWeight: "700",
         left: "50%",
         position: "absolute"
@@ -515,7 +513,6 @@ const topStyles = StyleSheet.create({
     },
     toTypo: {
         textAlign: "left",
-        fontFamily: "Pretendard",
         fontWeight: "300",
         fontSize: 40,
         top: 111,
@@ -528,7 +525,6 @@ const topStyles = StyleSheet.create({
     textTypo: {
         fontSize: 13,
         textAlign: "left",
-        fontFamily: "Pretendard",
         fontWeight: "300",
         position: "absolute"
     },
@@ -546,7 +542,6 @@ const topStyles = StyleSheet.create({
     text: {
         fontSize: 20,
         textAlign: "center",
-        fontFamily: "NanumSquare Neo OTF",
         fontWeight: "700",
         color: "#000",
         top: 0,
@@ -640,7 +635,6 @@ const postStyles = StyleSheet.create({
     textTypo: {
         textAlign: "left",
         color: "#000",
-        fontFamily: "SF Pro",
         lineHeight: 22,
     },
     heartLayout: {
@@ -680,7 +674,6 @@ const postStyles = StyleSheet.create({
         fontWeight: "600",
         textAlign: "left",
         color: "#000",
-        fontFamily: "SF Pro",
         lineHeight: 22,
     },
     text2: {

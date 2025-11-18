@@ -7,7 +7,8 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import ArrowLeftIcon from '@/assets/images/arrowGray.svg';
-import { ActivityIndicator, Animated, Dimensions, Modal, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, TouchableOpacity, View, PanResponder } from "react-native";
+import { ActivityIndicator, Animated, Dimensions, Modal, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, TouchableOpacity, View, PanResponder } from "react-native";
+import { CustomText as Text } from '@/components/CustomText';
 
 export default function MyArticles() {
     const { user } = useUser();
@@ -409,13 +410,11 @@ export default function MyArticles() {
                                                 )}
                                             </Animated.View>
 
-                                            <Text style={{ fontSize: 12, fontWeight: '300', color: '#000', fontFamily: 'Pretendard', marginLeft: -4 }}>{item?.likeCount === 0 ? '' : item?.likeCount?.toLocaleString()}</Text>
                                         </View>
                                     </View>
                                     <View style={[postStyles.bookmark, postStyles.heartLayout]}>
                                         <View style={{ position: 'relative', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
                                             <CommentIcon style={[postStyles.icon2, { marginTop: -2 }]} />
-                                            <Text style={{ fontSize: 12, fontWeight: '300', color: '#000', fontFamily: 'Pretendard', marginBottom: -1, marginLeft: -4 }}>{item?.comment?.length === 0 ? '' : item?.comment?.length?.toLocaleString()}</Text>
                                         </View>
                                     </View>
                                 </View>
@@ -528,7 +527,6 @@ const postStyles = StyleSheet.create({
     textTypo: {
         textAlign: "left",
         color: "#000",
-        fontFamily: "SF Pro",
         lineHeight: 22,
     },
     heartLayout: {
@@ -568,7 +566,6 @@ const postStyles = StyleSheet.create({
         fontWeight: "600",
         textAlign: "left",
         color: "#000",
-        fontFamily: "SF Pro",
         lineHeight: 22,
     },
     text2: {
@@ -927,7 +924,6 @@ const topStyles = StyleSheet.create({
         fontSize: 17,
         top: 37,
         textAlign: "center",
-        fontFamily: "NanumSquare Neo OTF",
         fontWeight: "700",
         left: "50%",
         position: "absolute"
@@ -938,7 +934,6 @@ const topStyles = StyleSheet.create({
     },
     toTypo: {
         textAlign: "left",
-        fontFamily: "Pretendard",
         fontWeight: "300",
         fontSize: 40,
         top: 111,
@@ -951,7 +946,6 @@ const topStyles = StyleSheet.create({
     textTypo: {
         fontSize: 13,
         textAlign: "left",
-        fontFamily: "Pretendard",
         fontWeight: "300",
         position: "absolute"
     },
@@ -969,7 +963,6 @@ const topStyles = StyleSheet.create({
     text: {
         fontSize: 20,
         textAlign: "center",
-        fontFamily: "NanumSquare Neo OTF",
         fontWeight: "700",
         color: "#000",
         top: 0,
