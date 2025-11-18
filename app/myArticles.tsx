@@ -7,7 +7,7 @@ import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import ArrowLeftIcon from '@/assets/images/arrowGray.svg';
-import { ActivityIndicator, Animated, Dimensions, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Animated, Dimensions, Modal, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, TouchableOpacity, View, PanResponder } from "react-native";
 
 export default function MyArticles() {
     const { user } = useUser();
@@ -19,6 +19,10 @@ export default function MyArticles() {
     const [isLoading, setIsLoading] = useState(true);
     const [imageAspectRatios, setImageAspectRatios] = useState<Map<number, number>>(new Map());
     const [imageLoadingStates, setImageLoadingStates] = useState<Map<number, boolean>>(new Map());
+    const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
+    const [selectedImages, setSelectedImages] = useState<string[]>([]);
+    const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
+    const isClosingModalRef = useRef(false);
     const likeAnimations = useRef<Map<number, Animated.Value>>(new Map());
     const HEADER_HEIGHT = 120;
     const HEADER_HIDE_DISTANCE = HEADER_HEIGHT + 40;
@@ -245,6 +249,28 @@ export default function MyArticles() {
         }
     }
 
+    const openImageModal = (imageUri: string, allImages?: string[], initialIndex?: number) => {
+        if (isClosingModalRef.current) return;
+        if (allImages && allImages.length > 0) {
+            setSelectedImages(allImages);
+            setSelectedImageIndex(initialIndex || 0);
+        } else {
+            setSelectedImages([imageUri]);
+            setSelectedImageIndex(0);
+        }
+        setSelectedImageUri(imageUri);
+    }
+
+    const closeImageModal = () => {
+        isClosingModalRef.current = true;
+        setSelectedImageUri(null);
+        setSelectedImages([]);
+        setSelectedImageIndex(0);
+        // 모달이 완전히 닫힌 후 플래그 리셋 (더 긴 시간으로 설정)
+        setTimeout(() => {
+            isClosingModalRef.current = false;
+        }, 500);
+    }
 
     return (
         <View style={{ flex: 1, position: 'relative', backgroundColor: '#fff' }}>
@@ -299,7 +325,7 @@ export default function MyArticles() {
                                 <Image source={item?.user?.image ?? require('@/assets/images/userIcon.png')} style={[postStyles.item, postStyles.itemPosition]} resizeMode="cover" />
                             </View>
                             <View style={{ width: '100%' }}>
-                                <View style={[postStyles.view2, { height: 'auto', width: '100%', position: 'relative' }]}>
+                                <View style={[postStyles.view2, { height: 'auto', width: '90%', position: 'relative' }]}>
                                     <Text style={[postStyles.text, postStyles.textTypo]}>{item?.user?.nickname}</Text>
                                     <Text style={[postStyles.text2, postStyles.textTypo]}>{item?.content}</Text>
                                     {item?.image ? (
@@ -311,6 +337,9 @@ export default function MyArticles() {
                                                         imageUri={item?.image?.split('|SPLIT|')?.[0]}
                                                         aspectRatio={imageAspectRatios.get(item?.pk)}
                                                         handleImageLoad={handleImageLoad}
+                                                        onImagePress={openImageModal}
+                                                        allImages={item?.image?.split('|SPLIT|')}
+                                                        isModalOpen={selectedImageUri !== null}
                                                     />
                                                 </>
                                             ) : (
@@ -331,22 +360,31 @@ export default function MyArticles() {
                                                                     imageUri={image}
                                                                     aspectRatio={imageAspectRatios.get(item?.pk)}
                                                                     handleImageLoad={handleImageLoad}
+                                                                    onImagePress={openImageModal}
+                                                                    allImages={item?.image?.split('|SPLIT|')}
+                                                                    imageIndex={index}
+                                                                    isModalOpen={selectedImageUri !== null}
                                                                 />
                                                             );
                                                         }
                                                         const aspectRatio = imageAspectRatios.get(item?.pk);
                                                         return (
-                                                            <Image
+                                                            <TouchableOpacity
                                                                 key={index}
-                                                                source={{ uri: image }}
-                                                                style={{
-                                                                    width: Dimensions.get('window').width - 93,
-                                                                    height: aspectRatio ? (Dimensions.get('window').width - 93) * aspectRatio : 200,
-                                                                    borderRadius: 10,
-                                                                    marginTop: 9
-                                                                }}
-                                                                contentFit="cover"
-                                                            />
+                                                                activeOpacity={0.9}
+                                                                onPress={() => openImageModal(image, item?.image?.split('|SPLIT|'), index)}
+                                                            >
+                                                                <Image
+                                                                    source={{ uri: image }}
+                                                                    style={{
+                                                                        width: Dimensions.get('window').width - 93,
+                                                                        height: aspectRatio ? (Dimensions.get('window').width - 93) * aspectRatio : 200,
+                                                                        borderRadius: 10,
+                                                                        marginTop: 9
+                                                                    }}
+                                                                    contentFit="cover"
+                                                                />
+                                                            </TouchableOpacity>
                                                         );
                                                     })}
                                                 </ScrollView>
@@ -386,6 +424,94 @@ export default function MyArticles() {
                     ))
                 )}
             </Animated.ScrollView>
+
+            {/* 이미지 모달 */}
+            <Modal
+                visible={selectedImageUri !== null}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={closeImageModal}
+            >
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={closeImageModal}
+                    style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.95)', justifyContent: 'center', alignItems: 'center' }}
+                >
+                    <TouchableOpacity
+                        activeOpacity={1}
+                        onPress={closeImageModal}
+                        style={{ position: 'absolute', top: 50, right: 20, zIndex: 1000, padding: 10 }}
+                    >
+                        <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>✕</Text>
+                    </TouchableOpacity>
+                    
+                    {selectedImages.length > 1 && (
+                        <>
+                            <TouchableOpacity
+                                activeOpacity={0.7}
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    if (selectedImageIndex > 0) {
+                                        setSelectedImageIndex(selectedImageIndex - 1);
+                                        setSelectedImageUri(selectedImages[selectedImageIndex - 1]);
+                                    }
+                                }}
+                                style={{ position: 'absolute', left: 20, zIndex: 1000, padding: 15 }}
+                                disabled={selectedImageIndex === 0}
+                            >
+                                <Text style={{ color: selectedImageIndex === 0 ? '#666' : '#fff', fontSize: 24, fontWeight: '600' }}>‹</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                activeOpacity={0.7}
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    if (selectedImageIndex < selectedImages.length - 1) {
+                                        setSelectedImageIndex(selectedImageIndex + 1);
+                                        setSelectedImageUri(selectedImages[selectedImageIndex + 1]);
+                                    }
+                                }}
+                                style={{ position: 'absolute', right: 20, zIndex: 1000, padding: 15 }}
+                                disabled={selectedImageIndex === selectedImages.length - 1}
+                            >
+                                <Text style={{ color: selectedImageIndex === selectedImages.length - 1 ? '#666' : '#fff', fontSize: 24, fontWeight: '600' }}>›</Text>
+                            </TouchableOpacity>
+                            <View style={{ position: 'absolute', bottom: 50, zIndex: 1000 }}>
+                                <Text style={{ color: '#fff', fontSize: 14, fontWeight: '400' }}>
+                                    {selectedImageIndex + 1} / {selectedImages.length}
+                                </Text>
+                            </View>
+                        </>
+                    )}
+                    
+                    <TouchableOpacity
+                        activeOpacity={1}
+                        onPress={(e) => e.stopPropagation()}
+                        style={{ flex: 1, width: '100%' }}
+                    >
+                        <ScrollView
+                            horizontal
+                            pagingEnabled
+                            showsHorizontalScrollIndicator={false}
+                            contentOffset={{ x: selectedImageIndex * Dimensions.get('window').width, y: 0 }}
+                            onMomentumScrollEnd={(event) => {
+                                const index = Math.round(event.nativeEvent.contentOffset.x / Dimensions.get('window').width);
+                                setSelectedImageIndex(index);
+                                setSelectedImageUri(selectedImages[index]);
+                            }}
+                        >
+                            {selectedImages.map((image, index) => (
+                                <View key={index} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Image
+                                        source={{ uri: image }}
+                                        style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height }}
+                                        contentFit="contain"
+                                    />
+                                </View>
+                            ))}
+                        </ScrollView>
+                    </TouchableOpacity>
+                </TouchableOpacity>
+            </Modal>
         </View>
     );
 }
@@ -507,18 +633,83 @@ const ImageWrapper = ({
     postPk,
     imageUri,
     aspectRatio,
-    handleImageLoad
+    handleImageLoad,
+    onImagePress,
+    allImages,
+    imageIndex = 0,
+    isModalOpen = false
 }: {
     postPk: number;
     imageUri: string;
     aspectRatio?: number;
     handleImageLoad: (postPk: number, event: any) => void;
+    onImagePress?: (imageUri: string, allImages?: string[], initialIndex?: number) => void;
+    allImages?: string[];
+    imageIndex?: number;
+    isModalOpen?: boolean;
 }) => {
     const [isLoading, setIsLoading] = useState(true);
     const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const hasLoadedRef = useRef(false);
     const isLoadStartCalledRef = useRef(false);
     const actualAspectRatio = aspectRatio || 200 / (Dimensions.get('window').width - 93); // 기본값
+    const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
+    const isDraggingRef = useRef(false);
+    const pressTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const panResponder = useRef(
+        PanResponder.create({
+            onStartShouldSetPanResponder: () => true,
+            onMoveShouldSetPanResponder: (_, gestureState) => {
+                // 이동 거리가 10px 이상이면 드래그로 간주
+                return Math.abs(gestureState.dx) > 10 || Math.abs(gestureState.dy) > 10;
+            },
+            onPanResponderGrant: (evt) => {
+                const { pageX, pageY } = evt.nativeEvent;
+                touchStartRef.current = { x: pageX, y: pageY, time: Date.now() };
+                isDraggingRef.current = false;
+            },
+            onPanResponderMove: (_, gestureState) => {
+                if (touchStartRef.current) {
+                    const deltaX = Math.abs(gestureState.dx);
+                    const deltaY = Math.abs(gestureState.dy);
+                    // 10px 이상 이동하면 드래그로 간주
+                    if (deltaX > 10 || deltaY > 10) {
+                        isDraggingRef.current = true;
+                    }
+                }
+            },
+            onPanResponderRelease: () => {
+                // 모달이 열려있으면 터치 이벤트 무시
+                if (isModalOpen) {
+                    touchStartRef.current = null;
+                    isDraggingRef.current = false;
+                    return;
+                }
+                
+                if (!isDraggingRef.current && onImagePress && touchStartRef.current) {
+                    // 터치 시간이 500ms 이하면 탭으로 간주
+                    const touchDuration = Date.now() - touchStartRef.current.time;
+                    if (touchDuration < 500) {
+                        // 기존 타이머가 있으면 취소
+                        if (pressTimeoutRef.current) {
+                            clearTimeout(pressTimeoutRef.current);
+                        }
+                        // 약간의 딜레이를 주어 모달이 완전히 닫힌 후에만 열리도록 함
+                        pressTimeoutRef.current = setTimeout(() => {
+                            // 모달이 여전히 닫혀있는지 확인
+                            if (!isModalOpen) {
+                                onImagePress(imageUri, allImages, imageIndex);
+                            }
+                            pressTimeoutRef.current = null;
+                        }, 200);
+                    }
+                }
+                touchStartRef.current = null;
+                isDraggingRef.current = false;
+            },
+        })
+    ).current;
 
     // imageUri가 변경될 때만 리셋
     useEffect(() => {
@@ -540,8 +731,19 @@ const ImageWrapper = ({
             if (loadTimeoutRef.current) {
                 clearTimeout(loadTimeoutRef.current);
             }
+            if (pressTimeoutRef.current) {
+                clearTimeout(pressTimeoutRef.current);
+            }
         };
     }, [imageUri]);
+    
+    // 모달이 열리면 타이머 취소
+    useEffect(() => {
+        if (isModalOpen && pressTimeoutRef.current) {
+            clearTimeout(pressTimeoutRef.current);
+            pressTimeoutRef.current = null;
+        }
+    }, [isModalOpen]);
 
     const handleLoadStart = () => {
         // 이미 호출되었거나 로드 완료되었으면 무시
@@ -591,7 +793,7 @@ const ImageWrapper = ({
     };
 
     return (
-        <View style={{ position: 'relative' }}>
+        <View style={{ position: 'relative' }} {...panResponder.panHandlers}>
             {isLoading && (
                 <View style={{
                     position: 'absolute',
@@ -621,8 +823,6 @@ const ImageWrapper = ({
                 onLoadStart={handleLoadStart}
                 onLoad={handleLoad}
                 onError={handleError}
-                onStartShouldSetResponder={() => true}
-                onMoveShouldSetResponder={() => true}
             />
         </View>
     );

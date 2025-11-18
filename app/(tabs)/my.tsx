@@ -172,11 +172,11 @@ export default function My() {
         <>
             <View style={{ paddingTop: 70, backgroundColor: '#fff', width: '100%', height: 0, zIndex: 1000, position: 'absolute', top: 0, left: 0, right: 0, paddingBottom: 0 }}>
                 <View style={topStyles.view0}>
-                    <TouchableOpacity onPress={() => router.back()} style={{ position: 'absolute', left: 21, top: -5, zIndex: 9999, padding: 5 }}>
+                    {/* <TouchableOpacity onPress={() => router.back()} style={{ position: 'absolute', left: 21, top: -5, zIndex: 9999, padding: 5 }}>
                         <ArrowLeftIcon width={24} height={24} />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={topStyles.text}>내 글</Text>
+                        <Text style={topStyles.text}>마이페이지</Text>
                     </View>
                 </View>
             </View>

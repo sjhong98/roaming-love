@@ -7,7 +7,7 @@ import useUser from '@/hooks/use-user';
 import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import { use, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Animated, Dimensions, KeyboardAvoidingView, NativeScrollEvent, NativeSyntheticEvent, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Animated, Dimensions, KeyboardAvoidingView, NativeScrollEvent, NativeSyntheticEvent, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, PanResponder } from "react-native";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import dayjs from 'dayjs';
 import ArrowLeftIcon from '@/assets/images/arrowGray.svg';
@@ -22,6 +22,10 @@ export default function ExploreDetail() {
     const [postDetail, setPostDetail] = useState<any>(null);
     const [imageAspectRatios, setImageAspectRatios] = useState<Map<number, number>>(new Map());
     const [commentText, setCommentText] = useState('');
+    const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
+    const [selectedImages, setSelectedImages] = useState<string[]>([]);
+    const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
+    const isClosingModalRef = useRef(false);
 
     const fetchPost = async () => {
         console.log('postPk', postPk);
@@ -130,6 +134,29 @@ export default function ExploreDetail() {
         ]).start();
     };
 
+    const openImageModal = (imageUri: string, allImages?: string[], initialIndex?: number) => {
+        if (isClosingModalRef.current) return;
+        if (allImages && allImages.length > 0) {
+            setSelectedImages(allImages);
+            setSelectedImageIndex(initialIndex || 0);
+        } else {
+            setSelectedImages([imageUri]);
+            setSelectedImageIndex(0);
+        }
+        setSelectedImageUri(imageUri);
+    }
+
+    const closeImageModal = () => {
+        isClosingModalRef.current = true;
+        setSelectedImageUri(null);
+        setSelectedImages([]);
+        setSelectedImageIndex(0);
+        // 모달이 완전히 닫힌 후 플래그 리셋 (더 긴 시간으로 설정)
+        setTimeout(() => {
+            isClosingModalRef.current = false;
+        }, 500);
+    }
+
     if (!postDetail) return
 
     return (
@@ -159,20 +186,25 @@ export default function ExploreDetail() {
                             <Text style={[postStyles.text2, postStyles.textTypo]}>{postDetail?.content}</Text>
                             {postDetail?.image ? (
                                 postDetail?.image?.split('|SPLIT|')?.length === 1 ?
-                                    (<Image
-                                        source={{ uri: postDetail?.image?.split('|SPLIT|')?.[0] }}
-                                        style={{
-                                            width: Dimensions.get('window').width - 93,
-                                            height: imageAspectRatios.has(postDetail?.pk)
-                                                ? (Dimensions.get('window').width - 93) * imageAspectRatios.get(postDetail?.pk)!
-                                                : 200, // 임시 높이 (로드 전까지)
-                                            borderRadius: 10,
-                                            marginTop: 9
-                                        }}
-                                        contentFit="cover"
-                                        onLoad={(event) => handleImageLoad(postDetail?.pk, event)}
-                                        onError={(error) => console.log('Image load error:', error)}
-                                    />) : (
+                                    (<TouchableOpacity
+                                        activeOpacity={0.9}
+                                        onPress={() => openImageModal(postDetail?.image?.split('|SPLIT|')?.[0], postDetail?.image?.split('|SPLIT|'), 0)}
+                                    >
+                                        <Image
+                                            source={{ uri: postDetail?.image?.split('|SPLIT|')?.[0] }}
+                                            style={{
+                                                width: Dimensions.get('window').width - 93,
+                                                height: imageAspectRatios.has(postDetail?.pk)
+                                                    ? (Dimensions.get('window').width - 93) * imageAspectRatios.get(postDetail?.pk)!
+                                                    : 200, // 임시 높이 (로드 전까지)
+                                                borderRadius: 10,
+                                                marginTop: 9
+                                            }}
+                                            contentFit="cover"
+                                            onLoad={(event) => handleImageLoad(postDetail?.pk, event)}
+                                            onError={(error) => console.log('Image load error:', error)}
+                                        />
+                                    </TouchableOpacity>) : (
                                         <ScrollView
                                             horizontal
                                             showsHorizontalScrollIndicator={false}
@@ -180,19 +212,24 @@ export default function ExploreDetail() {
                                             contentContainerStyle={{ gap: 12, paddingLeft: 21, paddingRight: 21 }}
                                         >
                                             {postDetail?.image?.split('|SPLIT|')?.map((image: string, index: number) => (
-                                                <Image
+                                                <TouchableOpacity
                                                     key={index}
-                                                    source={{ uri: image }}
-                                                    style={{
-                                                        width: Dimensions.get('window').width - 93,
-                                                        height: imageAspectRatios.has(postDetail?.pk)
-                                                            ? (Dimensions.get('window').width - 93) * imageAspectRatios.get(postDetail?.pk)!
-                                                            : 200, // 임시 높이 (로드 전까지)
-                                                        borderRadius: 10,
-                                                        marginTop: 9
-                                                    }}
-                                                    contentFit="cover"
-                                                />
+                                                    activeOpacity={0.9}
+                                                    onPress={() => openImageModal(image, postDetail?.image?.split('|SPLIT|'), index)}
+                                                >
+                                                    <Image
+                                                        source={{ uri: image }}
+                                                        style={{
+                                                            width: Dimensions.get('window').width - 93,
+                                                            height: imageAspectRatios.has(postDetail?.pk)
+                                                                ? (Dimensions.get('window').width - 93) * imageAspectRatios.get(postDetail?.pk)!
+                                                                : 200, // 임시 높이 (로드 전까지)
+                                                            borderRadius: 10,
+                                                            marginTop: 9
+                                                        }}
+                                                        contentFit="cover"
+                                                    />
+                                                </TouchableOpacity>
                                             ))}
                                         </ScrollView>
 
@@ -264,6 +301,94 @@ export default function ExploreDetail() {
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>
+
+            {/* 이미지 모달 */}
+            <Modal
+                visible={selectedImageUri !== null}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={closeImageModal}
+            >
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={closeImageModal}
+                    style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.95)', justifyContent: 'center', alignItems: 'center' }}
+                >
+                    <TouchableOpacity
+                        activeOpacity={1}
+                        onPress={closeImageModal}
+                        style={{ position: 'absolute', top: 50, right: 20, zIndex: 1000, padding: 10 }}
+                    >
+                        <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>✕</Text>
+                    </TouchableOpacity>
+                    
+                    {selectedImages.length > 1 && (
+                        <>
+                            <TouchableOpacity
+                                activeOpacity={0.7}
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    if (selectedImageIndex > 0) {
+                                        setSelectedImageIndex(selectedImageIndex - 1);
+                                        setSelectedImageUri(selectedImages[selectedImageIndex - 1]);
+                                    }
+                                }}
+                                style={{ position: 'absolute', left: 20, zIndex: 1000, padding: 15 }}
+                                disabled={selectedImageIndex === 0}
+                            >
+                                <Text style={{ color: selectedImageIndex === 0 ? '#666' : '#fff', fontSize: 24, fontWeight: '600' }}>‹</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                activeOpacity={0.7}
+                                onPress={(e) => {
+                                    e.stopPropagation();
+                                    if (selectedImageIndex < selectedImages.length - 1) {
+                                        setSelectedImageIndex(selectedImageIndex + 1);
+                                        setSelectedImageUri(selectedImages[selectedImageIndex + 1]);
+                                    }
+                                }}
+                                style={{ position: 'absolute', right: 20, zIndex: 1000, padding: 15 }}
+                                disabled={selectedImageIndex === selectedImages.length - 1}
+                            >
+                                <Text style={{ color: selectedImageIndex === selectedImages.length - 1 ? '#666' : '#fff', fontSize: 24, fontWeight: '600' }}>›</Text>
+                            </TouchableOpacity>
+                            <View style={{ position: 'absolute', bottom: 50, zIndex: 1000 }}>
+                                <Text style={{ color: '#fff', fontSize: 14, fontWeight: '400' }}>
+                                    {selectedImageIndex + 1} / {selectedImages.length}
+                                </Text>
+                            </View>
+                        </>
+                    )}
+                    
+                    <TouchableOpacity
+                        activeOpacity={1}
+                        onPress={(e) => e.stopPropagation()}
+                        style={{ flex: 1, width: '100%' }}
+                    >
+                        <ScrollView
+                            horizontal
+                            pagingEnabled
+                            showsHorizontalScrollIndicator={false}
+                            contentOffset={{ x: selectedImageIndex * Dimensions.get('window').width, y: 0 }}
+                            onMomentumScrollEnd={(event) => {
+                                const index = Math.round(event.nativeEvent.contentOffset.x / Dimensions.get('window').width);
+                                setSelectedImageIndex(index);
+                                setSelectedImageUri(selectedImages[index]);
+                            }}
+                        >
+                            {selectedImages.map((image, index) => (
+                                <View key={index} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Image
+                                        source={{ uri: image }}
+                                        style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height }}
+                                        contentFit="contain"
+                                    />
+                                </View>
+                            ))}
+                        </ScrollView>
+                    </TouchableOpacity>
+                </TouchableOpacity>
+            </Modal>
         </>
     );
 }

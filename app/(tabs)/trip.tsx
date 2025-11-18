@@ -313,10 +313,20 @@ export default function Trip() {
         setSearchResult(true);
 
         const filteredUserList = UserDummy.filter((user) => {
+            const userStartDate = dayjs(user.date.startDate);
+            const userEndDate = dayjs(user.date.endDate);
+            const selectedStartDate = dayjs(selectedForm.dateRange.startDate);
+            const selectedEndDate = dayjs(selectedForm.dateRange.endDate);
+            
+            // 날짜 범위가 겹치는지 확인: user의 시작일이 선택된 종료일 이전/같고, user의 종료일이 선택된 시작일 이후/같으면 겹침
+            const datesOverlap = selectedForm.dateType === 'date' 
+                ? (!userStartDate.isAfter(selectedEndDate, 'day') && !userEndDate.isBefore(selectedStartDate, 'day'))
+                : true;
+            
             return user.favoriteLocation.includes(selectedForm.location ?? '')
                 && user.tripType === selectedForm.tripType
                 && user.loveType === selectedForm.loveType
-                && (selectedForm.dateType === 'date' ? dayjs(user.date.startDate).isSame(dayjs(selectedForm.dateRange.startDate), 'day') && dayjs(user.date.endDate).isSame(dayjs(selectedForm.dateRange.endDate), 'day') : true)
+                && datesOverlap
                 && (selectedForm.dateType === 'day' ? user.period.includes(selectedForm.period) : true)
                 && (selectedForm.dateType === 'day' ? user.month.includes(selectedForm.month ?? 'none') : true)
         });

@@ -3,6 +3,8 @@ import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import * as WebBrowser from 'expo-web-browser';
 import 'react-native-reanimated';
+import { useFonts } from 'expo-font';
+import { Text } from 'react-native';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
@@ -15,6 +17,15 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+
+  const [loaded] = useFonts({
+    NanumNeo: require('../assets/fonts/NanumSquareNeo-Variable.ttf'),
+  });
+
+  if(!loaded) return null;
+
+  (Text as any).defaultProps = (Text as any).defaultProps || {};
+  (Text as any).defaultProps.style = { fontFamily: 'NanumNeo' };
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
