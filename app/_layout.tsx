@@ -33,6 +33,7 @@ export default function RootLayout() {
         <Stack.Screen name="chatDetail" options={{ headerShown: false, title: '채팅상세' }} />
         <Stack.Screen name="userProfile" options={{ headerShown: false, title: '유저프로필' }} />
         <Stack.Screen name="createPost" options={{ headerShown: false, title: '게시글작성' }} />  
+        <Stack.Screen name="myArticles" options={{ headerShown: false, title: '내 글 보기' }} />
       </Stack>
       <StatusBar style="auto" />
     </ThemeProvider>

@@ -4,12 +4,15 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import HeartActiveIcon from '@/assets/images/heartActive.svg';
 import HeartInactiveIcon from '@/assets/images/heartInactive.svg';
 import BackArrowIcon from '@/assets/images/backArrow.svg';
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import Locations from "@/constants/Locations";
 import { useRouter } from "expo-router";
 import Rating from "@/components/ui/Rating";
 import UserDummy from "@/constants/UserDummy";
 import LocationCard, { LOCATION_CARD_FONT_SIZE, LOCATION_CARD_MARKER_SIZE } from "@/components/ui/LocationCard";
+import TypeSelect from "@/components/trip/TypeSelect";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import LocationDetailOverlay from "@/components/ui/LocationDetailOverlay";
 
 export default function Main() {
     const router = useRouter();
@@ -18,6 +21,39 @@ export default function Main() {
     const [cardLayout, setCardLayout] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
     const [showTripContent, setShowTripContent] = useState(false);
     const [keepExpandedCardVisible, setKeepExpandedCardVisible] = useState(false);
+    const [tripType, setTripType] = useState<string | undefined>(undefined);
+    const [loveType, setLoveType] = useState<string | undefined>(undefined);
+    const [filteredLocationList, setFilteredLocationList] = useState<any[]>([]);
+
+    useEffect(() => {
+        if (selectedTab === 'best') {
+            setFilteredLocationList(Locations);
+        } else {
+            (async () => {
+                let result: any = await AsyncStorage.getItem('locationLikes');
+                if (result) {
+                    result = JSON.parse(result);
+                    setFilteredLocationList(Locations.filter((item: any) => result.includes(item.name)));
+                }
+            })()
+        }
+    }, [selectedTab])
+
+    // 선택된 타입에 따라 필터링된 사용자 목록
+    const filteredUsers = useMemo(() => {
+        let users = UserDummy;
+
+        if (tripType) {
+            users = users.filter(user => user.tripType === tripType);
+        }
+
+        if (loveType) {
+            users = users.filter(user => user.loveType === loveType);
+        }
+
+        return users;
+    }, [tripType, loveType]);
+
     const animatedWidth = useRef(new Animated.Value(189)).current;
     const animatedHeight = useRef(new Animated.Value(261)).current;
     const animatedTop = useRef(new Animated.Value(0)).current;
@@ -30,6 +66,7 @@ export default function Main() {
     const expandedTextFontSize = 24;
     const markerSize = useRef(new Animated.Value(initialMarkerSize)).current;
     const textFontSize = useRef(new Animated.Value(initialTextFontSize)).current;
+    const heartOpacity = useRef(new Animated.Value(1)).current;
     const scrollY = useRef(new Animated.Value(0)).current;
     const cardRefs = useRef<{ [key: number]: View | null }>({});
     const screenWidth = Dimensions.get('window').width;
@@ -55,6 +92,7 @@ export default function Main() {
         animatedLeft.setValue(0);
         markerSize.setValue(initialMarkerSize);
         textFontSize.setValue(initialTextFontSize);
+        heartOpacity.setValue(1);
         scrollY.setValue(0);
         setSelectedLocationIndex(null);
         setCardLayout(null);
@@ -88,13 +126,21 @@ export default function Main() {
             animatedOpacity.setValue(1);
             markerSize.setValue(initialMarkerSize);
             textFontSize.setValue(initialTextFontSize);
+            heartOpacity.setValue(1);
 
             // 다른 요소들 opacity 1->0 애니메이션 (숨김)
-            Animated.timing(otherElementsOpacity, {
-                toValue: 0,
-                duration: 300,
-                useNativeDriver: true,
-            }).start(() => {
+            Animated.parallel([
+                Animated.timing(otherElementsOpacity, {
+                    toValue: 0,
+                    duration: 300,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(heartOpacity, {
+                    toValue: 0,
+                    duration: 300,
+                    useNativeDriver: true,
+                }),
+            ]).start(() => {
                 // 첫 번째 애니메이션 완료 후, 카드를 상단 중앙으로 이동하고 크기 변경
                 const targetWidth = screenWidth; // 100vw
                 const targetHeight = 412;
@@ -212,8 +258,8 @@ export default function Main() {
                             contentContainerStyle={{ gap: 30 }}
                             showsHorizontalScrollIndicator={false}
                         >
-                            {
-                                Locations.map((item: any, index) => (
+                            {filteredLocationList.length > 0 ?
+                                filteredLocationList.map((item: any, index) => (
                                     <TouchableOpacity
                                         key={index}
                                         onPress={() => handleCardPress(index)}
@@ -226,18 +272,22 @@ export default function Main() {
                                         />
                                     </TouchableOpacity>
                                 ))
+                                :
+                                <View style={{ width: '100%', height: 301, justifyContent: 'center', alignItems: 'center' }}>
+                                    <Text style={{ marginLeft: -30, color: '#999', fontSize: 13, fontWeight: '300' }}>좋아요 표시된 여행지가 없습니다.</Text>
+                                </View>
                             }
                         </ScrollView>
                     </Animated.View>
 
                     {/* 테스트 버튼 */}
                     <Animated.View style={[styles.vectorIconContainer, { opacity: otherElementsOpacity }]}>
-                        <TouchableOpacity onPress={() => router.push('/test1')} style={[styles.vectorIconLayout, { marginRight: -25, position: 'relative', alignItems: 'center', justifyContent: 'center', gap: Dimensions.get('window').width * 0.02 }]}>
+                        <TouchableOpacity onPress={() => router.push(`/test1?testType=trip`)} style={[styles.vectorIconLayout, { marginRight: -25, position: 'relative', alignItems: 'center', justifyContent: 'center', gap: Dimensions.get('window').width * 0.02 }]}>
                             <Image source={require('@/assets/images/liquidButton.png')} style={[styles.vectorIcon, styles.vectorIconLayout, { position: 'absolute', top: 0, left: 0 }]} />
                             <Image source={require('@/assets/images/travelTest.png')} style={{ width: 74, height: 74 }} />
                             <Image source={require('@/assets/images/travelTestTitle.png')} style={{ width: Dimensions.get('window').width * 0.2, height: 17 }} contentFit="contain" />
                         </TouchableOpacity>
-                        <TouchableOpacity onPress={() => router.push('/test2')} style={[styles.vectorIconLayout, { marginLeft: -25, position: 'relative', alignItems: 'center', justifyContent: 'center', gap: Dimensions.get('window').width * 0.02 }]}>
+                        <TouchableOpacity onPress={() => router.push(`/test2?testType=love`)} style={[styles.vectorIconLayout, { marginLeft: -25, position: 'relative', alignItems: 'center', justifyContent: 'center', gap: Dimensions.get('window').width * 0.02 }]}>
                             <Image source={require('@/assets/images/liquidButton.png')} style={[styles.vectorIcon, styles.vectorIconLayout, { position: 'absolute', top: 0, left: 0 }]} />
                             <Image source={require('@/assets/images/relationshipTest.png')} style={{ width: 78, height: 70 }} />
                             <Image source={require('@/assets/images/relationshipTestTitle.png')} style={{ width: Dimensions.get('window').width * 0.2, height: 17 }} contentFit="contain" />
@@ -270,7 +320,9 @@ export default function Main() {
                         }}
                         contentFit="cover"
                     />
-                    <HeartActiveIcon style={{ position: 'absolute', top: 14, right: 19, width: 25, height: 25 }} />
+                    <Animated.View style={{ position: 'absolute', top: 14, right: 19, width: 25, height: 25, opacity: heartOpacity }}>
+                        <HeartActiveIcon style={{ width: 25, height: 25 }} />
+                    </Animated.View>
                     <View style={{ position: 'absolute', bottom: 18, width: '100%', alignItems: 'center' }}>
                         <Animated.View
                             style={{
@@ -299,247 +351,28 @@ export default function Main() {
             )}
 
             {/* Trip 콘텐츠 오버레이 - 애니메이션 완료 후 표시 */}
-            {showTripContent && selectedLocationIndex !== null && (() => {
-                const headerMaxHeight = 412;
-                const headerMinHeight = 138;
-                const headerHeight = scrollY.interpolate({
-                    inputRange: [0, headerMaxHeight - headerMinHeight],
-                    outputRange: [headerMaxHeight, headerMinHeight],
-                    extrapolate: 'clamp',
-                });
-
-                return (
-                    <View
-                        style={{
-                            position: 'absolute',
-                            top: 0,
-                            left: 0,
-                            right: 0,
-                            bottom: 0,
-                            zIndex: 2000,
-                        }}
-                    >
-                        {/* Sticky 헤더: 스크롤에 따라 412 -> 138로 축소 후 고정 */}
-                        <Animated.View
-                            style={{
-                                position: 'absolute',
-                                top: 0,
-                                left: 0,
-                                width: screenWidth,
-                                height: headerHeight,
-                                borderBottomLeftRadius: 24,
-                                borderBottomRightRadius: 24,
-                                overflow: 'hidden',
-                                zIndex: 10,
-                            }}
-                        >
-                            <Image
-                                source={Locations[selectedLocationIndex].image}
-                                style={{ width: '100%', height: '100%' }}
-                                contentFit="cover"
-                            />
-                            <View style={{ position: 'absolute', top: 60, width: '100%', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingHorizontal: 20 }}>
-                                <TouchableOpacity onPress={() => {
-                                    setShowTripContent(false)
-                                    resetAnimationState()
-                                }}>
-                                <BackArrowIcon style={{ width: 25, height: 25 }} />
-                                </TouchableOpacity>
-                                <HeartActiveIcon style={{ width: 25, height: 25 }} />
-                            </View>
-                            <View style={{ gap: 7, position: 'absolute', bottom: 18, width: '100%', alignItems: 'center' }}>
-                                <View
-                                    style={{ width: 32, height: 32 }}
-                                >
-                                    <Image
-                                        source={require('@/assets/images/marker.png')}
-                                        style={{ width: '100%', height: '100%' }}
-                                        contentFit="contain"
-                                    />
-                                </View>
-                                <Text
-                                    style={{ fontSize: 24, fontWeight: 600, color: '#FFF' }}
-                                >
-                                    {Locations[selectedLocationIndex].name}
-                                </Text>
-                            </View>
-                        </Animated.View>
-
-                        {/* 본문 스크롤: 헤더 높이만큼 상단 패딩을 두어 콘텐츠가 헤더 아래에서 시작 */}
-                        <Animated.ScrollView
-                            style={{ flex: 1 }}
-                            contentContainerStyle={{ paddingTop: headerMaxHeight }}
-                            scrollEventThrottle={16}
-                            onScroll={Animated.event(
-                                [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-                                { useNativeDriver: false }
-                            )}
-                        >
-                            <View style={{ minHeight: Dimensions.get('window').height * 2, position: 'relative' }}>
-                                <View style={locationTopStyles.view}>
-                                    <Text style={locationTopStyles.text}>추천지수</Text>
-                                    <Rating rating={4} />
-                                </View>
-
-                                <View style={{ width: '100%', paddingHorizontal: 11, marginTop: 9 }}>
-                                    <Image source={require('@/assets/images/ad.png')} style={adBannerStyles.rectangleIcon} resizeMode="cover" />
-                                </View>
-
-                                <View style={filterStyles.view}>
-                                    <View style={[filterStyles.view2, filterStyles.viewPosition]}>
-                                        <View style={[filterStyles.view3, filterStyles.viewPosition]} />
-                                        <Text style={[filterStyles.text, filterStyles.textTypo]}>선택해주세요</Text>
-                                        <Text style={[filterStyles.safeareaviewText, filterStyles.textTypo]}>여행 타입</Text>
-                                        {/* <Component1 style={filterStyles.adjustmentsoutlineIcon} width={25} height={24} /> */}
-                                    </View>
-                                    <View style={[filterStyles.view4, filterStyles.viewPosition]}>
-                                        <View style={[filterStyles.view3, filterStyles.viewPosition]} />
-                                        <Text style={[filterStyles.text, filterStyles.textTypo]}>선택해주세요</Text>
-                                        <Text style={[filterStyles.safeareaviewText, filterStyles.textTypo]}>연애 타입</Text>
-                                        {/* <Component7 style={filterStyles.adjustmentsoutlineIcon} width={25} height={24} /> */}
-                                    </View>
-                                </View>
-
-                                <View style={{ marginTop: 30, paddingHorizontal: 27, overflow: 'visible' }}>
-                                    <View style={userCardStyles.grid}>
-                                        {UserDummy.map((item, index) => (
-                                            <View key={`${item.nickname}-${index}`} style={[userCardStyles.cardWrapper, { width: cardContainerWidth }]}>
-                                                <View style={[userCardStyles.view]}>
-                                                    <View style={[userCardStyles.child, { backgroundColor: item.backgroundColor }]} />
-                                                    <View style={userCardStyles.view2}>
-                                                        <Text style={[userCardStyles.text, userCardStyles.textTypo]}>{item.nickname}</Text>
-                                                        <Text style={[userCardStyles.text2, userCardStyles.textTypo]}>{item.introduction}</Text>
-                                                    </View>
-                                                    <View style={userCardStyles.view3}>
-                                                        <Text style={[userCardStyles.text3, userCardStyles.text3Typo]}>{item.favorite}</Text>
-                                                    </View>
-                                                    <Image source={item.image} style={userCardStyles.item} />
-                                                    <View style={[userCardStyles.view4, userCardStyles.view4Position]}>
-                                                        <View style={[userCardStyles.inner, userCardStyles.view4Position]} />
-                                                        <Text style={[userCardStyles.follow, userCardStyles.text3Typo]}>{item.follow}</Text>
-                                                    </View>
-                                                </View>
-                                            </View>
-                                        ))}
-                                    </View>
-                                </View>
-                            </View>
-                        </Animated.ScrollView>
-                    </View>
-                );
-            })()}
+            {showTripContent && selectedLocationIndex !== null && (
+                <LocationDetailOverlay
+                    location={Locations[selectedLocationIndex]}
+                    scrollY={scrollY}
+                    onClose={() => {
+                        setShowTripContent(false);
+                        resetAnimationState();
+                    }}
+                                    tripType={tripType}
+                                    loveType={loveType}
+                                    setTripType={(tripType: string) => {
+                                        console.log('tripType', tripType);
+                                        setTripType(tripType);
+                                    }}
+                                    setLoveType={(loveType: string) => setLoveType(loveType)}
+                    filteredUsers={filteredUsers}
+                    cardContainerWidth={cardContainerWidth}
+                />
+                                        )}
         </View>
     )
 }
-
-const userCardStyles = StyleSheet.create({
-    parent: {
-        flex: 1
-    },
-    grid: {
-        flexDirection: "row",
-        flexWrap: "wrap",
-        justifyContent: "space-between"
-    },
-    cardWrapper: {
-        marginBottom: 15
-    },
-    textTypo: {
-        textAlign: "left",
-        color: "#000",
-        fontFamily: "NanumSquare Neo",
-        fontSize: 14,
-        width: 133,
-        left: "50%",
-        marginLeft: -66.5,
-        position: "absolute"
-    },
-    text3Typo: {
-        textAlign: "center",
-        color: "#000",
-        fontFamily: "NanumSquare Neo",
-        position: "absolute"
-    },
-    view4Position: {
-        height: 29,
-        width: 137,
-        marginLeft: -68.5,
-        left: "50%",
-        position: "absolute"
-    },
-    view: {
-        height: 232,
-        width: "100%",
-        flex: 1
-    },
-    child: {
-        height: "100%",
-        top: "0%",
-        right: "0%",
-        bottom: "0%",
-        boxShadow: "0px 0px 18px rgba(0, 0, 0, 0.15)",
-        elevation: 18,
-        borderRadius: 20,
-        left: "0%",
-        position: "absolute",
-        width: "100%"
-    },
-    view2: {
-        top: 108,
-        height: 37,
-        width: 133,
-        left: "50%",
-        marginLeft: -66.5,
-        position: "absolute"
-    },
-    text: {
-        top: 0,
-        fontWeight: "800"
-    },
-    text2: {
-        top: 22
-    },
-    view3: {
-        width: "35.93%",
-        right: "31.74%",
-        bottom: 49,
-        left: "32.34%",
-        height: 14,
-        position: "absolute"
-    },
-    text3: {
-        fontSize: 13,
-        fontWeight: "300",
-        bottom: 0,
-        left: "0%"
-    },
-    item: {
-        top: 17,
-        left: 15,
-        width: 76,
-        height: 76,
-        color: "#fff",
-        position: "absolute"
-    },
-    view4: {
-        bottom: 11
-    },
-    inner: {
-        boxShadow: "0px 0px 10.2px #fff",
-        elevation: 10.2,
-        borderRadius: 15,
-        backgroundColor: "#fff",
-        bottom: 0
-    },
-    follow: {
-        marginLeft: -23.5,
-        bottom: 7,
-        fontWeight: "800",
-        fontSize: 14,
-        textAlign: "center",
-        left: "50%"
-    }
-});
 
 const filterStyles = StyleSheet.create({
     viewPosition: {
@@ -590,16 +423,6 @@ const filterStyles = StyleSheet.create({
     },
     view4: {
         marginLeft: 10
-    }
-});
-
-const adBannerStyles = StyleSheet.create({
-    rectangleIcon: {
-        width: "100%",
-        height: 72,
-        maxWidth: "100%",
-        overflow: "hidden",
-        borderRadius: 10,
     }
 });
 
@@ -1064,33 +887,5 @@ const styles = StyleSheet.create({
         color: "#f3f3f3",
         left: "12.5%",
         maxWidth: "100%"
-    }
-});
-
-const locationTopStyles = StyleSheet.create({
-    safeareaview: {
-        flex: 1
-    },
-    view: {
-        width: "100%",
-        height: 28,
-        alignItems: 'center',
-        justifyContent: 'flex-end',
-        flexDirection: 'row',
-        marginTop: 17.39,
-        paddingHorizontal: 21.32,
-        gap: 6
-    },
-    ratingStars: {
-        width: 108,
-        height: 28
-    },
-    text: {
-        fontSize: 12,
-        lineHeight: 22,
-        fontWeight: "300",
-        fontFamily: "NanumSquare Neo",
-        color: "#000",
-        textAlign: "left"
     }
 });

@@ -1,7 +1,7 @@
 import { Image, StyleSheet, Text, View, Animated } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { router, useRouter } from "expo-router";
+import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { default as ReAnimated, interpolate, useAnimatedStyle, withTiming } from "react-native-reanimated";
 import LiquidGlassButton from "@/components/LiquidGlassButton";
 import { Chapter, QAFormType } from "@/constants/QAForm";
@@ -49,7 +49,7 @@ const Result_Loading_Screen = () => {
     )
 }
 
-const Result_Screen = () => {
+const Result_Screen = ({ testType, type }: { testType: string, type: string }) => {
     const isDirectionX = false
     const DELAY = 600
 
@@ -99,33 +99,50 @@ const Result_Screen = () => {
 
     return (
         <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-            <ReAnimated.Image style={[regularCardAnimatedStyle, { width: 267, height: 461, opacity: regularCardOpacity }]} source={require('@/assets/images/result_example.png')} />
-            <ReAnimated.Image style={[flippedCardAnimatedStyle, { width: 267, height: 461, marginTop: -461, opacity: flippedCardOpacity }]} source={require('@/assets/images/result_example2.png')} />
-            <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center', gap: 10, position: 'absolute', bottom: 0, flexDirection: 'row' }}>
-                <LiquidGlassButton
-                    style={{ width: '40%' }}
-                    text='뒷장보기'
-                    backgroundColor="#FF5878"
-                    onPress={() => {
-                        if (isFlipping) return;
-                        setIsFlipped(prev => !prev);
-                    }}
-                />
-                <LiquidGlassButton
-                    style={{ width: '40%' }}
-                    text='다음 테스트'
-                    backgroundColor="#FF5878"
-                    onPress={() => {
-                        router.push('/test2');
-                    }}
-                />
+            {/* <ReAnimated.Image style={[regularCardAnimatedStyle, { width: 267, height: 461, opacity: regularCardOpacity }]} source={require('@/assets/images/result_example.png')} />
+            <ReAnimated.Image style={[flippedCardAnimatedStyle, { width: 267, height: 461, marginTop: -461, opacity: flippedCardOpacity }]} source={require('@/assets/images/result_example2.png')} /> */}
+            <Text>{type}</Text>
 
-            </View>
+
+            {testType === 'trip' ?
+                <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center', gap: 10, position: 'absolute', bottom: 0, flexDirection: 'row' }}>
+                    <LiquidGlassButton
+                        style={{ width: '40%' }}
+                        text='뒷장보기'
+                        backgroundColor="#FF5878"
+                        onPress={() => {
+                            if (isFlipping) return;
+                            setIsFlipped(prev => !prev);
+                        }}
+                    />
+                    <LiquidGlassButton
+                        style={{ width: '40%' }}
+                        text='다음 테스트'
+                        backgroundColor="#FF5878"
+                        onPress={() => {
+                            router.push('/test2');
+                        }}
+                    />
+                </View>
+                :
+                <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center', gap: 10, position: 'absolute', bottom: 0, flexDirection: 'row', paddingHorizontal: 20 }}>
+                    <LiquidGlassButton
+                        style={{ width: '100%' }}
+                        text='홈으로'
+                        backgroundColor="#FF5878"
+                        onPress={() => {
+                            router.push('/(tabs)/main');
+                        }}
+                    />
+                </View>
+            }
         </View>
     )
 }
 
 export default function TestResult() {
+    const { testType } = useLocalSearchParams();
+
     const router = useRouter();
 
     const [step, setStep] = useState<number>(1);
@@ -147,16 +164,16 @@ export default function TestResult() {
         try {
             // AsyncStorage에서 form 데이터 읽기
             const formData = await AsyncStorage.getItem('testFormData');
-            
+
             if (!formData) {
-                console.error('Form 데이터가 없습니다.');
+                // console.error('Form 데이터가 없습니다.');
                 return;
             }
 
             console.log('loaded form data length:', formData.length);
-            
+
             calculateResult(formData);
-            
+
             // 사용 후 AsyncStorage에서 삭제 (선택사항)
             await AsyncStorage.removeItem('testFormData');
         } catch (error) {
@@ -166,7 +183,7 @@ export default function TestResult() {
 
     const calculateResult = (formString: string) => {
         if (!formString || formString.trim() === '') {
-            console.error('Form 문자열이 비어있습니다.');
+            // console.error('Form 문자열이 비어있습니다.');
             return;
         }
 
@@ -178,25 +195,34 @@ export default function TestResult() {
                 chapter.questions.forEach((question, questionIndex) => {
                     question.answers.forEach((answer, answerIndex) => {
                         // 여러 개 선택된 답변들 모두 반영
-                        if(answer.selected === true) {ㄱ
+                        if (answer.selected === true) {
+                            console.log('answer.type', answer.type)
+                            console.log('parsedForm.resultTypes[answer.type]', parsedForm.resultTypes[answer.type])
+                            console.log('answer', answer)
+
                             parsedForm.resultTypes[answer.type].score += answer.score;
                         }
                     })
                 })
             })
             setResult(parsedForm);
-            
+
             // 최고 점수를 가진 타입 찾기
             let maxScore = 0;
             let maxScoreType = ''
             Object.keys(parsedForm.resultTypes).forEach(type => {
-                const score = parsedForm.resultTypes[type].score;
-                if(score > maxScore) {
+                if(parsedForm.resultTypes[type]?.score === undefined) {
+                    console.log('type', type, 'score is undefined');
+                    return
+                }
+                const score = parsedForm.resultTypes[type]?.score;
+                if (score > maxScore) {
                     maxScore = score;
                     maxScoreType = type;
                 }
             })
             setType(maxScoreType)
+            AsyncStorage.setItem(testType as string + 'Type', maxScoreType);
 
             console.log('\n\n\n계산결과 : ', maxScoreType, '점수:', maxScore);
         } catch (error) {
@@ -207,7 +233,7 @@ export default function TestResult() {
 
     return (
         <SafeAreaView style={{ flex: 1, justifyContent: 'center', alignItems: 'center', gap: 4, backgroundColor: '#fff', position: 'relative' }}>
-            {step === 1 ? <Result_Loading_Screen /> : <Result_Screen />}
+            {step === 1 ? <Result_Loading_Screen /> : <Result_Screen testType={testType as string || ''} type={type || ''} />}
         </SafeAreaView>
     )
 }

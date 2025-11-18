@@ -1,16 +1,18 @@
 import CalendarInactiveIcon from '@/assets/images/calendarLightGray.svg';
 import CalendarActiveIcon from '@/assets/images/calendarDarkGray.svg';
 import ChangeEachOtherIcon from '@/assets/images/changeEachOther.svg';
+import HeartActiveIcon from '@/assets/images/heartActive.svg';
 import DateSelect from "@/components/trip/DateSelect";
 import LocationSelect from "@/components/trip/LocationSelect";
 import TypeSelect from "@/components/trip/TypeSelect";
-import LocationCard from "@/components/ui/LocationCard";
+import LocationCard, { LOCATION_CARD_FONT_SIZE, LOCATION_CARD_MARKER_SIZE } from "@/components/ui/LocationCard";
+import LocationDetailOverlay from "@/components/ui/LocationDetailOverlay";
 import UserDummy from "@/constants/UserDummy";
 import { changeToThreeLetter } from "@/utils/changeToThreeLetter";
 import dayjs from "dayjs";
 import { Image, ImageSource } from "expo-image";
-import { useEffect, useRef, useState } from "react";
-import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { useEffect, useRef, useState, useMemo } from "react";
+import { Dimensions, ScrollView, StyleSheet, Text, TouchableOpacity, View, Animated, Easing } from "react-native";
 import { router } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -41,6 +43,12 @@ export default function Trip() {
     const [dateSelectOpen, setDateSelectOpen] = useState(false);
     const [searchResult, setSearchResult] = useState<boolean>(false);
     const [filteredUserList, setFilteredUserList] = useState<any[]>([]);
+    const [selectedLocation, setSelectedLocation] = useState<LocationCardItem | null>(null);
+    const [cardLayout, setCardLayout] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
+    const [showTripContent, setShowTripContent] = useState(false);
+    const [keepExpandedCardVisible, setKeepExpandedCardVisible] = useState(false);
+    const [tripType, setTripType] = useState<string | undefined>(undefined);
+    const [loveType, setLoveType] = useState<string | undefined>(undefined);
 
     const scrollRef = useRef<ScrollView>(null);
 
@@ -67,13 +75,8 @@ export default function Trip() {
 
     const evenCardList: CardItem[] = [
         {
+            ...UserDummy[0],
             type: 'user',
-            nickname: '닉네임',
-            introduction: '한줄소개',
-            favorite: '#연애취향',
-            image: require('@/assets/images/userIcon.png'),
-            follow: 'Follow',
-            backgroundColor: '#ffd8e4',
         },
         {
             type: 'location',
@@ -86,13 +89,8 @@ export default function Trip() {
             image: require('@/assets/images/location/sydney.png'),
         },
         {
+            ...UserDummy[1],
             type: 'user',
-            nickname: '닉네임',
-            introduction: '한줄소개',
-            favorite: '#연애취향',
-            image: require('@/assets/images/userIcon.png'),
-            follow: 'Follow',
-            backgroundColor: '#C9FFF5',
         },
         {
             type: 'location',
@@ -113,13 +111,8 @@ export default function Trip() {
             image: require('@/assets/images/location/singapore.png'),
         },
         {
+            ...UserDummy[2],
             type: 'user',
-            nickname: '닉네임',
-            introduction: '한줄소개',
-            favorite: '#연애취향',
-            image: require('@/assets/images/userIcon.png'),
-            follow: 'Follow',
-            backgroundColor: '#C9FFF5',
         },
         {
             type: 'location',
@@ -132,6 +125,173 @@ export default function Trip() {
             image: require('@/assets/images/location/rome.png'),
         },
     ]
+
+    // 모든 location card 추출
+    const allLocationCards = useMemo(() => {
+        return [...evenCardList, ...oddCardList].filter((item): item is LocationCardItem => item.type === 'location');
+    }, []);
+
+    // 선택된 타입에 따라 필터링된 사용자 목록
+    const filteredUsers = useMemo(() => {
+        let users = UserDummy;
+
+        if (tripType) {
+            users = users.filter(user => user.tripType === tripType);
+        }
+
+        if (loveType) {
+            users = users.filter(user => user.loveType === loveType);
+        }
+
+        return users;
+    }, [tripType, loveType]);
+
+    // 애니메이션 관련 ref
+    const animatedWidth = useRef(new Animated.Value(189)).current;
+    const animatedHeight = useRef(new Animated.Value(261)).current;
+    const animatedTop = useRef(new Animated.Value(0)).current;
+    const animatedLeft = useRef(new Animated.Value(0)).current;
+    const animatedOpacity = useRef(new Animated.Value(0)).current;
+    const otherElementsOpacity = useRef(new Animated.Value(1)).current;
+    const initialMarkerSize = LOCATION_CARD_MARKER_SIZE;
+    const expandedMarkerSize = LOCATION_CARD_MARKER_SIZE;
+    const initialTextFontSize = LOCATION_CARD_FONT_SIZE;
+    const expandedTextFontSize = 24;
+    const markerSize = useRef(new Animated.Value(initialMarkerSize)).current;
+    const textFontSize = useRef(new Animated.Value(initialTextFontSize)).current;
+    const heartOpacity = useRef(new Animated.Value(1)).current;
+    const scrollY = useRef(new Animated.Value(0)).current;
+    const cardRefs = useRef<{ [key: string]: View | null }>({});
+    const screenWidth = Dimensions.get('window').width;
+    const screenHeight = Dimensions.get('window').height;
+    const overlayTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+    const cardContainerWidth = (screenWidth - 54 - 15) / 2;
+
+    useEffect(() => {
+        return () => {
+            if (overlayTimeoutRef.current) {
+                clearTimeout(overlayTimeoutRef.current);
+            }
+        };
+    }, []);
+
+    const resetAnimationState = () => {
+        // 기본 값으로 복구
+        animatedOpacity.setValue(0);
+        otherElementsOpacity.setValue(1);
+        animatedWidth.setValue(189);
+        animatedHeight.setValue(261);
+        animatedTop.setValue(0);
+        animatedLeft.setValue(0);
+        markerSize.setValue(initialMarkerSize);
+        textFontSize.setValue(initialTextFontSize);
+        heartOpacity.setValue(1);
+        scrollY.setValue(0);
+        setSelectedLocation(null);
+        setCardLayout(null);
+        setShowTripContent(false);
+        setKeepExpandedCardVisible(false);
+        if (overlayTimeoutRef.current) {
+            clearTimeout(overlayTimeoutRef.current);
+            overlayTimeoutRef.current = null;
+        }
+    };
+
+    const handleCardPress = (locationItem: LocationCardItem, cardKey: string) => {
+        const cardRef = cardRefs.current[cardKey];
+        if (!cardRef) return;
+
+        cardRef.measureInWindow((x, y, width, height) => {
+            setCardLayout({ x, y, width, height });
+            setSelectedLocation(locationItem);
+            setKeepExpandedCardVisible(false);
+            if (overlayTimeoutRef.current) {
+                clearTimeout(overlayTimeoutRef.current);
+                overlayTimeoutRef.current = null;
+            }
+
+            // 애니메이션 초기값 설정
+            animatedWidth.setValue(width);
+            animatedHeight.setValue(height);
+            animatedTop.setValue(y);
+            animatedLeft.setValue(x);
+            animatedOpacity.setValue(1);
+            markerSize.setValue(initialMarkerSize);
+            textFontSize.setValue(initialTextFontSize);
+            heartOpacity.setValue(1);
+
+            // 다른 요소들 opacity 1->0 애니메이션 (숨김)
+            Animated.parallel([
+                Animated.timing(otherElementsOpacity, {
+                    toValue: 0,
+                    duration: 300,
+                    useNativeDriver: true,
+                }),
+                Animated.timing(heartOpacity, {
+                    toValue: 0,
+                    duration: 300,
+                    useNativeDriver: true,
+                }),
+            ]).start(() => {
+                // 첫 번째 애니메이션 완료 후, 카드를 상단 중앙으로 이동하고 크기 변경
+                const targetWidth = screenWidth; // 100vw
+                const targetHeight = 412;
+                const targetTop = 0; // 최상단
+                const targetLeft = 0; // 중앙정렬 (width가 100%이므로)
+
+                Animated.parallel([
+                    Animated.timing(animatedWidth, {
+                        toValue: targetWidth,
+                        duration: 1000,
+                        easing: Easing.bezier(0.76, 0.14, 0.43, 1.01),
+                        useNativeDriver: false, // width/height는 native driver 사용 불가
+                    }),
+                    Animated.timing(animatedHeight, {
+                        toValue: targetHeight,
+                        duration: 1000,
+                        easing: Easing.bezier(0.76, 0.14, 0.43, 1.01),
+                        useNativeDriver: false,
+                    }),
+                    Animated.timing(animatedTop, {
+                        toValue: targetTop,
+                        duration: 1000,
+                        easing: Easing.bezier(0.76, 0.14, 0.43, 1.01),
+                        useNativeDriver: false,
+                    }),
+                    Animated.timing(animatedLeft, {
+                        toValue: targetLeft,
+                        duration: 1000,
+                        easing: Easing.bezier(0.76, 0.14, 0.43, 1.01),
+                        useNativeDriver: false,
+                    }),
+                    Animated.timing(markerSize, {
+                        toValue: expandedMarkerSize,
+                        duration: 1000,
+                        easing: Easing.bezier(0.76, 0.14, 0.43, 1.01),
+                        useNativeDriver: false,
+                    }),
+                    Animated.timing(textFontSize, {
+                        toValue: expandedTextFontSize,
+                        duration: 1000,
+                        easing: Easing.bezier(0.76, 0.14, 0.43, 1.01),
+                        useNativeDriver: false,
+                    }),
+                ]).start(() => {
+                    scrollY.setValue(0);
+                    if (overlayTimeoutRef.current) {
+                        clearTimeout(overlayTimeoutRef.current);
+                    }
+                    setKeepExpandedCardVisible(true);
+                    // 모든 애니메이션 완료 후 trip 콘텐츠 표시 (라우팅 없이 같은 화면에서 처리)
+                    setShowTripContent(true);
+                    overlayTimeoutRef.current = setTimeout(() => {
+                        setKeepExpandedCardVisible(false);
+                        overlayTimeoutRef.current = null;
+                    }, 120);
+                });
+            });
+        });
+    };
 
     useEffect(() => {
         if (!locationSelectOpen) {
@@ -160,14 +320,14 @@ export default function Trip() {
                 && (selectedForm.dateType === 'day' ? user.period.includes(selectedForm.period) : true)
                 && (selectedForm.dateType === 'day' ? user.month.includes(selectedForm.month ?? 'none') : true)
         });
-        console.log('filteredUserList', filteredUserList);
         setFilteredUserList(filteredUserList);
     }
 
 
     return !searchResult ? (
         <View>
-            <ScrollView ref={scrollRef} style={{ position: 'relative', height: '110%', paddingTop: 80 }} contentContainerStyle={{ paddingBottom: 150 }}>
+            <Animated.View style={{ opacity: otherElementsOpacity }}>
+                <ScrollView ref={scrollRef} style={{ position: 'relative', height: '110%', paddingTop: 80 }} contentContainerStyle={{ paddingBottom: 150 }}>
                 <View style={[topStyles.view0]}>
                     <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                         <Text style={topStyles.text}>검색</Text>
@@ -328,54 +488,66 @@ export default function Trip() {
 
                 <View style={{ width: '100%', paddingHorizontal: 20, flexDirection: 'row', gap: 10, position: 'relative', marginTop: 28 }}>
                     <View style={{ width: '48.5%', minHeight: 200, gap: 15 }}>
-                        {evenCardList.map((item, index) => (
+                        {evenCardList.map((item: any, index) => (
                             <View key={index} style={{ width: '100%' }}>
                                 {item.type === 'user' ? (
-                                    <View style={userCardStyles.view}>
+                                    <View style={[userCardStyles.view]}>
                                         <View style={userCardStyles.view2} />
-                                        <View style={[userCardStyles.vectorParent, userCardStyles.vectorLayout]}>
-                                            <Image source={item.image} style={[userCardStyles.vectorIcon, userCardStyles.vectorLayout]} />
-                                            <Text style={userCardStyles.text}>닉네임</Text>
-                                            <Text style={userCardStyles.safeareaviewText}>한 줄 소개</Text>
+                                        <View style={[userCardStyles.vectorParent, userCardStyles.vectorLayout, { paddingRight: 10}]}>
+                                            <Image source={item.image} style={[userCardStyles.vectorIcon, userCardStyles.vectorLayout, { borderRadius: 100 }]} />
+                                            <Text style={userCardStyles.text}>{item.nickname}</Text>
+                                            <Text style={[userCardStyles.safeareaviewText]}>{item.introduction}</Text>
                                         </View>
                                         <View style={userCardStyles.parent}>
-                                            <Text style={[userCardStyles.text2, userCardStyles.textTypo]}>#여행 타입</Text>
-                                            <Text style={[userCardStyles.text3, userCardStyles.textTypo]}>#연애 타입</Text>
+                                            <Text style={[userCardStyles.text2, userCardStyles.textTypo]}>{`#${item?.tripType}`}</Text>
+                                            <Text style={[userCardStyles.text3, userCardStyles.textTypo]}>{`#${item?.loveType}`}</Text>
                                         </View>
                                     </View>
                                 ) : (
-                                    <LocationCard
-                                        image={item.image}
-                                        name={item.name}
-                                        containerStyle={{ width: '100%', height: Dimensions.get('window').width * 0.6, aspectRatio: 189 / 261 }}
-                                    />
+                                    <TouchableOpacity
+                                        onPress={() => handleCardPress(item, `even-${index}`)}
+                                        activeOpacity={1}
+                                    >
+                                        <LocationCard
+                                            ref={(ref) => { cardRefs.current[`even-${index}`] = ref; }}
+                                            image={item.image}
+                                            name={item.name}
+                                            containerStyle={{ width: '100%', height: Dimensions.get('window').width * 0.6, aspectRatio: 189 / 261 }}
+                                        />
+                                    </TouchableOpacity>
                                 )}
                             </View>
                         ))}
                     </View>
 
                     <View style={{ width: '48.5%', minHeight: 200, gap: 15 }}>
-                        {oddCardList.map((item, index) => (
+                        {oddCardList.map((item: any, index) => (
                             <View key={index} style={{ width: '100%' }}>
                                 {item.type === 'user' ? (
                                     <View style={userCardStyles.view}>
                                         <View style={userCardStyles.view2} />
-                                        <View style={[userCardStyles.vectorParent, userCardStyles.vectorLayout]}>
-                                            <Image source={item.image} style={[userCardStyles.vectorIcon, userCardStyles.vectorLayout]} />
-                                            <Text style={userCardStyles.text}>닉네임</Text>
-                                            <Text style={userCardStyles.safeareaviewText}>한 줄 소개</Text>
+                                        <View style={[userCardStyles.vectorParent, userCardStyles.vectorLayout, { paddingRight: 10}]}>
+                                            <Image source={item.image} style={[userCardStyles.vectorIcon, userCardStyles.vectorLayout, { borderRadius: 100 }]} />
+                                            <Text style={userCardStyles.text}>{item.nickname}</Text>
+                                            <Text style={userCardStyles.safeareaviewText}>{item.introduction}</Text>
                                         </View>
                                         <View style={userCardStyles.parent}>
-                                            <Text style={[userCardStyles.text2, userCardStyles.textTypo]}>#여행 타입</Text>
-                                            <Text style={[userCardStyles.text3, userCardStyles.textTypo]}>#연애 타입</Text>
+                                            <Text style={[userCardStyles.text2, userCardStyles.textTypo]}>{`#${item?.tripType}`}</Text>
+                                            <Text style={[userCardStyles.text3, userCardStyles.textTypo]}>{`#${item?.loveType}`}</Text>
                                         </View>
                                     </View>
                                 ) : (
-                                    <LocationCard
-                                        image={item.image}
-                                        name={item.name}
-                                        containerStyle={{ width: "100%", height: Dimensions.get('window').width * 0.6, aspectRatio: 189 / 261 }}
-                                    />
+                                    <TouchableOpacity
+                                        onPress={() => handleCardPress(item, `odd-${index}`)}
+                                        activeOpacity={1}
+                                    >
+                                        <LocationCard
+                                            ref={(ref) => { cardRefs.current[`odd-${index}`] = ref; }}
+                                            image={item.image}
+                                            name={item.name}
+                                            containerStyle={{ width: "100%", height: Dimensions.get('window').width * 0.6, aspectRatio: 189 / 261 }}
+                                        />
+                                    </TouchableOpacity>
                                 )}
                             </View>
                         ))}
@@ -383,6 +555,82 @@ export default function Trip() {
 
                 </View>
             </ScrollView>
+            </Animated.View>
+
+            {/* 클릭된 카드의 absolute positioned 컴포넌트 */}
+            {selectedLocation && cardLayout && (!showTripContent || keepExpandedCardVisible) && (
+                <Animated.View
+                    style={{
+                        width: animatedWidth,
+                        height: animatedHeight,
+                        position: 'absolute',
+                        top: animatedTop,
+                        left: animatedLeft,
+                        borderRadius: 24,
+                        overflow: 'hidden',
+                        zIndex: 1000,
+                        opacity: animatedOpacity,
+                    }}
+                    pointerEvents="box-none"
+                >
+                    <Image
+                        source={selectedLocation.image}
+                        style={{
+                            width: '100%',
+                            height: '100%',
+                        }}
+                        contentFit="cover"
+                    />
+                    <Animated.View style={{ position: 'absolute', top: 14, right: 19, width: 25, height: 25, opacity: heartOpacity }}>
+                        <HeartActiveIcon style={{ width: 25, height: 25 }} />
+                    </Animated.View>
+                    <View style={{ position: 'absolute', bottom: 18, width: '100%', alignItems: 'center' }}>
+                        <Animated.View
+                            style={{
+                                width: markerSize,
+                                height: markerSize,
+                            }}
+                        >
+                            <Image
+                                source={require('@/assets/images/marker.png')}
+                                style={{ width: '100%', height: '100%' }}
+                                contentFit="contain"
+                            />
+                        </Animated.View>
+                        <Animated.Text
+                            style={{
+                                marginTop: 7,
+                                fontSize: textFontSize,
+                                fontWeight: 600,
+                                color: '#FFF',
+                            }}
+                        >
+                            {selectedLocation.name}
+                        </Animated.Text>
+                    </View>
+                </Animated.View>
+            )}
+
+            {/* Trip 콘텐츠 오버레이 - 애니메이션 완료 후 표시 */}
+            {showTripContent && selectedLocation && (
+                <LocationDetailOverlay
+                    location={selectedLocation}
+                    scrollY={scrollY}
+                    onClose={() => {
+                        setShowTripContent(false);
+                        resetAnimationState();
+                    }}
+                    tripType={tripType}
+                    loveType={loveType}
+                    setTripType={(tripType: string) => {
+                        console.log('tripType', tripType);
+                        setTripType(tripType);
+                    }}
+                    setLoveType={(loveType: string) => setLoveType(loveType)}
+                    filteredUsers={filteredUsers}
+                    cardContainerWidth={cardContainerWidth}
+                />
+            )}
         </View>
     ) : (
         <View>
@@ -409,7 +657,7 @@ export default function Trip() {
                                         <View style={userCardStyles2.view3}>
                                             <Text style={[userCardStyles2.text2, userCardStyles2.textTypo]}>{`#${item.loveType}`}</Text>
                                         </View>
-                                        <Image source={item.image} style={userCardStyles2.groupItem} />
+                                        <Image source={item.image} style={[userCardStyles2.groupItem, { borderRadius: 100 }]} />
                                         <TouchableOpacity onPress={() => router.push(`/chatDetail?id=${item.id}`)} style={[userCardStyles2.view4, userCardStyles2.view4Layout]}>
                                             <View style={[userCardStyles2.child, userCardStyles2.view4Layout]} />
                                             <Text style={[userCardStyles2.smallTalk, userCardStyles2.smallTalkTypo]}>Small Talk</Text>
@@ -646,7 +894,8 @@ const userCardStyles = StyleSheet.create({
     view: {
         width: "100%",
         elevation: 7,
-        height: 104,
+        minHeight: 104,
+        overflow: 'hidden',
     },
     view2: {
         borderRadius: 24,
@@ -701,10 +950,10 @@ const userCardStyles = StyleSheet.create({
         position: "absolute"
     },
     text2: {
-        left: 0
+        left: -10
     },
     text3: {
-        left: 69
+        left: 60
     }
 });
 

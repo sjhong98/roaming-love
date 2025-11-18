@@ -149,7 +149,7 @@ export default function ExploreSearch() {
                                 style={{ width: '100%', position: 'relative', borderColor: "#b3b3b3", borderBottomWidth: 0.5, paddingTop: 10, paddingLeft: 21, paddingRight: 13, flexDirection: 'row', gap: 13, paddingBottom: 10, zIndex: 1 }}
                             >
                                 <View style={{ width: 45 }}>
-                                    <Image source={require('@/assets/images/userIcon.png')} style={[postStyles.item, postStyles.itemPosition]} resizeMode="cover" />
+                                    <Image source={item?.user?.image ? { uri: item?.user?.image } : require('@/assets/images/userIcon.png')} style={[postStyles.item, postStyles.itemPosition]} resizeMode="cover" />
                                 </View>
                                 <View style={{ width: '100%' }}>
                                     <View style={[postStyles.view2, { height: 'auto', width: '100%', position: 'relative' }]}>

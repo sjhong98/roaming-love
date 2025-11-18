@@ -1,13 +1,15 @@
 import Login from "@/components/main/Login";
 import Splash from "@/components/main/Splash";
 import useUser from "@/hooks/use-user";
-import { router, useRouter } from "expo-router";
+import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated";
 
 export default function Index() {
   const { user } = useUser();
+  const { login } = useLocalSearchParams<{ login: string }>();
+
   const [isSplashScreen, setIsSplashScreen] = useState(true);
   const screenHeight = Dimensions.get('window').height;
 
@@ -23,16 +25,19 @@ export default function Index() {
   // }, [])
 
   useEffect(() => {
-    if(user === undefined) return;
-
-    setTimeout(() => {
-      if (user) {
-        router.replace('/(tabs)/main')
-      } else {
-        setIsSplashScreen(false);
-      }
-    }, 1500);
-  }, [user]);
+    console.log('login', login)
+    if (login) {
+      setIsSplashScreen(false)
+    } else {
+      setTimeout(() => {
+        if (user) {
+          router.replace('/(tabs)/main')
+        } else {
+          setIsSplashScreen(false);
+        }
+      }, 1500);
+    }
+  }, [user, login]);
 
   useEffect(() => {
     if (!isSplashScreen) {

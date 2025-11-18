@@ -74,7 +74,7 @@ export default function ChatDetail() {
                                 ) : (
                                     <View style={{ flexDirection: 'row', gap: 16 }}>
                                         <TouchableOpacity onPress={() => router.push(`/userProfile?id=${chatObj.id}`)}>
-                                            <Image source={chatObj.image} style={{ width: 45, height: 45, minWidth: 45, minHeight: 45, maxWidth: '100%' }} contentFit="cover" />
+                                            <Image source={[chatObj.image]} style={{ width: 45, height: 45, minWidth: 45, minHeight: 45, maxWidth: '100%', borderRadius: 100 }} contentFit="cover" />
                                         </TouchableOpacity>
                                         <View style={{ backgroundColor: '#E6E6E6', borderRadius: 10, borderBottomLeftRadius: 0, padding: 8, maxWidth: '80%' }}>
                                             <Text>{chatItem.text}</Text>

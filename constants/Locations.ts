@@ -11,7 +11,7 @@ const Locations = [
     },
     {
         id: 4,
-        name: 'New York, United States',
+        name: `New York,\nUnited States`,
         image: require('@/assets/images/location/newyork.png'),
     },
     {
@@ -21,7 +21,7 @@ const Locations = [
     },
     {
         id: 6,
-        name: 'Hawaii, United States',
+        name: `Hawaii,\nUnited States`,
         image: require('@/assets/images/location/hawaii.png'),
     },
     {

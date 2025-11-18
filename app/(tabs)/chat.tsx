@@ -72,7 +72,7 @@ export default function Chat() {
                                 </View>
                                 {/* <Image style={chatBoxStyles.vectorIcon} source={chat.userIcon} /> */}
                                 <Text style={[chatBoxStyles.jennifer, chatBoxStyles.pm0234Typo]}>{chat?.nickname}</Text>
-                                <Image style={[chatBoxStyles.icon, chatBoxStyles.iconPosition]} source={chat?.image} />
+                                <Image style={[chatBoxStyles.icon, chatBoxStyles.iconPosition, { borderRadius: 100 }]} source={chat?.image} />
                                 <Text style={[chatBoxStyles.heyWillYou, chatBoxStyles.pm0234Typo]}>{chat?.message[0]?.text}</Text>
                                 <Text style={[chatBoxStyles.pm0234, chatBoxStyles.iconPosition]}>{dayjs(chat?.message[0]?.time).format('A HH:mm')}</Text>
                                 {/* <Component3 style={[chatBoxStyles.safeareaviewIcon, chatBoxStyles.iconLayout]} /> */}

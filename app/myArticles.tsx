@@ -1,33 +1,25 @@
 import CommentIcon from '@/assets/images/commentIcon.svg';
 import HeartActiveIcon from '@/assets/images/heartActive.svg';
 import HeartInactiveIcon from '@/assets/images/heartIcon.svg';
-import SearchRedIcon from '@/assets/images/searchRed.svg';
 import supabase from "@/db";
 import useUser from '@/hooks/use-user';
-import DotsIcon from '@/assets/images/dots.svg';
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Animated, Dimensions, Modal, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert } from "react-native";
+import ArrowLeftIcon from '@/assets/images/arrowGray.svg';
+import { ActivityIndicator, Animated, Dimensions, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
-export default function Explore() {
+export default function MyArticles() {
     const { user } = useUser();
     const scrollRef = useRef<ScrollView>(null);
 
-    const [activeTab, setActiveTab] = useState('recommend');
     const [isCustomRefreshing, setIsCustomRefreshing] = useState(false);
-    const [tabContainerWidth, setTabContainerWidth] = useState(0);
     const [postList, setPostList] = useState([]);
     const [isPulled, setIsPulled] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [imageAspectRatios, setImageAspectRatios] = useState<Map<number, number>>(new Map());
     const [imageLoadingStates, setImageLoadingStates] = useState<Map<number, boolean>>(new Map());
-    const [selectedPostPk, setSelectedPostPk] = useState<number | null>(null);
-    const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
-    const dotsPressedRef = useRef(false);
     const likeAnimations = useRef<Map<number, Animated.Value>>(new Map());
-    const indicatorLeft = useRef(new Animated.Value(80)).current;
-    const indicatorWidth = useRef(new Animated.Value(29)).current;
     const HEADER_HEIGHT = 120;
     const HEADER_HIDE_DISTANCE = HEADER_HEIGHT + 40;
     const scrollY = useRef(new Animated.Value(0)).current;
@@ -63,6 +55,7 @@ export default function Explore() {
         const { data, error } = await supabase
             .from('post')
             .select('*, user:user(*), comment:post_comment(*), like:post_like(*)')
+            .eq('user_pk', user?.pk)
             .order('created_at', { ascending: false })
         if (error) {
             console.error('게시글 목록 가져오기 실패:', error);
@@ -90,8 +83,6 @@ export default function Explore() {
         fetchPostList();
     }, [user])
 
-
-
     useEffect(() => {
         if (!isCustomRefreshing) return;
 
@@ -99,26 +90,6 @@ export default function Explore() {
             setIsCustomRefreshing(false);
         });
     }, [isCustomRefreshing]);
-
-    useEffect(() => {
-        const targetWidth = activeTab === 'recommend' ? 40 : 70;
-        const targetLeft = activeTab === 'recommend'
-            ? 75
-            : Math.max(0, (tabContainerWidth || 0) - 73 - targetWidth);
-
-        Animated.parallel([
-            Animated.timing(indicatorLeft, {
-                toValue: targetLeft,
-                duration: 200,
-                useNativeDriver: false,
-            }),
-            Animated.timing(indicatorWidth, {
-                toValue: targetWidth,
-                duration: 200,
-                useNativeDriver: false,
-            }),
-        ]).start();
-    }, [activeTab, indicatorLeft, indicatorWidth, tabContainerWidth]);
 
     const contentHeightRef = useRef(0);
     const containerHeightRef = useRef(0);
@@ -274,85 +245,21 @@ export default function Explore() {
         }
     }
 
-    const handleMenuPress = (event: any, postPk: number) => {
-        event.stopPropagation();
-        dotsPressedRef.current = true;
-        const { pageX, pageY } = event.nativeEvent;
-        setMenuPosition({ x: pageX, y: pageY });
-        setSelectedPostPk(postPk);
-        // 다음 프레임에서 리셋
-        setTimeout(() => {
-            dotsPressedRef.current = false;
-        }, 100);
-    }
-
-    const handleDeletePost = async () => {
-        if (!selectedPostPk) return;
-
-        Alert.alert(
-            '게시물 삭제',
-            '정말 이 게시물을 삭제하시겠습니까?',
-            [
-                {
-                    text: '취소',
-                    style: 'cancel',
-                    onPress: () => {
-                        setSelectedPostPk(null);
-                        setMenuPosition(null);
-                    }
-                },
-                {
-                    text: '삭제',
-                    style: 'destructive',
-                    onPress: async () => {
-                        try {
-                            // 게시물 삭제
-                            const { error } = await supabase
-                                .from('post')
-                                .delete()
-                                .eq('pk', selectedPostPk);
-
-                            if (error) {
-                                console.error('게시물 삭제 실패:', error);
-                                Alert.alert('오류', '게시물 삭제에 실패했습니다.');
-                            } else {
-                                // 목록에서 제거
-                                setPostList((prev: any) => prev.filter((item: any) => item.pk !== selectedPostPk));
-                            }
-                        } catch (error) {
-                            console.error('게시물 삭제 중 오류:', error);
-                            Alert.alert('오류', '게시물 삭제 중 오류가 발생했습니다.');
-                        } finally {
-                            setSelectedPostPk(null);
-                            setMenuPosition(null);
-                        }
-                    }
-                }
-            ]
-        );
-    }
-
-    const closeMenu = () => {
-        setSelectedPostPk(null);
-        setMenuPosition(null);
-    }
-
 
     return (
-        <View style={{ flex: 1, position: 'relative' }}>
+        <View style={{ flex: 1, position: 'relative', backgroundColor: '#fff' }}>
 
             <Animated.View style={{ paddingTop: 70, backgroundColor: '#fff', width: '100%', height: 0, zIndex: 1000, position: 'absolute', top: 0, left: 0, right: 0, transform: [{ translateY: headerTranslateY }], paddingBottom: 0 }}>
                 <View style={topStyles.view0}>
+                    <TouchableOpacity onPress={() => router.back()} style={{ position: 'absolute', left: 21, top: -5, zIndex: 9999, padding: 5 }}>
+                        <ArrowLeftIcon width={24} height={24} />
+                    </TouchableOpacity>
                     <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
-                        <Text style={topStyles.text}>탐색하기</Text>
-                        <TouchableOpacity onPress={() => router.push('/exploreSearch')} style={{ marginRight: -115, marginTop: -1 }}>
-                            <SearchRedIcon width={24} height={24} />
-                        </TouchableOpacity>
+                        <Text style={topStyles.text}>내 글</Text>
                     </View>
                 </View>
             </Animated.View>
 
-            {/* <SafeAreaView style={{ flex: 1 }}> */}
             <Animated.ScrollView
                 ref={scrollRef}
                 style={{ flex: 1, marginTop: -10 }}
@@ -385,11 +292,7 @@ export default function Explore() {
                         <TouchableOpacity
                             key={index}
                             activeOpacity={1}
-                            onPress={() => {
-                                if (!dotsPressedRef.current) {
-                                    router.push(`/exploreDetail?postPk=${item?.pk}`);
-                                }
-                            }}
+                            onPress={() => router.push(`/exploreDetail?postPk=${item?.pk}`)}
                             style={{ width: '100%', position: 'relative', borderColor: "#b3b3b3", borderBottomWidth: 0.5, paddingTop: 10, paddingLeft: 21, paddingRight: 13, flexDirection: 'row', gap: 13, paddingBottom: 10, zIndex: 1 }}
                         >
                             <View style={{ width: 45 }}>
@@ -397,17 +300,8 @@ export default function Explore() {
                             </View>
                             <View style={{ width: '100%' }}>
                                 <View style={[postStyles.view2, { height: 'auto', width: '100%', position: 'relative' }]}>
-                                    {user?.pk === item?.user?.pk &&
-                                        <TouchableOpacity 
-                                            onPress={(e) => handleMenuPress(e, item?.pk)} 
-                                            onPressIn={() => { dotsPressedRef.current = true; }}
-                                            style={{ position: 'absolute', right: 60, top: 10, zIndex: 9999, padding: 5 }}
-                                        >
-                                            <DotsIcon />
-                                        </TouchableOpacity>
-                                    }
-                                    <Text style={[postStyles.text, postStyles.textTypo]}>{item?.user?.name ?? item?.user?.nickname}</Text>
-                                    <Text style={[postStyles.text2, postStyles.textTypo, { width: '90%' }]}>{item?.content}</Text>
+                                    <Text style={[postStyles.text, postStyles.textTypo]}>{item?.user?.nickname}</Text>
+                                    <Text style={[postStyles.text2, postStyles.textTypo]}>{item?.content}</Text>
                                     {item?.image ? (
                                         item?.image?.split('|SPLIT|')?.length === 1 ?
                                             (
@@ -492,64 +386,6 @@ export default function Explore() {
                     ))
                 )}
             </Animated.ScrollView>
-            {/* </SafeAreaView> */}
-
-            <TouchableOpacity onPress={() => router.push('/createPost')} style={{ position: 'absolute', bottom: 20, right: 10 }}>
-                <Image source={require('@/assets/images/createPostIcon.png')} style={{ width: 90, height: 85, zIndex: 9999 }} />
-            </TouchableOpacity>
-
-            {/* 메뉴 Modal */}
-            <Modal
-                visible={selectedPostPk !== null}
-                transparent={true}
-                animationType="fade"
-                onRequestClose={closeMenu}
-            >
-                <TouchableOpacity
-                    activeOpacity={1}
-                    onPress={closeMenu}
-                    style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
-                >
-                    {menuPosition && (
-                        <TouchableOpacity
-                            activeOpacity={1}
-                            onPress={(e) => e.stopPropagation()}
-                            style={{
-                                position: 'absolute',
-                                left: menuPosition.x - 100,
-                                top: menuPosition.y + 10,
-                                backgroundColor: '#fff',
-                                borderRadius: 8,
-                                paddingVertical: 8,
-                                paddingHorizontal: 0,
-                                minWidth: 120,
-                                shadowColor: '#000',
-                                shadowOffset: { width: 0, height: 2 },
-                                shadowOpacity: 0.25,
-                                shadowRadius: 3.84,
-                                elevation: 5,
-                            }}
-                        >
-                            <TouchableOpacity
-                                onPress={handleDeletePost}
-                                style={{
-                                    paddingVertical: 12,
-                                    paddingHorizontal: 16,
-                                }}
-                            >
-                                <Text style={{
-                                    fontSize: 16,
-                                    color: '#FF2D55',
-                                    fontFamily: 'Pretendard',
-                                    fontWeight: '500',
-                                }}>
-                                    게시물 삭제
-                                </Text>
-                            </TouchableOpacity>
-                        </TouchableOpacity>
-                    )}
-                </TouchableOpacity>
-            </Modal>
         </View>
     );
 }
@@ -663,52 +499,6 @@ const postStyles = StyleSheet.create({
         maxWidth: "100%",
         overflow: "hidden",
         position: "absolute"
-    }
-});
-
-const tabStyles = StyleSheet.create({
-    parent: {
-        flex: 1
-    },
-    textTypo: {
-        textAlign: "center",
-        color: "#000",
-        fontFamily: "NanumSquare Neo",
-        fontWeight: "700",
-        fontSize: 15,
-        // top: 0,
-        // position: "absolute"
-    },
-    view: {
-        width: "100%",
-        height: 30,
-        marginTop: -10
-        // flex: 1
-    },
-    child: {
-        top: 30,
-        borderStyle: "solid",
-        borderColor: "#b3b3b3",
-        borderBottomWidth: 0.5,
-        width: '100%',
-        height: 0,
-        position: "absolute"
-    },
-    text: {
-        // left: 84
-    },
-    text2: {
-        // left: 275
-    },
-    item: {
-        top: 26,
-        borderRadius: 1,
-        backgroundColor: "rgba(255, 45, 85, 0.7)",
-        width: 29,
-        height: 4,
-        position: "absolute",
-        // left: 80,
-        // right: 80
     }
 });
 

@@ -1,7 +1,7 @@
 import LiquidGlassButton from "@/components/LiquidGlassButton";
 import { QAFormAnswerType, QAFormType } from "@/constants/QAForm";
 import { Image } from "expo-image";
-import { useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Animated, SafeAreaView, Text, TouchableOpacity, View, StyleSheet, Dimensions, ScrollView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -98,6 +98,8 @@ export const TestForm = ({ form, setForm }:
         form: QAFormType,
         setForm: (form: QAFormType) => void
     }) => {
+    const { testType } = useLocalSearchParams();
+
     const router = useRouter()
     const [step, setStep] = useState(1);
     const [currentChapter, setCurrentChapter] = useState<number>(1);
@@ -190,13 +192,65 @@ export const TestForm = ({ form, setForm }:
         )
     }, [form.chapters, currentChapter, currentQuestion])
 
+    // 현재 질문에서 선택된 답변이 있는지 확인
+    const hasSelectedAnswer = useMemo(() => {
+        // 테스트 시작 페이지나 챕터 시작 페이지에서는 항상 true
+        if (step === 1 || currentQuestion === 0) {
+            return true;
+        }
+        
+        // 질문 페이지인 경우
+        const currentAnswers = form.chapters[currentChapter - 1]?.questions[currentQuestion - 1]?.answers;
+        if (!currentAnswers) return false;
+        
+        return currentAnswers.some((answer: QAFormAnswerType) => answer.selected === true);
+    }, [form.chapters, currentChapter, currentQuestion, step]);
+
+    const handlePrev = () => {
+        if (step === 1) {
+            // 첫 페이지에서는 이전 불가
+            return;
+        }
+        
+        if (currentQuestion === 0) {
+            // 챕터 시작 페이지에서 이전
+            if (currentChapter === 1) {
+                // 첫 번째 챕터의 시작 페이지라면 테스트 시작 페이지로
+                setStep(1);
+            } else {
+                // 이전 챕터의 마지막 질문으로
+                const prevChapter = currentChapter - 1;
+                const prevChapterQuestions = form.chapters[prevChapter - 1].questions.length;
+                setCurrentChapter(prevChapter);
+                setCurrentQuestion(prevChapterQuestions);
+                setStep(prev => prev - 1);
+            }
+        } else {
+            // 질문 페이지에서 이전
+            if (currentQuestion === 1) {
+                // 첫 번째 질문이면 챕터 시작 페이지로
+                setCurrentQuestion(0);
+                setStep(prev => prev - 1);
+            } else {
+                // 이전 질문으로
+                setCurrentQuestion(currentQuestion - 1);
+                setStep(prev => prev - 1);
+            }
+        }
+    }
+
     const handleNext = async () => {
         if (step === totalStepCount) {
             console.log('sending form', form)
             // AsyncStorage에 form 데이터 저장
             try {
                 await AsyncStorage.setItem('testFormData', JSON.stringify(form));
-                router.push('/test1Result');
+                router.push({
+                    pathname: '/test1Result',
+                    params: {
+                        testType: testType
+                    }
+                });
             } catch (error) {
                 console.error('Form 데이터 저장 실패:', error);
             }
@@ -230,11 +284,21 @@ export const TestForm = ({ form, setForm }:
                         />
                         : renderChapter
                 }
-                <View style={{ width: '100%', alignItems: 'center', position: 'absolute', bottom: 0 }}>
+                <View style={{ width: '100%', alignItems: 'center', position: 'absolute', bottom: 0, paddingBottom: 20, gap: 12, flexDirection: 'row', justifyContent: 'center', paddingHorizontal: 20 }}>
+                    {step > 1 && (
+                        <LiquidGlassButton
+                            text="이전으로"
+                            backgroundColor="#b3b3b3"
+                            onPress={handlePrev}
+                            style={{ flex: 1, maxWidth: 160 }}
+                        />
+                    )}
                     <LiquidGlassButton
                         text={step === 1 ? "시작하기" : "다음"}
-                        backgroundColor="#FF5878"
+                        backgroundColor={hasSelectedAnswer ? "#FF5878" : "#d3d3d3"}
                         onPress={handleNext}
+                        disabled={!hasSelectedAnswer}
+                        style={step > 1 ? { flex: 1, maxWidth: 160 } : { width: 334 }}
                     />
                 </View>
             </View>

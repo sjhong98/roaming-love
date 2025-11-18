@@ -149,12 +149,12 @@ export default function ExploreDetail() {
                     contentContainerStyle={{ paddingLeft: 21, paddingRight: 13, paddingBottom: 100 }}
                 >
                     <View style={{ flexDirection: 'row', alignItems: 'center', gap: 13 }}>
-                        <Image source={require('@/assets/images/userIcon.png')} style={{ width: 45, height: 45, borderRadius: 100 }} resizeMode="cover" />
-                        <Text style={[postStyles.text, postStyles.textTypo]}>{postDetail?.user?.nickname}</Text>
+                        <Image source={postDetail?.user?.image ? { uri: postDetail?.user?.image } : require('@/assets/images/userIcon.png')} style={{ width: 45, height: 45, borderRadius: 100 }} resizeMode="cover" />
+                        <Text style={[postStyles.text, postStyles.textTypo, { marginLeft: -3 }]}>{postDetail?.user?.nickname ?? postDetail?.user?.name}</Text>
                     </View>
                     <View style={{ width: '100%', marginTop: 13 }}>
                         <View style={[postStyles.view2, { height: 'auto', width: '100%', position: 'relative' }]}>
-                            <Text style={[postStyles.text2, postStyles.textTypo]}>{postDetail?.content}</Text>
+                            <Text style={[postStyles.text2, postStyles.textTypo ]}>{postDetail?.content}</Text>
                             {postDetail?.image ? (
                                 postDetail?.image?.split('|SPLIT|')?.length === 1 ?
                                     (<Image
@@ -235,10 +235,10 @@ export default function ExploreDetail() {
                     <View style={{ gap: 10}}>
                         {
                             postDetail?.comment?.map((comment: any, index: number) => (
-                                <View key={index} style={commentStyles.view}>
-                                    <Image source={require('@/assets/images/userIcon.png')} style={commentStyles.child} resizeMode="cover" />
+                                <View key={index} style={[commentStyles.view, { marginTop: 5}]}>
+                                    <Image source={comment?.user?.image ? { uri: comment?.user?.image } : require('@/assets/images/userIcon.png')} style={[commentStyles.child, { borderRadius: 100 }]} resizeMode="cover" />
                                     <Text style={[commentStyles.text, commentStyles.textTypo]}>{comment?.user?.nickname || comment?.user?.name}</Text>
-                                    <Text style={[commentStyles.text2, commentStyles.textTypo]}>{comment?.content}</Text>
+                                    <Text style={[commentStyles.text2, commentStyles.textTypo, { width: Dimensions.get('window').width - 82, position: 'relative' }]}>{comment?.content}</Text>
                                 </View>
                             ))
                         }
@@ -247,7 +247,7 @@ export default function ExploreDetail() {
             </SafeAreaView>
 
             <KeyboardAvoidingView style={{ position: 'absolute', bottom: 0, height: 49, width: '100%', flexDirection: 'row', gap: 6, paddingVertical: 7, paddingHorizontal: 11, backgroundColor: '#FFF' }}>
-                <Image source={require('@/assets/images/userIcon.png')} style={{ width: 35, height: 35, borderRadius: 100 }} resizeMode="cover" />
+                <Image source={user?.image ? { uri: user?.image } : require('@/assets/images/userIcon.png')} style={{ width: 35, height: 35, borderRadius: 100 }} resizeMode="cover" />
                 <View style={styles.item}>
                     <TextInput
                         style={[styles.text, { color: commentText ? '#000' : '#999' }]}
@@ -293,11 +293,13 @@ const commentStyles = StyleSheet.create({
     },
     text: {
         top: 0,
-        color: "#000"
+        color: "#000",
+        marginLeft: -4
     },
     text2: {
         top: 20,
-        color: "#333"
+        color: "#333",
+        marginLeft: -4
     }
 });
 

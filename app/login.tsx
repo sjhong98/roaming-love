@@ -88,6 +88,7 @@ export default function LoginScreen() {
                                     email: sessionData.user.email,
                                     id: sessionData.user.id,
                                     platform: 'auth',
+                                    introduction: ''
                                 }
 
                                 const userFromDb = await supabase
@@ -108,6 +109,7 @@ export default function LoginScreen() {
                                         // email: userInfo.email,
                                         id: userInfo.email,
                                         platform: userInfo.platform,
+                                        introduction: ''
                                     })
                                     .select()
                                     .single();

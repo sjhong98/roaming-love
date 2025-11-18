@@ -280,7 +280,7 @@ export default function CreatePost() {
                 </View>
 
                 <View style={{ width: '100%', flexDirection: 'row', paddingHorizontal: 20, marginTop: 10, }}>
-                    <Image source={require('@/assets/images/userIcon.png')} style={{ width: 45, height: 45, borderRadius: 20 }} />
+                    <Image source={user?.image ? { uri: user.image } : require('@/assets/images/userIcon.png')} style={{ width: 45, height: 45, borderRadius: 20 }} />
                     <TextInput
                         value={content}
                         onChangeText={setContent}
