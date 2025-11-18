@@ -305,7 +305,7 @@ export default function ExploreDetail() {
 
             {/* 이미지 모달 */}
             <Modal
-                visible={selectedImageUri !== null}
+                visible={!!selectedImageUri}
                 transparent={true}
                 animationType="fade"
                 onRequestClose={closeImageModal}

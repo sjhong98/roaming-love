@@ -538,7 +538,7 @@ export default function Explore() {
 
             {/* 메뉴 Modal */}
             <Modal
-                visible={selectedPostPk !== null}
+                visible={!!selectedPostPk}
                 transparent={true}
                 animationType="fade"
                 onRequestClose={closeMenu}
@@ -590,7 +590,7 @@ export default function Explore() {
 
             {/* 이미지 모달 */}
             <Modal
-                visible={selectedImageUri !== null}
+                visible={!!selectedImageUri}
                 transparent={true}
                 animationType="fade"
                 onRequestClose={closeImageModal}
