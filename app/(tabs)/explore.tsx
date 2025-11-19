@@ -30,6 +30,7 @@ export default function Explore() {
     const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
     const isClosingModalRef = useRef(false);
     const dotsPressedRef = useRef(false);
+    const userProfilePressedRef = useRef(false);
     const likeAnimations = useRef<Map<number, Animated.Value>>(new Map());
     const indicatorLeft = useRef(new Animated.Value(80)).current;
     const indicatorWidth = useRef(new Animated.Value(29)).current;
@@ -288,6 +289,7 @@ export default function Explore() {
         // 다음 프레임에서 리셋
         setTimeout(() => {
             dotsPressedRef.current = false;
+            userProfilePressedRef.current = false;
         }, 100);
     }
 
@@ -414,15 +416,25 @@ export default function Explore() {
                             key={index}
                             activeOpacity={1}
                             onPress={() => {
-                                if (!dotsPressedRef.current) {
+                                if (!dotsPressedRef.current && !userProfilePressedRef.current) {
                                     router.push(`/exploreDetail?postPk=${item?.pk}`);
                                 }
+                                userProfilePressedRef.current = false;
                             }}
                             style={{ width: '100%', position: 'relative', borderColor: "#b3b3b3", borderBottomWidth: 0.5, paddingTop: 10, paddingLeft: 21, paddingRight: 13, flexDirection: 'row', gap: 13, paddingBottom: 10, zIndex: 1 }}
                         >
-                            <View style={{ width: 45 }}>
+                            <TouchableOpacity 
+                                onPress={(e) => {
+                                    userProfilePressedRef.current = true;
+                                    if (item?.user?.pk) {
+                                        router.push(`/userProfile?id=${item?.user?.pk}&real=true`);
+                                    }
+                                }}
+                                onPressIn={() => { userProfilePressedRef.current = true; }}
+                                style={{ width: 45, height: 45 }}
+                            >
                                 <Image source={item?.user?.image ?? require('@/assets/images/userIcon.png')} style={[postStyles.item, postStyles.itemPosition]} resizeMode="cover" />
-                            </View>
+                            </TouchableOpacity>
                             <View style={{ width: '100%' }}>
                                 <View style={[postStyles.view2, { height: 'auto', width: '100%', position: 'relative' }]}>
                                     {user?.pk === item?.user?.pk &&
@@ -434,8 +446,19 @@ export default function Explore() {
                                             <DotsIcon />
                                         </TouchableOpacity>
                                     }
-                                    <Text style={[postStyles.text, postStyles.textTypo, { fontWeight: 700 }]}>{item?.user?.name ?? item?.user?.nickname}</Text>
-                                    <Text style={[postStyles.text2, postStyles.textTypo, { width: '90%' }]}>{item?.content}</Text>
+                                    <TouchableOpacity 
+                                        onPress={(e) => {
+                                            userProfilePressedRef.current = true;
+                                            if (item?.user?.pk) {
+                                                router.push(`/userProfile?id=${item?.user?.pk}&real=true`);
+                                            }
+                                        }}
+                                        onPressIn={() => { userProfilePressedRef.current = true; }}
+                                        style={{ width: 100 }}
+                                    >
+                                        <Text style={[postStyles.text, postStyles.textTypo, { fontWeight: 700 }]}>{item?.user?.name ?? item?.user?.nickname}</Text>
+                                    </TouchableOpacity>
+                                    <Text style={[postStyles.text2, postStyles.textTypo, { width: '86%' }]}>{item?.content}</Text>
                                     {item?.image ? (
                                         item?.image?.split('|SPLIT|')?.length === 1 ?
                                             (
@@ -474,6 +497,7 @@ export default function Explore() {
                                                             );
                                                         }
                                                         const aspectRatio = imageAspectRatios.get(item?.pk);
+                                                        const imageWidth = Dimensions.get('window').width - 104;
                                                         return (
                                                             <TouchableOpacity
                                                                 key={index}
@@ -483,8 +507,8 @@ export default function Explore() {
                                                                 <Image
                                                                     source={{ uri: image }}
                                                                     style={{
-                                                                        width: Dimensions.get('window').width - 93,
-                                                                        height: aspectRatio ? (Dimensions.get('window').width - 93) * aspectRatio : 200,
+                                                                        width: imageWidth,
+                                                                        height: aspectRatio ? imageWidth * aspectRatio : 200,
                                                                         borderRadius: 10,
                                                                         marginTop: 9
                                                                     }}
@@ -595,85 +619,104 @@ export default function Explore() {
                 animationType="fade"
                 onRequestClose={closeImageModal}
             >
-                <TouchableOpacity
-                    activeOpacity={1}
-                    onPress={closeImageModal}
-                    style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.95)', justifyContent: 'center', alignItems: 'center' }}
-                >
-                    <TouchableOpacity
-                        activeOpacity={1}
-                        onPress={closeImageModal}
-                        style={{ position: 'absolute', top: 50, right: 20, zIndex: 1000, padding: 10 }}
-                    >
-                        <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>✕</Text>
-                    </TouchableOpacity>
-                    
-                    {selectedImages.length > 1 && (
-                        <>
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                onPress={(e) => {
-                                    e.stopPropagation();
-                                    if (selectedImageIndex > 0) {
-                                        setSelectedImageIndex(selectedImageIndex - 1);
-                                        setSelectedImageUri(selectedImages[selectedImageIndex - 1]);
-                                    }
-                                }}
-                                style={{ position: 'absolute', left: 20, zIndex: 1000, padding: 15 }}
-                                disabled={selectedImageIndex === 0}
-                            >
-                                <Text style={{ color: selectedImageIndex === 0 ? '#666' : '#fff', fontSize: 24, fontWeight: '600' }}>‹</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                onPress={(e) => {
-                                    e.stopPropagation();
-                                    if (selectedImageIndex < selectedImages.length - 1) {
-                                        setSelectedImageIndex(selectedImageIndex + 1);
-                                        setSelectedImageUri(selectedImages[selectedImageIndex + 1]);
-                                    }
-                                }}
-                                style={{ position: 'absolute', right: 20, zIndex: 1000, padding: 15 }}
-                                disabled={selectedImageIndex === selectedImages.length - 1}
-                            >
-                                <Text style={{ color: selectedImageIndex === selectedImages.length - 1 ? '#666' : '#fff', fontSize: 24, fontWeight: '600' }}>›</Text>
-                            </TouchableOpacity>
-                            <View style={{ position: 'absolute', bottom: 50, zIndex: 1000 }}>
-                                <Text style={{ color: '#fff', fontSize: 14, fontWeight: '400' }}>
-                                    {selectedImageIndex + 1} / {selectedImages.length}
-                                </Text>
+                <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.95)', justifyContent: 'center', alignItems: 'center' }}>
+                    {(() => {
+                        const backgroundPanResponder = PanResponder.create({
+                            onStartShouldSetPanResponder: (evt, gestureState) => {
+                                // 수평 스와이프가 시작되면 responder를 설정하지 않음
+                                return false;
+                            },
+                            onMoveShouldSetPanResponder: (_, gestureState) => {
+                                // 수직 스와이프만 감지 (아래로 스와이프), 수평 스와이프는 무시
+                                if (Math.abs(gestureState.dx) > Math.abs(gestureState.dy)) {
+                                    return false; // 수평 스와이프는 ScrollView가 처리
+                                }
+                                return Math.abs(gestureState.dy) > 10;
+                            },
+                            onPanResponderTerminationRequest: () => true,
+                            onPanResponderRelease: (_, gestureState) => {
+                                // 수직 스와이프가 50px 이상이면 모달 닫기
+                                if (Math.abs(gestureState.dy) > 50 && Math.abs(gestureState.dy) > Math.abs(gestureState.dx)) {
+                                    closeImageModal();
+                                }
+                            },
+                        });
+
+                        return (
+                            <View style={{ flex: 1, width: '100%' }} {...backgroundPanResponder.panHandlers}>
+                                <TouchableOpacity
+                                    activeOpacity={1}
+                                    onPress={closeImageModal}
+                                    style={{ position: 'absolute', top: 50, right: 20, zIndex: 1000, padding: 10 }}
+                                >
+                                    <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>✕</Text>
+                                </TouchableOpacity>
+                                
+                                {selectedImages.length > 1 && (
+                                    <>
+                                        <TouchableOpacity
+                                            activeOpacity={0.7}
+                                            onPress={(e) => {
+                                                e.stopPropagation();
+                                                if (selectedImageIndex > 0) {
+                                                    setSelectedImageIndex(selectedImageIndex - 1);
+                                                    setSelectedImageUri(selectedImages[selectedImageIndex - 1]);
+                                                }
+                                            }}
+                                            style={{ position: 'absolute', left: 20, zIndex: 1000, padding: 15 }}
+                                            disabled={selectedImageIndex === 0}
+                                        >
+                                            <Text style={{ color: selectedImageIndex === 0 ? '#666' : '#fff', fontSize: 24, fontWeight: '600' }}>‹</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            activeOpacity={0.7}
+                                            onPress={(e) => {
+                                                e.stopPropagation();
+                                                if (selectedImageIndex < selectedImages.length - 1) {
+                                                    setSelectedImageIndex(selectedImageIndex + 1);
+                                                    setSelectedImageUri(selectedImages[selectedImageIndex + 1]);
+                                                }
+                                            }}
+                                            style={{ position: 'absolute', right: 20, zIndex: 1000, padding: 15 }}
+                                            disabled={selectedImageIndex === selectedImages.length - 1}
+                                        >
+                                            <Text style={{ color: selectedImageIndex === selectedImages.length - 1 ? '#666' : '#fff', fontSize: 24, fontWeight: '600' }}>›</Text>
+                                        </TouchableOpacity>
+                                        <View style={{ position: 'absolute', bottom: 50, zIndex: 1000 }}>
+                                            <Text style={{ color: '#fff', fontSize: 14, fontWeight: '400' }}>
+                                                {selectedImageIndex + 1} / {selectedImages.length}
+                                            </Text>
+                                        </View>
+                                    </>
+                                )}
+                                
+                                <ScrollView
+                                    horizontal
+                                    pagingEnabled
+                                    showsHorizontalScrollIndicator={false}
+                                    contentOffset={{ x: selectedImageIndex * Dimensions.get('window').width, y: 0 }}
+                                    onMomentumScrollEnd={(event) => {
+                                        const index = Math.round(event.nativeEvent.contentOffset.x / Dimensions.get('window').width);
+                                        setSelectedImageIndex(index);
+                                        setSelectedImageUri(selectedImages[index]);
+                                    }}
+                                    scrollEventThrottle={16}
+                                    style={{ flex: 1, width: '100%' }}
+                                >
+                                    {selectedImages.map((image, index) => (
+                                        <View key={index} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image
+                                                source={{ uri: image }}
+                                                style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height }}
+                                                contentFit="contain"
+                                            />
+                                        </View>
+                                    ))}
+                                </ScrollView>
                             </View>
-                        </>
-                    )}
-                    
-                    <TouchableOpacity
-                        activeOpacity={1}
-                        onPress={(e) => e.stopPropagation()}
-                        style={{ flex: 1, width: '100%' }}
-                    >
-                        <ScrollView
-                            horizontal
-                            pagingEnabled
-                            showsHorizontalScrollIndicator={false}
-                            contentOffset={{ x: selectedImageIndex * Dimensions.get('window').width, y: 0 }}
-                            onMomentumScrollEnd={(event) => {
-                                const index = Math.round(event.nativeEvent.contentOffset.x / Dimensions.get('window').width);
-                                setSelectedImageIndex(index);
-                                setSelectedImageUri(selectedImages[index]);
-                            }}
-                        >
-                            {selectedImages.map((image, index) => (
-                                <View key={index} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height, justifyContent: 'center', alignItems: 'center' }}>
-                                    <Image
-                                        source={{ uri: image }}
-                                        style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height }}
-                                        contentFit="contain"
-                                    />
-                                </View>
-                            ))}
-                        </ScrollView>
-                    </TouchableOpacity>
-                </TouchableOpacity>
+                        );
+                    })()}
+                </View>
             </Modal>
         </View>
     );
@@ -856,7 +899,8 @@ const ImageWrapper = ({
     const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const hasLoadedRef = useRef(false);
     const isLoadStartCalledRef = useRef(false);
-    const actualAspectRatio = aspectRatio || 200 / (Dimensions.get('window').width - 93); // 기본값
+    const imageWidth = Dimensions.get('window').width - 103;
+    const actualAspectRatio = aspectRatio || 200 / imageWidth; // 기본값
     const touchStartRef = useRef<{ x: number; y: number; time: number } | null>(null);
     const isDraggingRef = useRef(false);
 
@@ -976,8 +1020,8 @@ const ImageWrapper = ({
                     position: 'absolute',
                     top: 9,
                     left: 0,
-                    width: Dimensions.get('window').width - 93,
-                    height: (Dimensions.get('window').width - 93) * actualAspectRatio,
+                    width: imageWidth,
+                    height: imageWidth * actualAspectRatio,
                     borderRadius: 10,
                     backgroundColor: '#f0f0f0',
                     zIndex: 1,
@@ -990,8 +1034,8 @@ const ImageWrapper = ({
             <Image
                 source={{ uri: imageUri }}
                 style={{
-                    width: Dimensions.get('window').width - 93,
-                    height: aspectRatio ? (Dimensions.get('window').width - 93) * aspectRatio : 200,
+                    width: imageWidth,
+                    height: aspectRatio ? imageWidth * aspectRatio : 200,
                     borderRadius: 10,
                     marginTop: 9,
                     opacity: isLoading ? 0 : 1
@@ -1068,7 +1112,7 @@ const PostSkeleton = () => {
                     opacity
                 }} />
                 <Animated.View style={{
-                    width: Dimensions.get('window').width - 93,
+                    width: Dimensions.get('window').width - 103,
                     height: 200,
                     backgroundColor: '#e0e0e0',
                     borderRadius: 10,

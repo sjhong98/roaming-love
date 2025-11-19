@@ -18,6 +18,7 @@ export default function Chat() {
 
     const [searchKeyword, setSearchKeyword] = useState('');
     const [chatList, setChatList] = useState<any>([])
+    const [filteredChatList, setFilteredChatList] = useState<any>([])
 
     useEffect(() => {
         (async () => {
@@ -28,12 +29,22 @@ export default function Chat() {
 
             if(savedChatList && savedChatList?.length > 0) {
                 setChatList(savedChatList)
+                setFilteredChatList(savedChatList)
             } else {
                 AsyncStorage.setItem(`${user?.pk}_chatList`, JSON.stringify([UserDummy[0], UserDummy[3], UserDummy[7], UserDummy[9]]))
                 setChatList([UserDummy[0], UserDummy[3], UserDummy[7], UserDummy[9]])
+                setFilteredChatList([UserDummy[0], UserDummy[3], UserDummy[7], UserDummy[9]])
             }
         })()
     }, [user])
+
+    useEffect(() => {
+        if(searchKeyword.length > 0) {
+            setFilteredChatList(chatList.filter((chat: any) => chat.nickname.includes(searchKeyword)))
+        } else {
+            setFilteredChatList(chatList)
+        }
+    }, [searchKeyword])
 
     return (
         <SafeAreaView style={{ paddingTop: 10 }}>
@@ -68,7 +79,7 @@ export default function Chat() {
             >
                 <View style={{ width: '100%', paddingHorizontal: 24, justifyContent: 'center', marginTop: 31, gap: 10 }}>
                     {
-                        chatList.map((chat: any, index: number) => (
+                        filteredChatList.map((chat: any, index: number) => (
                             <TouchableOpacity onPress={() => router.push(`/chatDetail?id=${chat.id}`)} key={index} style={chatBoxStyles.view}>
                                 <View style={chatBoxStyles.view2}>
                                     <View style={[chatBoxStyles.view3, chatBoxStyles.viewPosition]} />

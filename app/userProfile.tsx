@@ -4,11 +4,31 @@ import { Image } from "expo-image";
 import { router, useLocalSearchParams } from "expo-router";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { CustomText as Text } from '@/components/CustomText';
+import { useEffect, useState } from 'react';
+import supabase from '@/db';
 
 export default function UserProfile() {
-    const { id } = useLocalSearchParams()
+    const { id, real } = useLocalSearchParams()
 
-    const userInfo = UserDummy.find(user => user.id === Number(id));
+    const [userInfo, setUserInfo] = useState<any>(null);
+
+    console.log('\n\n\n', id, real)
+
+    useEffect(() => {
+        if(real) {
+            (async () => {
+                const _userInfo = await supabase.from('user').select('*').eq('pk', id).single();
+                console.log('_userInfo', _userInfo);
+                console.log('id', id);
+                setUserInfo(_userInfo.data);
+            })()
+        } else {
+            const _userInfo = UserDummy.find(user => user.id === Number(id));
+            setUserInfo(_userInfo);
+        }
+    }, [id, real])
+
+    if(!userInfo) return null;
 
     return (
         <View style={{ flex: 1, position: 'relative', backgroundColor: '#EAE8E8' }}>
@@ -25,15 +45,17 @@ export default function UserProfile() {
                             <Text style={[styles.smallTalk, styles.jenniferTypo]}>Small Talk</Text>
                         </View>
                     </View>
-                    <Text style={[styles.jennifer, styles.text2Typo]}>{userInfo?.nickname}</Text>
-                    <Image source={userInfo?.image} style={[styles.inner, styles.iconLayout]} />
+                    <Text style={[styles.jennifer, styles.text2Typo]}>{userInfo?.nickname ?? userInfo?.name ?? '닉네임 없음'}</Text>
+                    <Image source={userInfo?.image ?? require('@/assets/images/userIcon.png')} style={[styles.inner, styles.iconLayout, { borderRadius: 100 }]} />
                     <View style={{ position: 'absolute', top: 130, left: 0, width: '100%', alignItems: 'center' }}>
                         <View style={[styles.parent, { width: 'auto', flexDirection: 'row', gap: 50 }]}>
-                            <Text style={[styles.text, styles.textTypo]}>{`#${userInfo?.tripType}`}</Text>
-                            <Text style={[styles.safeareaviewText, styles.textTypo]}>{`#${userInfo?.loveType}`}</Text>
+                            <Text style={[styles.text, styles.textTypo]}>{`#${userInfo?.tripType ? userInfo?.tripType : userInfo?.trip_type ?? '여행 타입 없음'}`}</Text>
+                            <Text style={[styles.safeareaviewText, styles.textTypo]}>{`#${userInfo?.loveType ?? userInfo?.love_type ?? '연애 타입 없음'}`}</Text>
                         </View>
                     </View>
-                    <Text style={[styles.text2, styles.text2Typo]}>{userInfo?.introduction}</Text>
+                    <View style={{ position: 'absolute', top: 0, left: 0, width: '100%', alignItems: 'center' }}>
+                        <Text style={[styles.text2, styles.text2Typo]} numberOfLines={1} ellipsizeMode="tail">{userInfo?.introduction ?? '소개글 없음'}</Text>
+                    </View>
                 </View>
             </View>
         </View>
@@ -153,7 +175,7 @@ const styles = StyleSheet.create({
     },
     text2: {
         top: 84,
-        left: 128,
+        // left: 128,
         textAlign: "left",
         fontSize: 20
     }

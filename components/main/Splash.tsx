@@ -2,6 +2,7 @@ import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Dimensions, StyleSheet, View } from "react-native";
 import { CustomText as Text } from '@/components/CustomText';
+import RoamingLoveIcon from '@/assets/images/roamingLove.svg';
 
 export default function Splash() {
     return (
@@ -11,8 +12,7 @@ export default function Splash() {
             <Image source={require('@/assets/images/splash-background.png')} style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }} />
             <View style={splashScreenStyles.child} />
             <Image source={require('@/assets/images/icon.png')} style={splashScreenStyles.icon} />
-            <Text style={splashScreenStyles.roamingLove}>Roaming</Text>
-            <Text style={splashScreenStyles.roamingLove}>Love</Text>
+            <RoamingLoveIcon style={splashScreenStyles.roamingLove} />
         </View>
     )
 }
@@ -35,7 +35,7 @@ const splashScreenStyles = StyleSheet.create({
     },
     roamingLove: {
         fontSize: 35,
-        fontWeight: "700",
+        fontWeight: 900,
         color: "#e60047",
         textAlign: "center",
         display: "flex",
@@ -43,6 +43,7 @@ const splashScreenStyles = StyleSheet.create({
         justifyContent: "center",
         width: 185,
         height: 40,
+        marginTop: 20
     },
     icon: {
         width: 129,

@@ -66,7 +66,7 @@ export default function ChatDetail() {
                 <View style={headerStyles.view}>
                     <View style={headerStyles.child} />
                     <Text style={headerStyles.jennifer}>Jennifer</Text>
-                    <TouchableOpacity onPress={() => router.back()} style={[headerStyles.arrowLeft, headerStyles.arrowLeftPosition]}>
+                    <TouchableOpacity onPress={() => router.back()} style={[headerStyles.arrowLeft, headerStyles.arrowLeftPosition, { marginTop: -8 }]}>
                         <ArrowGray style={[headerStyles.icon, headerStyles.iconLayout]} />
                     </TouchableOpacity>
                     <View style={[headerStyles.phoneCall, headerStyles.arrowLeftPosition]}>
@@ -113,12 +113,11 @@ export default function ChatDetail() {
                             <TextInput
                                 value={inputMessage}
                                 onChangeText={setInputMessage}
-                                onSubmitEditing={handleSendMessage}
-                                returnKeyType="send"
+                                multiline={true}
                                 blurOnSubmit={false}
                                 placeholder="메시지 입력"
                                 placeholderTextColor="#999"
-                                style={bottomStyles.textInput}
+                                style={[bottomStyles.textInput, { textAlignVertical: 'top' }]}
                             />
                         </View>
                         <TouchableOpacity onPress={handleSendMessage}>
@@ -169,9 +168,11 @@ const bottomStyles = StyleSheet.create({
         borderRadius: 15,
         backgroundColor: "#efeff0",
         width: '88%',
-        height: 35,
+        minHeight: 35,
+        maxHeight: 100,
         paddingLeft: 13,
-        justifyContent: 'center',
+        paddingVertical: 8,
+        justifyContent: 'flex-start',
     },
     textInput: {
         width: "100%",

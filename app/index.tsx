@@ -30,6 +30,8 @@ export default function Index() {
         setIsSplashScreen(false)
       }, 500);
     } else {
+      if(user === undefined) return
+
       setTimeout(() => {
         if (user) {
           router.replace('/(tabs)/main')

@@ -19,9 +19,9 @@ const getFontFamily = (fontWeight?: string | number): string => {
     return 'NanumSquareNeo-Light';
   } else if (numericWeight <= 500) {
     return 'NanumSquareNeo-Regular';
-  } else if (numericWeight <= 700) {
+  } else if (numericWeight < 700) {
     return 'NanumSquareNeo-Bold';
-  } else if (numericWeight <= 800) {
+  } else if (numericWeight < 800) {
     return 'NanumSquareNeo-ExtraBold';
   } else {
     return 'NanumSquareNeo-Heavy';
@@ -47,12 +47,15 @@ export const CustomText = React.forwardRef<any, CustomTextProps>((props, ref) =>
   
   const fontFamily = getFontFamily(fontWeight);
   
+  // 커스텀 폰트를 사용할 때는 fontWeight를 제거 (폰트 패밀리 자체가 굵기를 결정)
+  const baseStyle = { fontFamily };
+  
   // 폰트를 적용하고, 사용자 스타일과 병합
   const fontStyle = Array.isArray(style)
-    ? [{ fontFamily, fontWeight }, ...style]
+    ? [baseStyle, ...style]
     : style
-    ? [{ fontFamily, fontWeight }, style]
-    : { fontFamily, fontWeight };
+    ? [baseStyle, style]
+    : baseStyle;
   
   return (
     <RNText {...restProps} style={fontStyle} ref={ref} />

@@ -3,11 +3,12 @@ import HeartActiveIcon from '@/assets/images/heartActive.svg';
 import HeartInactiveIcon from '@/assets/images/heartIcon.svg';
 import supabase from "@/db";
 import useUser from '@/hooks/use-user';
+import DotsIcon from '@/assets/images/dots.svg';
 import { Image } from "expo-image";
 import { router } from "expo-router";
 import { useEffect, useRef, useState } from "react";
 import ArrowLeftIcon from '@/assets/images/arrowGray.svg';
-import { ActivityIndicator, Animated, Dimensions, Modal, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, TouchableOpacity, View, PanResponder } from "react-native";
+import { ActivityIndicator, Animated, Dimensions, Modal, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, TouchableOpacity, View, PanResponder, Alert } from "react-native";
 import { CustomText as Text } from '@/components/CustomText';
 
 export default function MyArticles() {
@@ -23,7 +24,10 @@ export default function MyArticles() {
     const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
     const [selectedImages, setSelectedImages] = useState<string[]>([]);
     const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
+    const [selectedPostPk, setSelectedPostPk] = useState<number | null>(null);
+    const [menuPosition, setMenuPosition] = useState<{ x: number; y: number } | null>(null);
     const isClosingModalRef = useRef(false);
+    const dotsPressedRef = useRef(false);
     const likeAnimations = useRef<Map<number, Animated.Value>>(new Map());
     const HEADER_HEIGHT = 120;
     const HEADER_HIDE_DISTANCE = HEADER_HEIGHT + 40;
@@ -273,6 +277,69 @@ export default function MyArticles() {
         }, 500);
     }
 
+    const handleMenuPress = (event: any, postPk: number) => {
+        event.stopPropagation();
+        dotsPressedRef.current = true;
+        const { pageX, pageY } = event.nativeEvent;
+        setMenuPosition({ x: pageX, y: pageY });
+        setSelectedPostPk(postPk);
+        // 다음 프레임에서 리셋
+        setTimeout(() => {
+            dotsPressedRef.current = false;
+        }, 100);
+    }
+
+    const handleDeletePost = async () => {
+        if (!selectedPostPk) return;
+
+        Alert.alert(
+            '게시물 삭제',
+            '정말 이 게시물을 삭제하시겠습니까?',
+            [
+                {
+                    text: '취소',
+                    style: 'cancel',
+                    onPress: () => {
+                        setSelectedPostPk(null);
+                        setMenuPosition(null);
+                    }
+                },
+                {
+                    text: '삭제',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            // 게시물 삭제
+                            const { error } = await supabase
+                                .from('post')
+                                .delete()
+                                .eq('pk', selectedPostPk);
+
+                            if (error) {
+                                console.error('게시물 삭제 실패:', error);
+                                Alert.alert('오류', '게시물 삭제에 실패했습니다.');
+                            } else {
+                                // 목록에서 제거
+                                setPostList((prev: any) => prev.filter((item: any) => item.pk !== selectedPostPk));
+                            }
+                        } catch (error) {
+                            console.error('게시물 삭제 중 오류:', error);
+                            Alert.alert('오류', '게시물 삭제 중 오류가 발생했습니다.');
+                        } finally {
+                            setSelectedPostPk(null);
+                            setMenuPosition(null);
+                        }
+                    }
+                }
+            ]
+        );
+    }
+
+    const closeMenu = () => {
+        setSelectedPostPk(null);
+        setMenuPosition(null);
+    }
+
     return (
         <View style={{ flex: 1, position: 'relative', backgroundColor: '#fff' }}>
 
@@ -319,7 +386,12 @@ export default function MyArticles() {
                         <TouchableOpacity
                             key={index}
                             activeOpacity={1}
-                            onPress={() => router.push(`/exploreDetail?postPk=${item?.pk}`)}
+                            onPress={() => {
+                                if (!dotsPressedRef.current) {
+                                    router.push(`/exploreDetail?postPk=${item?.pk}`);
+                                }
+                                dotsPressedRef.current = false;
+                            }}
                             style={{ width: '100%', position: 'relative', borderColor: "#b3b3b3", borderBottomWidth: 0.5, paddingTop: 10, paddingLeft: 21, paddingRight: 13, flexDirection: 'row', gap: 13, paddingBottom: 10, zIndex: 1 }}
                         >
                             <View style={{ width: 45 }}>
@@ -327,7 +399,14 @@ export default function MyArticles() {
                             </View>
                             <View style={{ width: '100%' }}>
                                 <View style={[postStyles.view2, { height: 'auto', width: '90%', position: 'relative' }]}>
-                                    <Text style={[postStyles.text, postStyles.textTypo]}>{item?.user?.nickname}</Text>
+                                    <TouchableOpacity 
+                                        onPress={(e) => handleMenuPress(e, item?.pk)} 
+                                        onPressIn={() => { dotsPressedRef.current = true; }}
+                                        style={{ position: 'absolute', right: 60, top: 10, zIndex: 9999, padding: 5 }}
+                                    >
+                                        <DotsIcon />
+                                    </TouchableOpacity>
+                                    <Text style={[postStyles.text, postStyles.textTypo]}>{item?.user?.nickname ?? item?.user?.name ?? item?.user?.email}</Text>
                                     <Text style={[postStyles.text2, postStyles.textTypo]}>{item?.content}</Text>
                                     {item?.image ? (
                                         item?.image?.split('|SPLIT|')?.length === 1 ?
@@ -424,6 +503,58 @@ export default function MyArticles() {
                 )}
             </Animated.ScrollView>
 
+            {/* 메뉴 Modal */}
+            <Modal
+                visible={!!selectedPostPk}
+                transparent={true}
+                animationType="fade"
+                onRequestClose={closeMenu}
+            >
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={closeMenu}
+                    style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
+                >
+                    {menuPosition && (
+                        <TouchableOpacity
+                            activeOpacity={1}
+                            onPress={(e) => e.stopPropagation()}
+                            style={{
+                                position: 'absolute',
+                                left: menuPosition.x - 100,
+                                top: menuPosition.y + 10,
+                                backgroundColor: '#fff',
+                                borderRadius: 8,
+                                paddingVertical: 8,
+                                paddingHorizontal: 0,
+                                minWidth: 120,
+                                shadowColor: '#000',
+                                shadowOffset: { width: 0, height: 2 },
+                                shadowOpacity: 0.25,
+                                shadowRadius: 3.84,
+                                elevation: 5,
+                            }}
+                        >
+                            <TouchableOpacity
+                                onPress={handleDeletePost}
+                                style={{
+                                    paddingVertical: 12,
+                                    paddingHorizontal: 16,
+                                }}
+                            >
+                                <Text style={{
+                                    fontSize: 16,
+                                    color: '#FF2D55',
+                                    fontWeight: '500',
+                                }}>
+                                    게시물 삭제
+                                </Text>
+                            </TouchableOpacity>
+                        </TouchableOpacity>
+                    )}
+                </TouchableOpacity>
+            </Modal>
+
             {/* 이미지 모달 */}
             <Modal
                 visible={!!selectedImageUri}
@@ -431,85 +562,104 @@ export default function MyArticles() {
                 animationType="fade"
                 onRequestClose={closeImageModal}
             >
-                <TouchableOpacity
-                    activeOpacity={1}
-                    onPress={closeImageModal}
-                    style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.95)', justifyContent: 'center', alignItems: 'center' }}
-                >
-                    <TouchableOpacity
-                        activeOpacity={1}
-                        onPress={closeImageModal}
-                        style={{ position: 'absolute', top: 50, right: 20, zIndex: 1000, padding: 10 }}
-                    >
-                        <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>✕</Text>
-                    </TouchableOpacity>
-                    
-                    {selectedImages.length > 1 && (
-                        <>
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                onPress={(e) => {
-                                    e.stopPropagation();
-                                    if (selectedImageIndex > 0) {
-                                        setSelectedImageIndex(selectedImageIndex - 1);
-                                        setSelectedImageUri(selectedImages[selectedImageIndex - 1]);
-                                    }
-                                }}
-                                style={{ position: 'absolute', left: 20, zIndex: 1000, padding: 15 }}
-                                disabled={selectedImageIndex === 0}
-                            >
-                                <Text style={{ color: selectedImageIndex === 0 ? '#666' : '#fff', fontSize: 24, fontWeight: '600' }}>‹</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                onPress={(e) => {
-                                    e.stopPropagation();
-                                    if (selectedImageIndex < selectedImages.length - 1) {
-                                        setSelectedImageIndex(selectedImageIndex + 1);
-                                        setSelectedImageUri(selectedImages[selectedImageIndex + 1]);
-                                    }
-                                }}
-                                style={{ position: 'absolute', right: 20, zIndex: 1000, padding: 15 }}
-                                disabled={selectedImageIndex === selectedImages.length - 1}
-                            >
-                                <Text style={{ color: selectedImageIndex === selectedImages.length - 1 ? '#666' : '#fff', fontSize: 24, fontWeight: '600' }}>›</Text>
-                            </TouchableOpacity>
-                            <View style={{ position: 'absolute', bottom: 50, zIndex: 1000 }}>
-                                <Text style={{ color: '#fff', fontSize: 14, fontWeight: '400' }}>
-                                    {selectedImageIndex + 1} / {selectedImages.length}
-                                </Text>
+                <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.95)', justifyContent: 'center', alignItems: 'center' }}>
+                    {(() => {
+                        const backgroundPanResponder = PanResponder.create({
+                            onStartShouldSetPanResponder: (evt, gestureState) => {
+                                // 수평 스와이프가 시작되면 responder를 설정하지 않음
+                                return false;
+                            },
+                            onMoveShouldSetPanResponder: (_, gestureState) => {
+                                // 수직 스와이프만 감지 (아래로 스와이프), 수평 스와이프는 무시
+                                if (Math.abs(gestureState.dx) > Math.abs(gestureState.dy)) {
+                                    return false; // 수평 스와이프는 ScrollView가 처리
+                                }
+                                return Math.abs(gestureState.dy) > 10;
+                            },
+                            onPanResponderTerminationRequest: () => true,
+                            onPanResponderRelease: (_, gestureState) => {
+                                // 수직 스와이프가 50px 이상이면 모달 닫기
+                                if (Math.abs(gestureState.dy) > 50 && Math.abs(gestureState.dy) > Math.abs(gestureState.dx)) {
+                                    closeImageModal();
+                                }
+                            },
+                        });
+
+                        return (
+                            <View style={{ flex: 1, width: '100%' }} {...backgroundPanResponder.panHandlers}>
+                                <TouchableOpacity
+                                    activeOpacity={1}
+                                    onPress={closeImageModal}
+                                    style={{ position: 'absolute', top: 50, right: 20, zIndex: 1000, padding: 10 }}
+                                >
+                                    <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>✕</Text>
+                                </TouchableOpacity>
+                                
+                                {selectedImages.length > 1 && (
+                                    <>
+                                        <TouchableOpacity
+                                            activeOpacity={0.7}
+                                            onPress={(e) => {
+                                                e.stopPropagation();
+                                                if (selectedImageIndex > 0) {
+                                                    setSelectedImageIndex(selectedImageIndex - 1);
+                                                    setSelectedImageUri(selectedImages[selectedImageIndex - 1]);
+                                                }
+                                            }}
+                                            style={{ position: 'absolute', left: 20, zIndex: 1000, padding: 15 }}
+                                            disabled={selectedImageIndex === 0}
+                                        >
+                                            <Text style={{ color: selectedImageIndex === 0 ? '#666' : '#fff', fontSize: 24, fontWeight: '600' }}>‹</Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity
+                                            activeOpacity={0.7}
+                                            onPress={(e) => {
+                                                e.stopPropagation();
+                                                if (selectedImageIndex < selectedImages.length - 1) {
+                                                    setSelectedImageIndex(selectedImageIndex + 1);
+                                                    setSelectedImageUri(selectedImages[selectedImageIndex + 1]);
+                                                }
+                                            }}
+                                            style={{ position: 'absolute', right: 20, zIndex: 1000, padding: 15 }}
+                                            disabled={selectedImageIndex === selectedImages.length - 1}
+                                        >
+                                            <Text style={{ color: selectedImageIndex === selectedImages.length - 1 ? '#666' : '#fff', fontSize: 24, fontWeight: '600' }}>›</Text>
+                                        </TouchableOpacity>
+                                        <View style={{ position: 'absolute', bottom: 50, zIndex: 1000 }}>
+                                            <Text style={{ color: '#fff', fontSize: 14, fontWeight: '400' }}>
+                                                {selectedImageIndex + 1} / {selectedImages.length}
+                                            </Text>
+                                        </View>
+                                    </>
+                                )}
+                                
+                                <ScrollView
+                                    horizontal
+                                    pagingEnabled
+                                    showsHorizontalScrollIndicator={false}
+                                    contentOffset={{ x: selectedImageIndex * Dimensions.get('window').width, y: 0 }}
+                                    onMomentumScrollEnd={(event) => {
+                                        const index = Math.round(event.nativeEvent.contentOffset.x / Dimensions.get('window').width);
+                                        setSelectedImageIndex(index);
+                                        setSelectedImageUri(selectedImages[index]);
+                                    }}
+                                    scrollEventThrottle={16}
+                                    style={{ flex: 1, width: '100%' }}
+                                >
+                                    {selectedImages.map((image, index) => (
+                                        <View key={index} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height, justifyContent: 'center', alignItems: 'center' }}>
+                                            <Image
+                                                source={{ uri: image }}
+                                                style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height }}
+                                                contentFit="contain"
+                                            />
+                                        </View>
+                                    ))}
+                                </ScrollView>
                             </View>
-                        </>
-                    )}
-                    
-                    <TouchableOpacity
-                        activeOpacity={1}
-                        onPress={(e) => e.stopPropagation()}
-                        style={{ flex: 1, width: '100%' }}
-                    >
-                        <ScrollView
-                            horizontal
-                            pagingEnabled
-                            showsHorizontalScrollIndicator={false}
-                            contentOffset={{ x: selectedImageIndex * Dimensions.get('window').width, y: 0 }}
-                            onMomentumScrollEnd={(event) => {
-                                const index = Math.round(event.nativeEvent.contentOffset.x / Dimensions.get('window').width);
-                                setSelectedImageIndex(index);
-                                setSelectedImageUri(selectedImages[index]);
-                            }}
-                        >
-                            {selectedImages.map((image, index) => (
-                                <View key={index} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height, justifyContent: 'center', alignItems: 'center' }}>
-                                    <Image
-                                        source={{ uri: image }}
-                                        style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height }}
-                                        contentFit="contain"
-                                    />
-                                </View>
-                            ))}
-                        </ScrollView>
-                    </TouchableOpacity>
-                </TouchableOpacity>
+                        );
+                    })()}
+                </View>
             </Modal>
         </View>
     );

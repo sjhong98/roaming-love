@@ -240,7 +240,7 @@ export default function My() {
                             profileNicknameAdjusted && (
                                 <TouchableOpacity
                                     onPress={handleProfileNicknameAdjust}
-                                    style={{ backgroundColor: '#FF5878', padding: 10, borderRadius: 15, alignItems: 'center', position: 'absolute', right: 10 }}
+                                    style={{ backgroundColor: '#FF5878', padding: 10, borderRadius: 15, alignItems: 'center', position: 'absolute', right: 10, top: 23 }}
                                 >
                                     <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>저장</Text>
                                 </TouchableOpacity>
@@ -264,7 +264,7 @@ export default function My() {
                             profileIntroductionAdjusted && (
                                 <TouchableOpacity
                                     onPress={handleProfileIntroductionAdjust}
-                                    style={{ backgroundColor: '#FF5878', padding: 10, borderRadius: 15, alignItems: 'center', position: 'absolute', right: 10 }}
+                                    style={{ backgroundColor: '#FF5878', padding: 10, borderRadius: 15, alignItems: 'center', position: 'absolute', right: 10, top: 23 }}
                                 >
                                     <Text style={{ color: '#fff', fontSize: 16, fontWeight: 'bold' }}>저장</Text>
                                 </TouchableOpacity>

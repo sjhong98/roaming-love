@@ -46,90 +46,95 @@ export const Test1QAForm: QAFormType = {
   testDescription: '여행 성향 테스트',
   testImage: require('@/assets/images/test1_1.png'),
   resultTypes: {
-    '아이코닉 포토': { 
+    '모험 유랑단': { 
       score: 0,
       color: '#FF2D55',
-      keyword: ['랜드마크', '야경', '포토', '효율동선'],
-      description: '당신은 ‘완성도 있는 기록’에서 큰 만족을 느끼는 유형이에요. 동선을 효율적으로 잡아 대표 스폿을 놓치지 않고, 빛·구도·타이밍을 챙기는 꼼꼼함이 있어요. 이동과 대기보다 사진 결과물이 중요하고, 일정의 리듬을 스스로 주도할 때 컨디션이 좋아집니다. 팀 안에서는 길잡이·포토 디렉터 역할을 맡으면 강점을 발휘해요.\n좋아하는 여행 랜드마크·전망대·스카이라인이 있는 도시, 해가 바뀌는 시간대(황금빛 석양·네온 야경) 중심의 루트가 잘 맞습니다. “핵심 2개 예약 + 여유 1블록” 구조로 촬영 포인트를 확실히 확보하고, 이동은 택시·직항·우선탑승 등으로 컨디션을 지키면 좋아요. 카페는 시그니처 메뉴가 있고 포토 스폿이 분명한 곳이 만족도를 올립니다.\n피하면 좋은 여행 하루에 스폿을 다섯 개 이상 ‘찍고 가는’ 과밀 루틴, 긴 웨이팅을 여러 번 연속 배치하는 일정은 피로 대비 성취가 낮습니다. 실내 위주로만 이어지는 전시 투어나 무계획 이동도 집중력을 떨어뜨려요.',
+      keyword: ['모험', '유랑', '자유', '탐험'],
+      description: '당신은 자유롭고 모험적인 여행을 즐기는 유형이에요. 계획에 얽매이지 않고 즉흥적으로 여행을 즐기며, 새로운 곳을 탐험하는 것을 좋아해요.',
       recommend: [
-        '전망대→랜드마크→시그니처 카페(낮/석양 중 2타임)',
-        '핵심 2개 예약 + 여유 1블록',
-        '택시/직항/우선탑승으로 컨디션 관리'
+        '즉흥적인 여행 계획',
+        '로컬 시장과 골목 탐험',
+        '유연한 일정'
       ],
       avoid: [
-        '긴 웨이팅 연속, 과밀 체크리스트',
-        '실내 투어만 연속 배치'
+        '과도한 계획',
+        '고정된 일정',
+        '관광지 중심 여행'
       ],
-      image1: require('@/assets/images/test2_result1.png'),
-      image2: require('@/assets/images/test2_result1_2.png'),
+      image1: require('@/assets/images/test1_result1.png'),
+      image2: require('@/assets/images/test1_result1_2.png'),
     },
-    '하이브리드형': {
+    '여행 만학도': {
       score: 0,
       color: '#A78BFA',
-      keyword: ['균형', '유연', '핵심예약', '여유블록'],
-      description: '당신은 두 축 이상에서 균형이 높은 ‘조율형’이에요. 핵심 몇 가지는 확실히 정하되, 현지 상황에 맞춰 유연하게 바꾸는 운영을 잘합니다. 팀 내에서 역할을 나누고 의견을 수렴하는 능력이 좋아 갈등을 최소화해요. 무엇을 하느냐 못지않게 어떻게 하느냐(리듬·컨디션)를 중시합니다.\n좋아하는 여행 “핵심 예약 2개 + 여유 블록 2개” 구조가 베스트입니다. 오전에는 고정 일정, 오후에는 현지의 우연을 받아들이고, 이동은 40–60분 단위로 끊어 피로를 관리하세요. 전시·포토·로컬·자연 중 그날 컨디션에 맞게 비율을 조절하면 만족도가 높습니다.\n피하면 좋은 여행 분 단위로 쪼개진 과계획이나, 아무 준비 없는 완전 즉흥은 모두 리스크가 큽니다. 장거리 이동을 연속 배치하거나 예약만 과도하게 넣으면 유연함이 사라지고 즐거움이 줄어요.',
+      keyword: ['학습', '문화', '역사', '지식'],
+      description: '당신은 여행을 통해 배우고 성장하는 것을 좋아하는 유형이에요. 박물관, 미술관, 유명 건축물을 방문하며 깊이 있게 감상하는 것을 즐깁니다.',
       recommend: [
-        '핵심 예약 2개 + 여유 블록 2개',
-        '오전 고정 일정 + 오후 유연 조정',
-        '이동 40–60분 단위로 끊어 피로 관리'
+        '박물관/미술관 방문',
+        '해설과 가이드 활용',
+        '문화적 경험 중심'
       ],
       avoid: [
-        '분 단위 과계획',
-        '완전 무계획·장거리 연속 이동'
+        '피상적인 관광',
+        '사진 위주 코스',
+        '빠른 이동'
       ],
-      image1: require('@/assets/images/test2_result2.png'),
-      image2: require('@/assets/images/test2_result2_2.png'),
+      image1: require('@/assets/images/test1_result2.png'),
+      image2: require('@/assets/images/test1_result2_2.png'),
     },
-    '힐링산책가': {
+    '늘보 베짱이': {
       score: 0,
       color: '#22C55E',
-      keyword: ['골목', '시장', '카페', '머묾'],
-      description: '당신은 생활 리듬을 느끼며 머무는 시간에서 행복을 찾는 유형이에요. 골목·시장·동네 카페 같은 작은 스폿을 천천히 연결하고, 우연히 발견한 장소에 오래 머무는 여유가 있어요. 기록은 가볍게, 대화와 관찰이 중심이며 ‘과정 자체’를 즐길 줄 압니다.\n좋아하는 여행 15–20분 소도보 루프(시장→카페→공원/강변)처럼 이동 자체가 즐거운 동선을 선호해요. 숙소는 산책권에 볼거리와 식당이 밀집한 곳이 좋고, 점심은 로컬 정식, 오후에는 노을 산책과 가벼운 디저트를 배치하면 만족도가 높습니다. 일정은 느슨하게 시작해 현지의 우연을 받아들이는 구성이 좋아요.\n피하면 좋은 여행 환승이 잦은 광역 이동, 시간표대로 움직이는 단체 투어, 대형 쇼핑몰 위주 루틴은 관찰과 머묾의 즐거움을 희석시킵니다. 촉박한 체크리스트식 일정도 피로만 남길 수 있어요.',
+      keyword: ['휴식', '힐링', '여유', '안정'],
+      description: '당신은 여행에서 휴식과 힐링을 중시하는 유형이에요. 바쁘게 움직이기보다는 여유롭게 머물며 휴식을 취하는 것을 좋아합니다.',
       recommend: [
-        '소도보 루프(시장→카페→공원/강변 15–20분)',
-        '로컬 정식 점심 + 노을 산책',
-        '뷰 좋은 숙소 베이스, 느슨한 일정'
+        '여유로운 일정',
+        '숙소에서의 휴식',
+        '느긋한 활동'
       ],
       avoid: [
-        '광역 환승/단체 투어',
-        '대형 쇼핑몰 위주, 촉박 체크리스트'
+        '과도한 이동',
+        '빡빡한 일정',
+        '장거리 도보'
       ],
-      image1: require('@/assets/images/test2_result3.png'),
-      image2: require('@/assets/images/test2_result3_2.png'),
+      image1: require('@/assets/images/test1_result3.png'),
+      image2: require('@/assets/images/test1_result3_2.png'),
     },
-    '자연액티브': {
+    '핫플레이더': {
       score: 0,
       color: '#06B6D4',
-      keyword: ['하이킹', '해변', '전망', '체험'],
-      description: '당신은 몸을 쓰며 얻는 성취감과 야외의 변화무쌍한 풍경에서 에너지를 받는 유형이에요. 하이킹·해변·전망 드라이브·수상 액티비티 등 바깥 활동이 메인이며, 도전–회복의 리듬을 스스로 조절할 때 컨디션이 가장 좋습니다. 안전·장비·영양 관리에 민감할수록 몰입이 길어져요.\n좋아하는 여행 일출·일몰 뷰포인트 1–2개와 하이킹·카약·서핑 같은 액티비티를 묶어 하루를 설계하세요. 날씨 플랜 A/B, 물·간식·복장 체크, 이동은 시간 절약 위주로 잡으면 퍼포먼스가 안정됩니다. 숙소는 샤워·세탁·보관이 편한 곳이 효율적이고, 회복을 위한 온천·스파·브런치를 중간중간 넣으면 좋아요.\n피하면 좋은 여행 종일 실내·웨이팅 중심의 루틴, 무계획 강행, 회복 블록 없이 액티비티만 연속 배치하는 일정은 부상·번아웃 위험이 큽니다. 과도한 장거리 환승도 에너지 누수를 일으켜요.',
+      keyword: ['핫플', 'SNS', '인기', '트렌드'],
+      description: '당신은 SNS에서 유행하는 핫플레이스를 찾아다니는 것을 좋아하는 유형이에요. 인기 있는 식당, 카페, 관광지를 방문하며 사진을 찍는 것을 즐깁니다.',
       recommend: [
-        '일출/일몰 포인트 + 하이킹/카약/서핑',
-        '날씨 플랜 A/B + 장비·수분 루틴 내장',
-        '시간 절약 이동 + 회복 블록(스파/브런치)'
+        'SNS 핫플 방문',
+        '인기 맛집 탐방',
+        '사진 찍기'
       ],
       avoid: [
-        '종일 실내·웨이팅 루틴',
-        '회복 없이 액티비티 연속, 무계획 강행'
+        '로컬 식당',
+        '무명 장소',
+        '웨이팅 없는 곳'
       ],
-      image1: require('@/assets/images/test2_result4.png'),
-      image2: require('@/assets/images/test2_result4_2.png'),
+      image1: require('@/assets/images/test1_result4.png'),
+      image2: require('@/assets/images/test1_result4_2.png'),
     },
-    '전시감상가': {
+    '가성비 로거': {
       score: 0,
       color: '#F59E0B',
-      keyword: ['뮤지엄', '건축', '해설', '여운'],
-      description: '당신은 이야기가 있는 콘텐츠를 깊이 있게 감상하는 유형이에요. 박물관·미술관·건축·역사 공간을 주제별로 큐레이션하고, 해설·오디오가이드·도슨트를 통해 맥락을 연결할 때 만족도가 올라갑니다. 날씨나 변수에 흔들리지 않는 실내 대체 플랜을 잘 쓰고, 여운을 정리하는 조용한 시간도 중요하게 여깁니다.\n좋아하는 여행 뮤지엄 패스나 타임슬롯을 미리 확보해 하루 1–2개의 전시에 몰입하고, 건축 산책·북카페·아카이브 같은 정적 공간을 곁들인 루트가 잘 맞습니다. 숙소는 조용하고 컨디션 관리가 쉬운 곳이 좋아요. 점심은 전시장 근처의 비스트로나 카페로 이동을 짧게 가져가면 리듬이 안정됩니다.\n피하면 좋은 여행 설명이나 맥락 없이 ‘인증샷’만 남기는 코스, 소음·혼잡이 심한 핫플을 연속으로 도는 일정은 감상 밀도를 떨어뜨립니다. 장거리 도보·환승이 많은 광역 이동도 비추천이에요.',
+      keyword: ['가성비', '절약', '효율', '계획'],
+      description: '당신은 가성비를 중시하며 효율적인 여행을 계획하는 유형이에요. 예산을 고려하며 최대한 많은 곳을 둘러보는 것을 좋아합니다.',
       recommend: [
-        '전시 1–2개(타임슬롯/해설) 집중 감상',
-        '건축 산책 + 북카페/아카이브',
-        '전시장 근처 비스트로 점심으로 이동 최소화'
+        '가성비 좋은 숙소',
+        '대중교통 활용',
+        '할인 상품 이용'
       ],
       avoid: [
-        '인증샷 순회, 혼잡 핫플 연속 방문',
-        '장거리 환승/도보 과다'
+        '고가 숙소',
+        '비싼 식당',
+        '비효율적인 이동'
       ],
-      image1: require('@/assets/images/test2_result5.png'),
-      image2: require('@/assets/images/test2_result5_2.png'),
+      image1: require('@/assets/images/test1_result5.png'),
+      image2: require('@/assets/images/test1_result5_2.png'),
     },
   },
   chapters: [
@@ -146,8 +151,8 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '저렴하지만 선호하지 않는 시간대', type: '자연액티브', score: 1, selected: null },
-            { answer: '비싸지만 선호하는 시간대', type: '아이코닉 포토', score: 1, selected: null }
+            { answer: '저렴하지만 선호하지 않는 시간대', type: '가성비 로거', score: 5, selected: null },
+            { answer: '비싸지만 선호하는 시간대', type: '핫플레이더', score: 4, selected: null }
           ]
         },
         {
@@ -156,8 +161,8 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '예약 다 했는데 당연히 떠나야지', type: '자연액티브', score: 1, selected: null },
-            { answer: '공항/숙소 고립 위험… 취소/연기하자', type: '전시감상가', score: 1, selected: null }
+            { answer: '예약 다 했는데 당연히 떠나야지', type: '가성비 로거', score: 5, selected: null },
+            { answer: '공항/숙소 고립 위험… 취소/연기하자', type: '늘보 베짱이', score: 5, selected: null }
           ]
         },
         {
@@ -166,10 +171,10 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '안전하고 룸서비스 가능한 4성급+ 호텔', type: '전시감상가', score: 1, selected: null },
-            { answer: '부엌·거실 있는 에어비앤비(집처럼)', type: '힐링산책가', score: 1, selected: null },
-            { answer: '가성비 최고! 깔끔한 2~3성급 호텔/호스텔', type: '자연액티브', score: 1, selected: null },
-            { answer: '라운지/바/공용공간 활발한 게스트하우스', type: '힐링산책가', score: 1, selected: null }
+            { answer: '안전하고 룸서비스 가능한 4성급+ 호텔', type: '늘보 베짱이', score: 5, selected: null },
+            { answer: '부엌·거실 있는 에어비앤비(집처럼)', type: '모험 유랑단', score: 2, selected: null },
+            { answer: '가성비 최고! 깔끔한 2~3성급 호텔/호스텔', type: '가성비 로거', score: 5, selected: null },
+            { answer: '라운지/바/공용공간 활발한 게스트하우스', type: '모험 유랑단', score: 4, selected: null }
           ]
         },
         {
@@ -178,10 +183,10 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '시간대별로 촘촘히 계획(예약多)', type: '아이코닉 포토', score: 1, selected: null },
-            { answer: '큰 틀만 미리 정하고 현지가서 유연하게', type: '하이브리드형', score: 1, selected: null },
-            { answer: '숙소 외에는 아무것도 정하지 않고 간다', type: '힐링산책가', score: 1, selected: null },
-            { answer: 'SNS에서 본 핫한 식당과 카페를 알아보고 동선을 짠다.', type: '아이코닉 포토', score: 1, selected: null }
+            { answer: '시간대별로 촘촘히 계획(예약多)', type: '여행 만학도', score: 4, selected: null },
+            { answer: '큰 틀만 미리 정하고 현지가서 유연하게', type: '모험 유랑단', score: 3, selected: null },
+            { answer: '숙소 외에는 아무것도 정하지 않고 간다', type: '모험 유랑단', score: 5, selected: null },
+            { answer: 'SNS에서 본 핫한 식당과 카페를 알아보고 동선을 짠다.', type: '핫플레이더', score: 5, selected: null }
           ]
         }
       ]
@@ -199,10 +204,10 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '창가', type: '아이코닉 포토', score: 1, selected: null },
-            { answer: '중간', type: '하이브리드형', score: 1, selected: null },
-            { answer: '복도', type: '힐링산책가', score: 1, selected: null },
-            { answer: '상관없음', type: '하이브리드형', score: 1, selected: null }
+            { answer: '창가', type: '핫플레이더', score: 4, selected: null },
+            { answer: '중간', type: '모험 유랑단', score: 1, selected: null },
+            { answer: '복도', type: '늘보 베짱이', score: 4, selected: null },
+            { answer: '상관없음', type: '모험 유랑단', score: 4, selected: null }
           ]
         },
         {
@@ -211,9 +216,9 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '가장 먼저 줄 선다', type: '자연액티브', score: 1, selected: null },
-            { answer: '줄 생기면 바로 합류한다', type: '하이브리드형', score: 1, selected: null },
-            { answer: '줄이 짧아질 때까지 기다렸다 합류한다', type: '힐링산책가', score: 1, selected: null }
+            { answer: '가장 먼저 줄 선다', type: '가성비 로거', score: 5, selected: null },
+            { answer: '줄 생기면 바로 합류한다', type: '모험 유랑단', score: 3, selected: null },
+            { answer: '줄이 짧아질 때까지 기다렸다 합류한다', type: '늘보 베짱이', score: 5, selected: null }
           ]
         }
       ]
@@ -231,10 +236,10 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '미리 찾아본 로컬 식당', type: '힐링산책가', score: 1, selected: null },
-            { answer: '돌아다니다가 눈에 보이는 곳', type: '힐링산책가', score: 1, selected: null },
-            { answer: '가벼운 카페나 브런치', type: '힐링산책가', score: 1, selected: null },
-            { answer: '맛이 보장된 프랜차이즈', type: '전시감상가', score: 1, selected: null }
+            { answer: '미리 찾아본 로컬 식당', type: '여행 만학도', score: 5, selected: null },
+            { answer: '돌아다니다가 눈에 보이는 곳', type: '모험 유랑단', score: 5, selected: null },
+            { answer: '가벼운 카페나 브런치', type: '핫플레이더', score: 4, selected: null },
+            { answer: '맛이 보장된 프랜차이즈', type: '가성비 로거', score: 3, selected: null }
           ]
         },
         {
@@ -243,8 +248,8 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '웨이팅 감수하고 인기맛집', type: '아이코닉 포토', score: 1, selected: null },
-            { answer: '바로 먹고 이동 동선 살린다', type: '힐링산책가', score: 1, selected: null }
+            { answer: '웨이팅 감수하고 인기맛집', type: '핫플레이더', score: 5, selected: null },
+            { answer: '바로 먹고 이동 동선 살린다', type: '가성비 로거', score: 5, selected: null }
           ]
         }
       ]
@@ -262,10 +267,10 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: 'SNS 핫플 현지 유명 카페', type: '아이코닉 포토', score: 1, selected: null },
-            { answer: '테마/컨셉 강한 카페(동물·영화 등)', type: '전시감상가', score: 1, selected: null },
-            { answer: '프랜차이즈(국가별 한정 메뉴 기대)', type: '전시감상가', score: 1, selected: null },
-            { answer: '길 걷다 보이는 로컬 카페(즉흥 발견)', type: '힐링산책가', score: 1, selected: null }
+            { answer: 'SNS 핫플 현지 유명 카페', type: '핫플레이더', score: 5, selected: null },
+            { answer: '테마/컨셉 강한 카페(동물·영화 등)', type: '핫플레이더', score: 3, selected: null },
+            { answer: '프랜차이즈(국가별 한정 메뉴 기대)', type: '가성비 로거', score: 3, selected: null },
+            { answer: '길 걷다 보이는 로컬 카페(즉흥 발견)', type: '모험 유랑단', score: 5, selected: null }
           ]
         }
       ]
@@ -283,11 +288,11 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: null,
           answers: [
-            { answer: '사진 잘 찍고 예쁘게 기록하기', type: '아이코닉 포토', score: 2, selected: null },
-            { answer: '유명 관광지는 꼭 가보기', type: '아이코닉 포토', score: 2, selected: null },
-            { answer: '박물관·미술관에서 천천히 감상하기', type: '전시감상가', score: 2, selected: null },
-            { answer: '로컬 동네를 산책하며 현지 분위기 느끼기', type: '힐링산책가', score: 2, selected: null },
-            { answer: '액티비티/패키지 체험으로 빡! 즐기기', type: '자연액티브', score: 2, selected: null }
+            { answer: '사진 잘 찍고 예쁘게 기록하기', type: '핫플레이더', score: 5, selected: null },
+            { answer: '유명 관광지는 꼭 가보기', type: '가성비 로거', score: 5, selected: null },
+            { answer: '박물관·미술관에서 천천히 감상하기', type: '여행 만학도', score: 5, selected: null },
+            { answer: '로컬 동네를 산책하며 현지 분위기 느끼기', type: '모험 유랑단', score: 5, selected: null },
+            { answer: '액티비티/패키지 체험으로 빡! 즐기기', type: '모험 유랑단', score: 4, selected: null }
           ]
         },
         {
@@ -296,10 +301,10 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '구도·빛까지 신경 써서 전문 카메라로 제대로 남기고 싶어요', type: '아이코닉 포토', score: 1, selected: null },
-            { answer: '관광지마다 사진 찍는걸 좋아해요', type: '아이코닉 포토', score: 1, selected: null },
-            { answer: '기록용으로 가볍게 찍으면 충분해요', type: '힐링산책가', score: 1, selected: null },
-            { answer: '사진보다는 눈으로 담는 편이에요', type: '힐링산책가', score: 1, selected: null }
+            { answer: '구도·빛까지 신경 써서 전문 카메라로 제대로 남기고 싶어요', type: '핫플레이더', score: 5, selected: null },
+            { answer: '관광지마다 사진 찍는걸 좋아해요', type: '핫플레이더', score: 4, selected: null },
+            { answer: '기록용으로 가볍게 찍으면 충분해요', type: '모험 유랑단', score: 4, selected: null },
+            { answer: '사진보다는 눈으로 담는 편이에요', type: '늘보 베짱이', score: 5, selected: null }
           ]
         },
         {
@@ -308,9 +313,9 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '핵심 스폿은 꼭 가보고 싶어요', type: '아이코닉 포토', score: 1, selected: null },
-            { answer: '동선 맞으면 가볼래요', type: '하이브리드형', score: 1, selected: null },
-            { answer: '꼭 가야 한다는 생각은 없어요', type: '힐링산책가', score: 1, selected: null }
+            { answer: '핵심 스폿은 꼭 가보고 싶어요', type: '여행 만학도', score: 5, selected: null },
+            { answer: '동선 맞으면 가볼래요', type: '가성비 로거', score: 5, selected: null },
+            { answer: '꼭 가야 한다는 생각은 없어요', type: '모험 유랑단', score: 5, selected: null }
           ]
         },
         {
@@ -319,9 +324,9 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '해설/오디오가이드까지 챙겨 즐기는 편이에요', type: '전시감상가', score: 2, selected: null },
-            { answer: '유명한 곳 한두 곳이면 좋아요', type: '전시감상가', score: 1, selected: null },
-            { answer: '실내 전시는 잘 안 가는 편이에요', type: '자연액티브', score: 1, selected: null }
+            { answer: '해설/오디오가이드까지 챙겨 즐기는 편이에요', type: '여행 만학도', score: 5, selected: null },
+            { answer: '유명한 곳 한두 곳이면 좋아요', type: '여행 만학도', score: 3, selected: null },
+            { answer: '실내 전시는 잘 안 가는 편이에요', type: '늘보 베짱이', score: 5, selected: null }
           ]
         },
         {
@@ -330,9 +335,9 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '골목·시장·카페 돌며 오래 머무는 걸 좋아해요', type: '힐링산책가', score: 2, selected: null },
-            { answer: '일정에 여유가 있으면 넣고 싶어요', type: '힐링산책가', score: 1, selected: null },
-            { answer: '빠른 이동이 더 맞아요', type: '아이코닉 포토', score: 1, selected: null }
+            { answer: '골목·시장·카페 돌며 오래 머무는 걸 좋아해요', type: '모험 유랑단', score: 5, selected: null },
+            { answer: '일정에 여유가 있으면 넣고 싶어요', type: '여행 만학도', score: 3, selected: null },
+            { answer: '빠른 이동이 더 맞아요', type: '가성비 로거', score: 5, selected: null }
           ]
         },
         {
@@ -341,9 +346,9 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '서핑·하이킹 등 체험을 적극적으로 하고 싶어요', type: '자연액티브', score: 2, selected: null },
-            { answer: '1~2개만 가볍게 체험하면 충분해요', type: '하이브리드형', score: 1, selected: null },
-            { answer: '체험보다는 관람/휴식이 좋아요', type: '전시감상가', score: 1, selected: null },
+            { answer: '서핑·하이킹 등 체험을 적극적으로 하고 싶어요', type: '모험 유랑단', score: 5, selected: null },
+            { answer: '1~2개만 가볍게 체험하면 충분해요', type: '가성비 로거', score: 3, selected: null },
+            { answer: '체험보다는 관람/휴식이 좋아요', type: '늘보 베짱이', score: 5, selected: null },
           ]
         },
         {
@@ -352,9 +357,9 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '야시장/바/야경 코스 OK!', type: '아이코닉 포토', score: 1, selected: null },
-            { answer: '숙소 휴식이 좋아(보드게임/라운지)', type: '전시감상가', score: 1, selected: null },
-            { answer: '다음 날 컨디션 보고 당일 결정', type: '하이브리드형', score: 1, selected: null }
+            { answer: '야시장/바/야경 코스 OK!', type: '가성비 로거', score: 5, selected: null },
+            { answer: '숙소 휴식이 좋아(보드게임/라운지)', type: '늘보 베짱이', score: 5, selected: null },
+            { answer: '다음 날 컨디션 보고 당일 결정', type: '모험 유랑단', score: 3, selected: null }
           ]
         },
         {
@@ -363,9 +368,9 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '걷자! 20분은 산책', type: '힐링산책가', score: 1, selected: null },
-            { answer: '환승 2회도 OK(요금 절약/현지 경험)', type: '전시감상가', score: 1, selected: null },
-            { answer: '택시로 시간 세이브', type: '아이코닉 포토', score: 1, selected: null }
+            { answer: '걷자! 20분은 산책', type: '모험 유랑단', score: 5, selected: null },
+            { answer: '환승 2회도 OK(요금 절약/현지 경험)', type: '가성비 로거', score: 4, selected: null },
+            { answer: '택시로 시간 세이브', type: '늘보 베짱이', score: 5, selected: null }
           ]
         },
         {
@@ -374,9 +379,9 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '대형 쇼핑센터/아울렛 루트 잡는다', type: '아이코닉 포토', score: 1, selected: null },
-            { answer: '동네 마켓·플리마켓 위주', type: '힐링산책가', score: 1, selected: null },
-            { answer: '여행은 무겁게 싫다(기념품 최소)', type: '자연액티브', score: 1, selected: null }
+            { answer: '대형 쇼핑센터/아울렛 루트 잡는다', type: '가성비 로거', score: 4, selected: null },
+            { answer: '동네 마켓·플리마켓 위주', type: '모험 유랑단', score: 5, selected: null },
+            { answer: '여행은 무겁게 싫다(기념품 최소)', type: '늘보 베짱이', score: 5, selected: null }
           ]
         },
         {
@@ -385,11 +390,11 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '현지 교통비나 로컬 식당에서의 경험', type: '힐링산책가', score: 1, selected: null },
-            { answer: '박물관 입장권 / 투어 비용', type: '전시감상가', score: 1, selected: null },
-            { answer: '푹신한 침구와 룸서비스가 있는 럭셔리 숙소 비용', type: '전시감상가', score: 1, selected: null },
-            { answer: '예쁜 옷이나 악세서리, 기념품 구매 비용', type: '아이코닉 포토', score: 1, selected: null },
-            { answer: '대중교통 패스 / 할인된 투어 상품 비용', type: '하이브리드형', score: 1, selected: null }
+            { answer: '현지 교통비나 로컬 식당에서의 경험', type: '모험 유랑단', score: 5, selected: null },
+            { answer: '박물관 입장권 / 투어 비용', type: '여행 만학도', score: 5, selected: null },
+            { answer: '푹신한 침구와 룸서비스가 있는 럭셔리 숙소 비용', type: '늘보 베짱이', score: 5, selected: null },
+            { answer: '예쁜 옷이나 악세서리, 기념품 구매 비용', type: '핫플레이더', score: 5, selected: null },
+            { answer: '대중교통 패스 / 할인된 투어 상품 비용', type: '가성비 로거', score: 5, selected: null }
           ]
         }
       ]
@@ -407,19 +412,11 @@ export const Test1QAForm: QAFormType = {
           minSelect: 0,
           maxSelect: null,
           answers: [
-            { answer: '과음/클럽', type: '전시감상가', score: 1, selected: null },
-            { answer: '새벽 일정(아주 이른 기상)', type: '힐링산책가', score: 1, selected: null },
-            { answer: '장거리 도보/과한 걷기', type: '전시감상가', score: 1, selected: null },
-            { answer: '장거리 운전/야간 운전', type: '힐링산책가', score: 1, selected: null },
-            { answer: '익스트림 액티비티(번지, 패러글라이딩 등)', type: '전시감상가', score: 1, selected: null },
-            { answer: '혼잡한 곳/과한 웨이팅', type: '힐링산책가', score: 1, selected: null },
-            { answer: '소음 많은 숙소/파티형 숙소', type: '전시감상가', score: 1, selected: null },
-            { answer: '위생이 불안한 식당/거리 음식', type: '전시감상가', score: 1, selected: null },
-            { answer: '특정 음식/식이 제한(해산물, 돼지고기, 글루텐 등)', type: '전시감상가', score: 1, selected: null },
-            { answer: '알레르기 유발 요소(동물털, 꽃가루 등)', type: '전시감상가', score: 1, selected: null },
-            { answer: '정치/종교 색채 강한 장소·이벤트', type: '전시감상가', score: 1, selected: null },
-            { answer: '사진·촬영 위주 코스', type: '힐링산책가', score: 1, selected: null },
-            { answer: '쇼핑 위주 코스', type: '자연액티브', score: 1, selected: null },
+            { answer: '장거리 도보/과한 걷기', type: '늘보 베짱이', score: 5, selected: null },
+            { answer: '혼잡한 곳/과한 웨이팅', type: '가성비 로거', score: 4, selected: null },
+            { answer: '소음 많은 숙소/파티형 숙소', type: '늘보 베짱이', score: 5, selected: null },
+            { answer: '사진·촬영 위주 코스', type: '여행 만학도', score: 4, selected: null },
+            { answer: '쇼핑 위주 코스', type: '모험 유랑단', score: 3, selected: null },
           ]
         },
         {
@@ -428,12 +425,11 @@ export const Test1QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 2,
           answers: [
-            { answer: '그 나라의 현지 시장이나 골목을 탐험하는 것', type: '힐링산책가', score: 2, selected: null },
-            { answer: '유명한 건축물 앞에서 설명을 들으며 감상하는 것', type: '전시감상가', score: 2, selected: null },
-            { answer: '침대나 수영장에서 하루종일 멍 대리는 것', type: '힐링산책가', score: 2, selected: null },
-            { answer: '유명한 식당에 가서 사진찍고 맛보는 것', type: '아이코닉 포토', score: 2, selected: null },
-            { answer: '유명한 관광명소를 짧게라도 다 둘러보는 것', type: '아이코닉 포토', score: 2, selected: null },
-            { answer: '자연 속에서 액티비티를 즐기는 것', type: '자연액티브', score: 2, selected: null }
+            { answer: '현지 시장이나 골목을 탐험하는 것', type: '모험 유랑단', score: 5, selected: null },
+            { answer: '유명한 건축물 앞에서 설명을 들으며 감상하는 것', type: '여행 만학도', score: 5, selected: null },
+            { answer: '침대나 수영장에서 하루 종일 멍 때리는 것', type: '늘보 베짱이', score: 5, selected: null },
+            { answer: '유명한 식당에 가서 사진 찍고 맛보는 것', type: '핫플레이더', score: 5, selected: null },
+            { answer: '유명한 관광명소를 짧게라도 다 둘러보는 것', type: '가성비 로거', score: 5, selected: null },
           ]
         }
       ]

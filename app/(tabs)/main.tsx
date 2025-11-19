@@ -248,13 +248,13 @@ export default function Main() {
                                 <Image source={require('@/assets/images/blackLogo.png')} style={{ width: 49, height: 42 }} />
                             </View>
                             <View style={{ position: 'absolute', top: 93, width: '100%', alignItems: 'center' }}>
-                                <Image source={require('@/assets/images/logoTitle.png')} style={{ width: 204, height: 46 }} contentFit="contain" />
+                                <Image source={require('@/assets/images/logoTitle.png')} style={{ width: 153, height: 35 }} contentFit="contain" />
                             </View>
                         </>
                     </Animated.View>
 
                     {/* 탭 */}
-                    <Animated.View style={{ opacity: otherElementsOpacity, marginTop: Dimensions.get('window').height < 700 ? -35 : 0 }}>
+                    <Animated.View style={{ opacity: otherElementsOpacity, marginTop: Dimensions.get('window').height < 700 ? -35 : -10 }}>
                         <>
                             <View style={{ backgroundColor: '#F76480', width: 18, height: 18, position: 'absolute', top: 181, left: selectedTab === 'best' ? 60 : 174, borderRadius: 100 }} />
                             <TouchableOpacity onPress={() => setSelectedTab('best')}>
@@ -267,7 +267,7 @@ export default function Main() {
                     </Animated.View>
 
                     {/* 여행지 카드 */}
-                    <Animated.View style={{ width: '100%', position: 'absolute', bottom: Dimensions.get('window').height > 900 ? '34%' : Dimensions.get('window').height < 700 ? '15%' : '26%', height: 301, opacity: otherElementsOpacity }}>
+                    <Animated.View style={{ width: '100%', position: 'absolute', bottom: Dimensions.get('window').height > 900 ? '34%' : Dimensions.get('window').height < 700 ? '15%' : '27%', height: 301, opacity: otherElementsOpacity }}>
                         <ScrollView
                             horizontal
                             style={{ width: '100%', height: 301, paddingLeft: 41, paddingVertical: 20, overflow: 'visible' }}
