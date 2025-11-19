@@ -36,7 +36,9 @@ export interface ResultType {
     keyword: string[]
     description: string
     recommend: string[]
-    avoid: string[]
+    avoid: string[],
+    image1: any,
+    image2: any
   };
 }
 
@@ -57,7 +59,9 @@ export const Test1QAForm: QAFormType = {
       avoid: [
         '긴 웨이팅 연속, 과밀 체크리스트',
         '실내 투어만 연속 배치'
-      ]
+      ],
+      image1: require('@/assets/images/test2_result1.png'),
+      image2: require('@/assets/images/test2_result1_2.png'),
     },
     '하이브리드형': {
       score: 0,
@@ -72,7 +76,9 @@ export const Test1QAForm: QAFormType = {
       avoid: [
         '분 단위 과계획',
         '완전 무계획·장거리 연속 이동'
-      ]
+      ],
+      image1: require('@/assets/images/test2_result2.png'),
+      image2: require('@/assets/images/test2_result2_2.png'),
     },
     '힐링산책가': {
       score: 0,
@@ -87,7 +93,9 @@ export const Test1QAForm: QAFormType = {
       avoid: [
         '광역 환승/단체 투어',
         '대형 쇼핑몰 위주, 촉박 체크리스트'
-      ]
+      ],
+      image1: require('@/assets/images/test2_result3.png'),
+      image2: require('@/assets/images/test2_result3_2.png'),
     },
     '자연액티브': {
       score: 0,
@@ -102,7 +110,9 @@ export const Test1QAForm: QAFormType = {
       avoid: [
         '종일 실내·웨이팅 루틴',
         '회복 없이 액티비티 연속, 무계획 강행'
-      ]
+      ],
+      image1: require('@/assets/images/test2_result4.png'),
+      image2: require('@/assets/images/test2_result4_2.png'),
     },
     '전시감상가': {
       score: 0,
@@ -117,7 +127,9 @@ export const Test1QAForm: QAFormType = {
       avoid: [
         '인증샷 순회, 혼잡 핫플 연속 방문',
         '장거리 환승/도보 과다'
-      ]
+      ],
+      image1: require('@/assets/images/test2_result5.png'),
+      image2: require('@/assets/images/test2_result5_2.png'),
     },
   },
   chapters: [
@@ -433,11 +445,11 @@ export const Test2QAForm: QAFormType = {
   testDescription: '연애 성향 테스트',
   testImage: require('@/assets/images/test2_1.png'),
   resultTypes: {
-    '대화형 안정파': {
+    '안정적인 동반자': {
       score: 0,
       color: '#4A90E2',
-      keyword: ['대화', '안정', '규칙', '소통'],
-      description: '당신은 진지한 연애를 추구하며, 명확한 소통과 안정적인 관계를 중시하는 유형이에요. 관계 시작 전에 기준을 명확히 정하고, 연락 빈도와 만남의 규칙을 함께 설정하는 것을 선호합니다. 갈등이 생기면 바로 대화를 제안하고, 빠르게 사과하고 재합의하는 스타일이에요.\n좋아하는 관계 연락을 자주 주고받고, 일상을 공유하며 깊은 대화를 나누는 것을 즐깁니다. 데이트는 조용한 카페나 가벼운 식사, 전시·산책 같은 정적인 활동을 선호하고, 서로 번갈아가며 계획을 주도하는 균형을 좋아해요. 공개적 애정 표현은 포옹이나 짧은 키스 정도가 편하고, 안정과 일상 루틴을 우선시합니다.\n피하면 좋은 관계 즉흥적이고 무계획한 만남, 연락이 드문 관계, 감정 기복이 심한 파트너와는 어려울 수 있어요. 규칙 없이 유동적으로만 흘러가는 관계나, 개인 공간을 과도하게 요구하는 스타일은 맞지 않습니다.',
+      keyword: ['안정', '규칙', '소통', '균형'],
+      description: '당신은 진지한 연애를 추구하며, 명확한 소통과 안정적인 관계를 중시하는 유형이에요. 관계 시작 전에 기준을 명확히 정하고, 연락 빈도와 만남의 규칙을 함께 설정하는 것을 선호합니다. 갈등이 생기면 먼저 진정한 뒤 대화하고, 빠르게 사과하고 재합의하는 스타일이에요.\n좋아하는 관계 연락을 적절히 주고받고, 일상을 공유하며 깊은 대화를 나누는 것을 즐깁니다. 데이트는 조용한 카페나 가벼운 식사, 전시·산책 같은 정적인 활동을 선호하고, 서로 번갈아가며 계획을 주도하는 균형을 좋아해요. 안정과 일상 루틴을 우선시하며, 관계의 안정을 해치지 않는 선에서 서로의 일정과 공간을 보장합니다.\n피하면 좋은 관계 즉흥적이고 무계획한 만남, 연락이 드문 관계, 감정 기복이 심한 파트너와는 어려울 수 있어요. 규칙 없이 유동적으로만 흘러가는 관계나, 개인 공간을 과도하게 요구하는 스타일은 맞지 않습니다.',
       recommend: [
         '관계 시작 전 명확한 규칙과 기준 설정',
         '정기적인 대화 시간 확보',
@@ -447,71 +459,81 @@ export const Test2QAForm: QAFormType = {
         '즉흥적이고 무계획한 만남',
         '연락이 드문 관계',
         '규칙 없이 유동적으로만 흐르는 관계'
-      ]
+      ],
+      image1: require('@/assets/images/test2_result1.png'),
+      image2: require('@/assets/images/test2_result1_2.png'),
     },
-    '낭만 플래너': {
+    '열정적인 몰입형': {
       score: 0,
       color: '#E91E63',
-      keyword: ['계획', '낭만', '균형', '로맨틱'],
-      description: '당신은 연애에서 계획과 낭만을 모두 추구하는 유형이에요. 데이트 계획과 예약을 주도하는 것을 좋아하고, 전시·산책 같은 문화적 활동을 즐깁니다. 안정과 성장의 균형을 맞추는 것을 중시하며, 글/메모로 감정을 정리해 공유하는 스타일이에요.\n좋아하는 관계 진지한 연애를 시작하며, 관계 규칙을 함께 정립합니다. 데이트는 전시·산책을 즐기고, 제안한 사람이 먼저 계산하는 것을 선호해요. 포옹이나 짧은 키스 같은 애정 표현이 편하고, 사적인 1:1 만남은 가능하면 피하고 경계를 유지하는 스타일입니다.\n피하면 좋은 관계 완전히 즉흥적인 만남이나, 계획 없이 흘러가는 관계는 어려울 수 있어요. 과도하게 자유로운 스타일이나, 공개적 애정 표현을 극도로 선호하는 파트너와는 맞지 않을 수 있습니다.',
+      keyword: ['열정', '몰입', '깊이', '공유'],
+      description: '당신은 관계에 깊이 몰입하며 열정적인 연애를 추구하는 유형이에요. 사랑에 빠지면 상대의 모든 것을 공유하고 싶어하며, 자주 함께하고 싶어 합니다. 연인과 최대한 많은 시간을 공유하며 정서적으로 밀착하고 싶어해요.\n좋아하는 관계 연락을 자주 주고받고, 하루 1-2회 정도 주고받는 것을 선호합니다. 답장 속도에 민감하며, 늦답이나 읽씹이 이어지면 불안이 커집니다. 연인에게 깊은 사적인 비밀이나 고민을 털어놓는 것이 편하고, 관계가 끝날까 봐 두려워하는 경향이 있어요.\n피하면 좋은 관계 연락이 드문 관계나, 개인 공간을 과도하게 요구하는 스타일은 어려울 수 있어요. 감정 기복이 심하거나 감정적 부담이 큰 관계는 지속하기 어려울 수 있습니다.',
       recommend: [
-        '데이트 계획과 예약을 주도적으로 관리',
-        '전시·산책 같은 문화적 활동 즐기기',
-        '글/메모로 감정 정리 후 공유'
+        '자주 연락 주고받기',
+        '함께하는 시간 최대한 확보',
+        '깊은 정서적 공유'
       ],
       avoid: [
-        '완전히 즉흥적인 만남',
-        '계획 없이 흘러가는 관계',
-        '과도하게 자유로운 스타일'
-      ]
-    },
-    '공간 존중형': {
-      score: 0,
-      color: '#9B59B6',
-      keyword: ['독립', '공간', '천천히', '자유'],
-      description: '당신은 개인의 공간과 독립성을 중시하는 유형이에요. 관계를 천천히 알아보고 가능하면 이어가는 스타일이며, 각자의 일정과 공간을 반드시 보장하는 것을 중요하게 생각합니다. 연락은 필요할 때만 주고받고, 답장 속도에 크게 구애받지 않아요.\n좋아하는 관계 만나 보며 필요할 때 조율하는 유연한 방식을 선호합니다. 갈등이 생기면 먼저 진정한 뒤 대화하고, 시간을 두고 정리한 뒤 사과하는 스타일이에요. 데이트는 조용한 카페나 가벼운 식사, 상대가 주도하는 것을 선호하며, 더치페이나 번갈아 계산하는 방식을 좋아합니다.\n피하면 좋은 관계 매일 여러 번 연락을 주고받거나, 빠른 답장을 기대하는 관계는 부담스러울 수 있어요. 과도하게 밀착되거나, 개인 공간을 존중하지 않는 파트너와는 어려울 수 있습니다.',
-      recommend: [
-        '각자의 일정과 공간 보장',
-        '필요할 때만 연락 주고받기',
-        '천천히 알아가는 관계 속도'
+        '연락이 드문 관계',
+        '과도한 개인 공간 요구',
+        '감정 기복이 심한 관계'
       ],
-      avoid: [
-        '매일 여러 번 연락 주고받기',
-        '빠른 답장 기대',
-        '과도하게 밀착된 관계'
-      ]
+      image1: require('@/assets/images/test2_result2.png'),
+      image2: require('@/assets/images/test2_result2_2.png'),
     },
-    '활력 즉흥형': {
+    '자유로운 유희형': {
       score: 0,
       color: '#F39C12',
-      keyword: ['즉흥', '자유', '유연', '활력'],
-      description: '당신은 자유롭고 즉흥적인 연애를 즐기는 유형이에요. 가볍게 만나며 즐거운 만남을 만들고, 상황에 따라 유동적으로 관계를 정립합니다. 합의의 중요도를 낮게 보며, 갈등이 생기면 일단 거리를 두고 나중에 다루는 스타일이에요.\n좋아하는 관계 연락은 필요할 때만 주고받고, 답장 속도에 크게 구애받지 않습니다. 데이트는 액티비티를 체험하거나 즉흥 제안을 선호하고, 상황에 따라 유연하게 비용을 정하는 방식을 좋아해요. 새로운 모임이나 사람 많은 자리를 즐기며, 성장과 도전 기회를 우선시합니다.\n피하면 좋은 관계 명확한 규칙을 요구하거나, 자주 연락을 주고받아야 하는 관계는 부담스러울 수 있어요. 과도하게 계획적이거나, 안정만을 추구하는 파트너와는 맞지 않을 수 있습니다.',
+      keyword: ['자유', '즉흥', '유연', '활력'],
+      description: '당신은 자유롭고 즉흥적인 연애를 즐기는 유형이에요. 가볍게 만나며 즐거운 만남을 만들고, 상황에 따라 유동적으로 관계를 정립합니다. 합의의 중요도를 낮게 보며, 갈등이 생기면 일단 거리를 두고 나중에 다루는 스타일이에요.\n좋아하는 관계 연락은 필요할 때만 주고받고, 답장 속도에 크게 구애받지 않습니다. 데이트는 즉흥 제안을 선호하고, 상황에 따라 유연하게 비용을 정하는 방식을 좋아해요. 취미·여가를 즐기고, 친구와 약속을 잡으며, 즉흥 약속을 즐기는 스타일입니다.\n피하면 좋은 관계 명확한 규칙을 요구하거나, 자주 연락을 주고받아야 하는 관계는 부담스러울 수 있어요. 과도하게 계획적이거나, 안정만을 추구하는 파트너와는 맞지 않을 수 있습니다.',
       recommend: [
         '즉흥적이고 유연한 만남',
-        '액티비티 중심의 데이트',
-        '성장과 도전 기회 추구'
+        '필요할 때만 연락 주고받기',
+        '자유로운 관계 스타일'
       ],
       avoid: [
         '명확한 규칙 요구',
         '자주 연락 주고받기',
         '과도하게 계획적인 관계'
-      ]
+      ],
+      image1: require('@/assets/images/test2_result3.png'),
+      image2: require('@/assets/images/test2_result3_2.png'),
     },
-    '나이트아웃형': {
+    '공감 중심 밀착형': {
       score: 0,
-      color: '#E74C3C',
-      keyword: ['야간', '활동', '공개', '에너지'],
-      description: '당신은 활기찬 야간 활동과 공개적인 애정 표현을 즐기는 유형이에요. 분위기 좋은 바를 선택하고, 술자리를 즐기며, 사진·SNS에서 커플 사진/표현이 편합니다. 새로운 모임과 사람 많은 자리를 좋아하고, 야시장·바·밤산책 같은 야간 활동을 즐겨요.\n좋아하는 관계 가볍게 만나며 즐거운 만남을 만들고, 상황에 따라 유동적으로 관계를 정립합니다. 데이트는 즉흥 제안을 선호하고, 분위기에 따라 마시거나 즐겨 마시는 스타일이에요. 공개적 애정 표현에 거부감이 없고, 모두 괜찮거나 그 이상도 괜찮아합니다.\n피하면 좋은 관계 규칙을 과도하게 요구하거나, 공개적 애정 표현을 꺼리는 관계는 어려울 수 있어요. 조용하고 정적인 활동만 선호하거나, 술자리를 피하는 파트너와는 맞지 않을 수 있습니다.',
+      color: '#9B59B6',
+      keyword: ['공감', '밀착', '정서', '유대'],
+      description: '당신은 정서적으로 밀착하며 공감을 중시하는 유형이에요. 연인과 최대한 많은 시간을 공유하며 정서적으로 밀착하고 싶어 합니다. 깊은 정서적 유대가 가장 중요하며, 관계가 깊어진다면 자연스럽게 미래를 함께 계획하고 싶어해요.\n좋아하는 관계 연락을 자주 주고받고, 답장 속도에 민감합니다. 늦답이나 읽씹이 이어지면 불안이 커지며, 연인과의 관계가 끝날까 봐 두려워하는 경향이 있어요. 연인에게 깊은 사적인 비밀이나 고민을 털어놓는 것이 편하고, 관계의 분위기를 해치고 싶지 않아 웬만한 문제는 언급하지 않는 스타일입니다.\n피하면 좋은 관계 연락이 드문 관계나, 개인 공간을 과도하게 요구하는 스타일은 어려울 수 있어요. 감정 기복이 심하거나 감정적 부담이 큰 관계는 지속하기 어려울 수 있습니다.',
       recommend: [
-        '야간 활동 중심의 데이트',
-        '공개적 애정 표현 즐기기',
-        '즉흥적이고 활기찬 만남'
+        '정서적 밀착과 공감',
+        '자주 연락 주고받기',
+        '깊은 정서적 유대 형성'
       ],
       avoid: [
-        '과도한 규칙 요구',
-        '공개적 애정 표현 회피',
-        '조용하고 정적인 활동만'
-      ]
+        '연락이 드문 관계',
+        '과도한 개인 공간 요구',
+        '감정 기복이 심한 관계'
+      ],
+      image1: require('@/assets/images/test2_result4.png'),
+      image2: require('@/assets/images/test2_result4_2.png'),
+    },
+    '독립 보장형': {
+      score: 0,
+      color: '#E74C3C',
+      keyword: ['독립', '공간', '자유', '보장'],
+      description: '당신은 개인의 공간과 독립성을 중시하는 유형이에요. 연애 중에도 각자의 일정과 공간을 절대적으로 보장받아야 한다고 생각합니다. 구속받지 않는 자유로운 연애를 추구하며, 각자의 사생활과 공간을 확실히 구분하고 싶어 해요.\n좋아하는 관계 연락은 필요할 때만 주고받고, 답장 속도에 크게 구애받지 않습니다. 갈등이 생기면 바로 대화를 제안하거나, 일단 거리를 두고 나중에 다루는 스타일이에요. 사적인 1:1 만남은 가능하면 피하고 경계를 유지하며, 상호 신뢰를 우선하고 별도 공유를 요구하지 않습니다.\n피하면 좋은 관계 매일 여러 번 연락을 주고받거나, 빠른 답장을 기대하는 관계는 부담스러울 수 있어요. 과도하게 밀착되거나, 개인 공간을 존중하지 않는 파트너와는 어려울 수 있습니다.',
+      recommend: [
+        '각자의 일정과 공간 보장',
+        '필요할 때만 연락 주고받기',
+        '독립적인 관계 스타일'
+      ],
+      avoid: [
+        '매일 여러 번 연락 주고받기',
+        '빠른 답장 기대',
+        '과도하게 밀착된 관계'
+      ],
+      image1: require('@/assets/images/test2_result5.png'),
+      image2: require('@/assets/images/test2_result5_2.png'),
     },
   },
   chapters: [
@@ -528,11 +550,11 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '진지한 연애를 시작한다.', type: '대화형 안정파', score: 2, selected: null },
-            { answer: '천천히 알아보고 가능하면 이어간다.', type: '공간 존중형', score: 2, selected: null },
-            { answer: '가볍게 만나며 즐거운 만남을 만든다.', type: '활력 즉흥형', score: 2, selected: null },
-            { answer: '여행/소셜 메이트로 지낸다(연애 의도 없음).', type: '활력 즉흥형', score: 2, selected: null },
-            { answer: '아직 결정하지 않았다.', type: '공간 존중형', score: 1, selected: null }
+            { answer: '진지한 연애를 시작한다.', type: '열정적인 몰입형', score: 5, selected: null },
+            { answer: '천천히 알아보고 가능하면 이어간다.', type: '안정적인 동반자', score: 5, selected: null },
+            { answer: '가볍게 만나며 즐거운 만남을 만든다.', type: '자유로운 유희형', score: 5, selected: null },
+            { answer: '여행/소셜 메이트로 지낸다.', type: '독립 보장형', score: 5, selected: null },
+            { answer: '아직 결정하지 않았다.', type: '안정적인 동반자', score: 0, selected: null }
           ]
         },
         {
@@ -541,10 +563,10 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '시작 전에 기준을 명확히 정한다.', type: '대화형 안정파', score: 2, selected: null },
-            { answer: '만나 보며 필요할 때 조율한다.', type: '공간 존중형', score: 1, selected: null },
-            { answer: '상황에 따라 유동적으로 정한다.', type: '활력 즉흥형', score: 1, selected: null },
-            { answer: '합의의 중요도를 낮게 본다.', type: '활력 즉흥형', score: 2, selected: null }
+            { answer: '시작 전에 기준을 명확히 정한다.', type: '안정적인 동반자', score: 5, selected: null },
+            { answer: '만나 보며 필요할 때 조율한다.', type: '열정적인 몰입형', score: 4, selected: null },
+            { answer: '상황에 따라 유동적으로 정한다.', type: '독립 보장형', score: 5, selected: null },
+            { answer: '합의의 중요도를 낮게 본다.', type: '자유로운 유희형', score: 4, selected: null }
           ]
         },
         {
@@ -553,11 +575,11 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '1 전혀 아니다', type: '활력 즉흥형', score: 1, selected: null },
-            { answer: '2 조금 그렇다', type: '활력 즉흥형', score: 1, selected: null },
-            { answer: '3 보통이다', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '4 대체로 그렇다', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '5 매우 그렇다', type: '대화형 안정파', score: 1, selected: null }
+            { answer: '나는 관계의 평화를 위해 나를 바칠 준비가 된, 헌신적인 사랑꾼이다.', type: '공감 중심 밀착형', score: 5, selected: null },
+            { answer: '나는 장기적인 관계의 안정을 위해 나의 개인적인 불편함쯤은 당연히 감수할 줄 아는 성숙한 동반자이다.', type: '안정적인 동반자', score: 5, selected: null },
+            { answer: '나는 관계에 깊이 몰입하는 만큼 상대와의 경험을 위해서라면 어느 정도의 희생은 감수할 수 있다.', type: '열정적인 몰입형', score: 5, selected: null },
+            { answer: '나는 개인의 영역이 크게 침해받지 않는, 독립적인 선에서만 희생을 감수한다.', type: '독립 보장형', score: 5, selected: null },
+            { answer: '나는 개인의 자유를 잃는 희생은 절대 감수하지 않는다.', type: '자유로운 유희형', score: 5, selected: null }
           ]
         },
         {
@@ -566,28 +588,28 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '1 전혀 아니다', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '2 조금 그렇다', type: '낭만 플래너', score: 1, selected: null },
-            { answer: '3 보통이다', type: '공간 존중형', score: 1, selected: null },
-            { answer: '4 대체로 그렇다', type: '공간 존중형', score: 2, selected: null },
-            { answer: '5 매우 그렇다', type: '공간 존중형', score: 2, selected: null }
+            { answer: '나는 연애 중에도 각자의 일정과 공간을 절대적으로 보장받아야 한다고 생각하는 사람이다.', type: '독립 보장형', score: 5, selected: null },
+            { answer: '나는 구속받지 않는 자유로운 연애를 추구하며, 각자의 사생활과 공간을 확실히 구분하고 싶다.', type: '자유로운 유희형', score: 5, selected: null },
+            { answer: '나는 관계의 안정을 해치지 않는 선에서 서로의 일정과 공간을 보장하되, 함께하는 시간도 중요하게 생각한다.', type: '안정적인 동반자', score: 5, selected: null },
+            { answer: '나는 사랑에 빠지면 상대의 모든 것을 공유하고 싶다. 각자의 공간 보장은 필요하지만, 자주 함께하고 싶다.', type: '열정적인 몰입형', score: 5, selected: null },
+            { answer: '나는 연인과 최대한 많은 시간을 공유하며 정서적으로 밀착하고 싶다. 각자의 공간은 크게 중요하지 않다.', type: '공감 중심 밀착형', score: 5, selected: null }
           ]
         },
         {
           questionId: 'Q5',
           question: '나는 다음 요소와는 절대 만나지 않는다(최대 3개).',
-          minSelect: 0,
+          minSelect: 1,
           maxSelect: 3,
           answers: [
-            { answer: '과음과 잦은 음주', type: '대화형 안정파', score: 2, selected: null },
-            { answer: '흡연', type: '대화형 안정파', score: 2, selected: null },
-            { answer: '위생 관념 부족', type: '공간 존중형', score: 2, selected: null },
-            { answer: '동성/이성 친구가 많다', type: '낭만 플래너', score: 2, selected: null },
-            { answer: '장거리 연애', type: '낭만 플래너', score: 2, selected: null },
-            { answer: '정치·종교 극단 성향을 드러낸다.', type: '공간 존중형', score: 2, selected: null },
-            { answer: '반려동물 알레르기가 있다.', type: '공간 존중형', score: 2, selected: null },
-            { answer: '결혼 의사가 나와 다르다.', type: '대화형 안정파', score: 2, selected: null },
-            { answer: '자녀 계획이 나와 다르다.', type: '나이트아웃형', score: 2, selected: null },
+            { answer: '과음과 잦은 음주', type: '자유로운 유희형', score: 5, selected: null },
+            { answer: '흡연', type: '열정적인 몰입형', score: 5, selected: null },
+            { answer: '위생 관념 부족', type: '안정적인 동반자', score: 5, selected: null },
+            { answer: '동성/이성 친구가 많다', type: '독립 보장형', score: 5, selected: null },
+            { answer: '장거리 연애', type: '공감 중심 밀착형', score: 5, selected: null },
+            { answer: '정치·종교 극단 성향을 드러낸다.', type: '안정적인 동반자', score: 4, selected: null },
+            { answer: '반려동물 알레르기가 있다.', type: '독립 보장형', score: 5, selected: null },
+            { answer: '결혼 의사가 나와 다르다.', type: '공감 중심 밀착형', score: 5, selected: null },
+            { answer: '자녀 계획이 나와 다르다.', type: '자유로운 유희형', score: 5, selected: null },
           ]
         }
       ]
@@ -605,10 +627,10 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '매일 여러 번 주고받는다.', type: '대화형 안정파', score: 2, selected: null },
-            { answer: '하루 1-2회 정도 주고받는다.', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '이틀에 한 번 정도 주고받는다.', type: '공간 존중형', score: 1, selected: null },
-            { answer: '필요할 때만 주고받는다.', type: '공간 존중형', score: 1, selected: null }
+            { answer: '매일 여러 번 주고받는다.', type: '공감 중심 밀착형', score: 5, selected: null },
+            { answer: '하루 1–2회 정도 주고받는다.', type: '열정적인 몰입형', score: 5, selected: null },
+            { answer: '이틀에 한 번 정도 주고받는다.', type: '안정적인 동반자', score: 5, selected: null },
+            { answer: '필요할 때만 주고받는다.', type: '자유로운 유희형', score: 5, selected: null }
           ]
         },
         {
@@ -617,11 +639,11 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '10분 내로 온다.', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '1시간 내로 온다.', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '반나절 내로 온다.', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '하루 내로 온다.', type: '공간 존중형', score: 1, selected: null },
-            { answer: '크게 상관하지 않는다.', type: '공간 존중형', score: 1, selected: null }
+            { answer: '10분 내로 온다.', type: '공감 중심 밀착형', score: 5, selected: null },
+            { answer: '1시간 내로 온다.', type: '열정적인 몰입형', score: 5, selected: null },
+            { answer: '반나절 내로 온다.', type: '자유로운 유희형', score: 3, selected: null },
+            { answer: '하루 내로 온다.', type: '안정적인 동반자', score: 3, selected: null },
+            { answer: '크게 상관하지 않는다.', type: '독립 보장형', score: 5, selected: null }
           ]
         },
         {
@@ -630,11 +652,11 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '1 전혀 아니다', type: '공간 존중형', score: 1, selected: null },
-            { answer: '2 조금 그렇다', type: '활력 즉흥형', score: 1, selected: null },
-            { answer: '3 보통이다', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '4 대체로 그렇다', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '5 매우 그렇다', type: '대화형 안정파', score: 1, selected: null }
+            { answer: '1 전혀 아니다', type: '독립 보장형', score: 1, selected: null },
+            { answer: '2 조금 그렇다', type: '자유로운 유희형', score: 2, selected: null },
+            { answer: '3 보통이다', type: '안정적인 동반자', score: 3, selected: null },
+            { answer: '4 대체로 그렇다', type: '열정적인 몰입형', score: 4, selected: null },
+            { answer: '5 매우 그렇다', type: '공감 중심 밀착형', score: 5, selected: null }
           ]
         },
         {
@@ -643,11 +665,11 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '1 전혀 아니다', type: '공간 존중형', score: 1, selected: null },
-            { answer: '2 조금 그렇다', type: '공간 존중형', score: 1, selected: null },
-            { answer: '3 보통이다', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '4 대체로 그렇다', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '5 매우 그렇다', type: '대화형 안정파', score: 1, selected: null }
+            { answer: '1 전혀 아니다', type: '독립 보장형', score: 2, selected: null },
+            { answer: '2 조금 그렇다', type: '자유로운 유희형', score: 1, selected: null },
+            { answer: '3 보통이다', type: '안정적인 동반자', score: 3, selected: null },
+            { answer: '4 대체로 그렇다', type: '열정적인 몰입형', score: 4, selected: null },
+            { answer: '5 매우 그렇다', type: '공감 중심 밀착형', score: 5, selected: null }
           ]
         },
         {
@@ -656,11 +678,11 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '1 전혀 아니다', type: '공간 존중형', score: 1, selected: null },
-            { answer: '2 조금 그렇다', type: '활력 즉흥형', score: 1, selected: null },
-            { answer: '3 보통이다', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '4 대체로 그렇다', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '5 매우 그렇다', type: '대화형 안정파', score: 1, selected: null }
+            { answer: '1 전혀 아니다', type: '독립 보장형', score: 1, selected: null },
+            { answer: '2 조금 그렇다', type: '자유로운 유희형', score: 2, selected: null },
+            { answer: '3 보통이다', type: '안정적인 동반자', score: 3, selected: null },
+            { answer: '4 대체로 그렇다', type: '열정적인 몰입형', score: 5, selected: null },
+            { answer: '5 매우 그렇다', type: '공감 중심 밀착형', score: 5, selected: null }
           ]
         }
       ]
@@ -678,10 +700,11 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '바로 대화를 제안한다.', type: '대화형 안정파', score: 2, selected: null },
-            { answer: '먼저 진정한 뒤 대화한다.', type: '공간 존중형', score: 1, selected: null },
-            { answer: '글/메모로 정리해 공유한다.', type: '낭만 플래너', score: 1, selected: null },
-            { answer: '일단 거리를 두고 나중에 다룬다.', type: '활력 즉흥형', score: 1, selected: null }
+            { answer: '바로 대화를 제안한다.', type: '독립 보장형', score: 5, selected: null },
+            { answer: '먼저 진정한 뒤 대화한다.', type: '안정적인 동반자', score: 5, selected: null },
+            { answer: '글/메모로 정리해 공유한다.', type: '자유로운 유희형', score: 5, selected: null },
+            { answer: '일단 거리를 두고 나중에 다룬다.', type: '안정적인 동반자', score: 5, selected: null },
+            { answer: '관계의 분위기를 해치고 싶지 않아 웬만한 문제는 언급하지 않고, 긍정적인 면만 보려고 노력한다.', type: '자유로운 유희형', score: 5, selected: null }
           ]
         },
         {
@@ -690,11 +713,11 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '1 전혀 아니다', type: '활력 즉흥형', score: 1, selected: null },
-            { answer: '2 조금 그렇다', type: '활력 즉흥형', score: 1, selected: null },
-            { answer: '3 보통이다', type: '낭만 플래너', score: 1, selected: null },
-            { answer: '4 대체로 그렇다', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '5 매우 그렇다', type: '대화형 안정파', score: 1, selected: null }
+            { answer: '1 전혀 아니다', type: '자유로운 유희형', score: 5, selected: null },
+            { answer: '2 조금 그렇다', type: '안정적인 동반자', score: 2, selected: null },
+            { answer: '3 보통이다', type: '안정적인 동반자', score: 2, selected: null },
+            { answer: '4 대체로 그렇다', type: '자유로운 유희형', score: 5, selected: null },
+            { answer: '5 매우 그렇다', type: '독립 보장형', score: 5, selected: null }
           ]
         },
         {
@@ -703,10 +726,10 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '빠르게 사과하고 재합의한다.', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '시간을 두고 정리한 뒤 사과한다.', type: '공간 존중형', score: 1, selected: null },
-            { answer: '제3자의 조언을 구한다.', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '묵과하고 넘어간다.', type: '활력 즉흥형', score: 1, selected: null }
+            { answer: '빠르게 사과하고 재합의한다.', type: '안정적인 동반자', score: 5, selected: null },
+            { answer: '시간을 두고 정리한 뒤 사과한다.', type: '열정적인 몰입형', score: 5, selected: null },
+            { answer: '제3자의 조언을 구한다.', type: '열정적인 몰입형', score: 5, selected: null },
+            { answer: '묵과하고 넘어간다.', type: '안정적인 동반자', score: 5, selected: null }
           ]
         },
         {
@@ -715,10 +738,10 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '이성 친구와의 만남·연락을 사전에 알리고 투명하게 공유한다.', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '상황에 따라 사후 공유로 충분히 설명한다.', type: '공간 존중형', score: 1, selected: null },
-            { answer: '사적인 1:1 만남은 가능하면 피하고 경계를 유지한다.', type: '낭만 플래너', score: 1, selected: null },
-            { answer: '상호 신뢰를 우선하고 별도 공유를 요구하지 않는다.', type: '공간 존중형', score: 1, selected: null }
+            { answer: '이성 친구와의 만남·연락을 사전에 알리고 투명하게 공유한다.', type: '자유로운 유희형', score: 5, selected: null },
+            { answer: '상황에 따라 사후 공유로 충분히 설명한다.', type: '안정적인 동반자', score: 5, selected: null },
+            { answer: '사적인 1:1 만남은 가능하면 피하고 경계를 유지한다.', type: '독립 보장형', score: 5, selected: null },
+            { answer: '상호 신뢰를 우선하고 별도 공유를 요구하지 않는다.', type: '독립 보장형', score: 5, selected: null }
           ]
         },
         {
@@ -727,11 +750,11 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '1 전혀 아니다', type: '활력 즉흥형', score: 1, selected: null },
-            { answer: '2 조금 그렇다', type: '나이트아웃형', score: 1, selected: null },
-            { answer: '3 보통이다', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '4 대체로 그렇다', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '5 매우 그렇다', type: '대화형 안정파', score: 1, selected: null }
+            { answer: '1 전혀 아니다', type: '자유로운 유희형', score: 5, selected: null },
+            { answer: '2 조금 그렇다', type: '자유로운 유희형', score: 4, selected: null },
+            { answer: '3 보통이다', type: '자유로운 유희형', score: 3, selected: null },
+            { answer: '4 대체로 그렇다', type: '자유로운 유희형', score: 2, selected: null },
+            { answer: '5 매우 그렇다', type: '자유로운 유희형', score: 1, selected: null }
           ]
         }
       ]
@@ -745,64 +768,63 @@ export const Test2QAForm: QAFormType = {
       questions: [
         {
           questionId: 'Q16',
-          question: '첫 데이트 자리는 이렇게 선호한다.',
-          minSelect: 1,
-          maxSelect: 1,
-          answers: [
-            { answer: '조용한 카페를 선택한다.', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '가볍게 식사를 한다.', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '전시·산책을 즐긴다.', type: '낭만 플래너', score: 1, selected: null },
-            { answer: '액티비티를 체험한다.', type: '활력 즉흥형', score: 1, selected: null },
-            { answer: '분위기 좋은 바를 선택한다.', type: '나이트아웃형', score: 2, selected: null }
-          ]
-        },
-        {
-          questionId: 'Q17',
           question: '데이트 주도는 이렇게 한다.',
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '내가 계획·예약을 주도한다.', type: '낭만 플래너', score: 2, selected: null },
-            { answer: '서로 번갈아 주도한다.', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '상대가 주도하길 선호한다.', type: '공간 존중형', score: 1, selected: null },
-            { answer: '즉흥 제안을 선호한다.', type: '활력 즉흥형', score: 1, selected: null }
+            { answer: '내가 계획·예약을 주도한다.', type: '열정적인 몰입형', score: 4, selected: null },
+            { answer: '서로 번갈아 주도한다.', type: '안정적인 동반자', score: 4, selected: null },
+            { answer: '상대가 주도하길 선호한다.', type: '공감 중심 밀착형', score: 4, selected: null },
+            { answer: '즉흥 제안을 선호한다.', type: '열정적인 몰입형', score: 4, selected: null }
           ]
         },
         {
-          questionId: 'Q18',
+          questionId: 'Q17',
           question: '데이트 비용은 이렇게 생각한다.',
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '더치페이를 한다.', type: '공간 존중형', score: 1, selected: null },
-            { answer: '번갈아 계산한다.', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '제안한 사람이 먼저 낸다.', type: '낭만 플래너', score: 1, selected: null },
-            { answer: '상황에 따라 유연하게 정한다.', type: '활력 즉흥형', score: 1, selected: null }
+            { answer: '더치페이를 한다.', type: '자유로운 유희형', score: 4, selected: null },
+            { answer: '번갈아 계산한다.', type: '안정적인 동반자', score: 5, selected: null },
+            { answer: '제안한 사람이 먼저 낸다.', type: '열정적인 몰입형', score: 4, selected: null },
+            { answer: '상황에 따라 유연하게 정한다.', type: '열정적인 몰입형', score: 5, selected: null }
+          ]
+        },
+        {
+          questionId: 'Q18',
+          question: '관계의 최종 목표 및 미래 계획은?',
+          minSelect: 1,
+          maxSelect: 1,
+          answers: [
+            { answer: '관계는 장기적인 삶의 동반자를 찾는 과정이며, 나의 미래 계획에 있어 가장 중요한 부분이다.', type: '안정적인 동반자', score: 5, selected: null },
+            { answer: '깊은 정서적 유대가 가장 중요하며, 관계가 깊어진다면 자연스럽게 미래를 함께 계획하고 싶다.', type: '공감 중심 밀착형', score: 5, selected: null },
+            { answer: '현재의 강렬한 감정과 경험을 즐기는 것이 우선이며, 미래 계획은 그 다음 단계로 생각하고 싶다.', type: '열정적인 몰입형', score: 5, selected: null },
+            { answer: '연애는 개인의 삶을 보조하는 요소일 뿐, 나의 커리어/개인 목표가 미래 계획에서 우선순위다.', type: '독립 보장형', score: 5, selected: null },
+            { answer: '연애는 현재의 즐거움을 위한 것이며, 미래의 구속이나 장기적인 계획은 전혀 고려하지 않는다.', type: '자유로운 유희형', score: 5, selected: null }
           ]
         },
         {
           questionId: 'Q19',
-          question: '술자리 성향은 이렇다.',
+          question: '주말은 주로 이렇게 보낸다.',
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '마시지 않는다.', type: '공간 존중형', score: 1, selected: null },
-            { answer: '가볍게 마신다.', type: '공간 존중형', score: 1, selected: null },
-            { answer: '분위기에 따라 마신다.', type: '나이트아웃형', score: 2, selected: null },
-            { answer: '즐겨 마신다.', type: '나이트아웃형', score: 2, selected: null }
+            { answer: '취미·여가를 즐긴다.', type: '자유로운 유희형', score: 5, selected: null },
+            { answer: '친구와 약속을 잡는다.', type: '자유로운 유희형', score: 4, selected: null },
+            { answer: '즉흥 약속을 즐긴다/그때 그때 다르다.', type: '자유로운 유희형', score: 4, selected: null },
+            { answer: '(연애할때) 특별한 일이 없는 한 항상 연인과 보낸다.', type: '열정적인 몰입형', score: 5, selected: null }
           ]
         },
         {
           questionId: 'Q20',
-          question: '내가 편한 공개적 애정표현 범위는 이렇다',
+          question: '연애에서 내가 더 우선하는 가치는 무엇이다',
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '공공장소에서는 애정 표현을 최소화한다.', type: '공간 존중형', score: 1, selected: null },
-            { answer: '포옹은 편하다.', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '짧은 키스는 괜찮다.', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '사진·SNS에서 커플 사진/표현이 편하다.', type: '나이트아웃형', score: 2, selected: null },
-            { answer: '모두 괜찮다. 혹은 그 이상도', type: '나이트아웃형', score: 2, selected: null }
+            { answer: '안정과 일상 루틴을 우선한다.', type: '안정적인 동반자', score: 5, selected: null },
+            { answer: '성장과 도전 기회를 우선한다.', type: '자유로운 유희형', score: 5, selected: null },
+            { answer: '안정과 성장의 균형을 맞춘다.', type: '안정적인 동반자', score: 5, selected: null },
+            { answer: '아직 모르겠다.', type: '안정적인 동반자', score: 0, selected: null }
           ]
         }
       ]
@@ -820,8 +842,8 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '아침형으로 생활한다.', type: '공간 존중형', score: 1, selected: null },
-            { answer: '유연하게 상황에 따라 조정', type: '대화형 안정파', score: 0, selected: null }
+            { answer: '아침형으로 생활한다.', type: '독립 보장형', score: 1, selected: null },
+            { answer: '유연하게 상황에 따라 조정', type: '안정적인 동반자', score: 0, selected: null }
           ]
         },
         {
@@ -830,10 +852,10 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '취미·여가를 즐긴다.', type: '공간 존중형', score: 1, selected: null },
-            { answer: '친구와 약속을 잡는다.', type: '활력 즉흥형', score: 1, selected: null },
-            { answer: '즉흥 약속을 즐긴다/그때 그때 다르다.', type: '활력 즉흥형', score: 1, selected: null },
-            { answer: '(연애할때) 특별한 일이 없는 한 항상 연인과 보낸다.', type: '대화형 안정파', score: 1, selected: null }
+            { answer: '취미·여가를 즐긴다.', type: '독립 보장형', score: 1, selected: null },
+            { answer: '친구와 약속을 잡는다.', type: '자유로운 유희형', score: 1, selected: null },
+            { answer: '즉흥 약속을 즐긴다/그때 그때 다르다.', type: '자유로운 유희형', score: 1, selected: null },
+            { answer: '(연애할때) 특별한 일이 없는 한 항상 연인과 보낸다.', type: '안정적인 동반자', score: 1, selected: null }
           ]
         },
         {
@@ -842,11 +864,11 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '1 전혀 아니다', type: '공간 존중형', score: 1, selected: null },
-            { answer: '2 조금 그렇다', type: '공간 존중형', score: 1, selected: null },
-            { answer: '3 보통이다', type: '활력 즉흥형', score: 1, selected: null },
-            { answer: '4 대체로 그렇다', type: '활력 즉흥형', score: 1, selected: null },
-            { answer: '5 매우 그렇다', type: '활력 즉흥형', score: 1, selected: null }
+            { answer: '1 전혀 아니다', type: '독립 보장형', score: 1, selected: null },
+            { answer: '2 조금 그렇다', type: '독립 보장형', score: 1, selected: null },
+            { answer: '3 보통이다', type: '자유로운 유희형', score: 1, selected: null },
+            { answer: '4 대체로 그렇다', type: '자유로운 유희형', score: 1, selected: null },
+            { answer: '5 매우 그렇다', type: '자유로운 유희형', score: 1, selected: null }
           ]
         },
         {
@@ -855,11 +877,11 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '1 전혀 아니다', type: '공간 존중형', score: 1, selected: null },
-            { answer: '2 조금 그렇다', type: '대화형 안정파', score: 1, selected: null },
-            { answer: '3 보통이다', type: '활력 즉흥형', score: 1, selected: null },
-            { answer: '4 대체로 그렇다', type: '활력 즉흥형', score: 1, selected: null },
-            { answer: '5 매우 그렇다', type: '나이트아웃형', score: 2, selected: null }
+            { answer: '1 전혀 아니다', type: '독립 보장형', score: 1, selected: null },
+            { answer: '2 조금 그렇다', type: '안정적인 동반자', score: 1, selected: null },
+            { answer: '3 보통이다', type: '자유로운 유희형', score: 1, selected: null },
+            { answer: '4 대체로 그렇다', type: '자유로운 유희형', score: 1, selected: null },
+            { answer: '5 매우 그렇다', type: '자유로운 유희형', score: 2, selected: null }
           ]
         },
         {
@@ -868,10 +890,10 @@ export const Test2QAForm: QAFormType = {
           minSelect: 1,
           maxSelect: 1,
           answers: [
-            { answer: '안정과 일상 루틴을 우선한다.', type: '대화형 안정파', score: 2, selected: null },
-            { answer: '성장과 도전 기회를 우선한다.', type: '활력 즉흥형', score: 2, selected: null },
-            { answer: '안정과 성장의 균형을 맞춘다.', type: '낭만 플래너', score: 2, selected: null },
-            { answer: '아직 모르겠다.', type: '공간 존중형', score: 1, selected: null }
+            { answer: '안정과 일상 루틴을 우선한다.', type: '안정적인 동반자', score: 2, selected: null },
+            { answer: '성장과 도전 기회를 우선한다.', type: '자유로운 유희형', score: 2, selected: null },
+            { answer: '안정과 성장의 균형을 맞춘다.', type: '안정적인 동반자', score: 2, selected: null },
+            { answer: '아직 모르겠다.', type: '독립 보장형', score: 1, selected: null }
           ]
         }
       ]

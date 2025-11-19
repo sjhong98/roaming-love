@@ -83,6 +83,7 @@ export default function LocationDetailOverlay({
         if (!user) return;
 
         let result: any = await AsyncStorage.getItem(`${user?.pk}_locationLikes`);
+        
         if (result) {
             result = JSON.parse(result);
             if (result.includes(location.name)) {

@@ -84,7 +84,7 @@ const TestQuestionScreen = ({ question, answers, maxSelect, onChange }: {
                             style={[test1_3_style.rectangleGroup]}
                             onPress={() => onChange(index)}
                         >
-                            <View style={[test1_3_style.groupChild, { backgroundColor: isSelected ? '#FF2D55' : '#efeff0', overflow: 'hidden', paddingHorizontal: 20 }]}>
+                            <View style={[test1_3_style.groupChild, { backgroundColor: isSelected ? '#FF2D55' : '#efeff0', overflow: 'hidden', paddingHorizontal: 20, paddingVertical: 10 }]}>
                                 <Text style={[test1_3_style.textTypo, { color: isSelected ? '#fff' : '#999' }]}>{answer.answer}</Text>
                             </View>
                         </TouchableOpacity>
@@ -394,7 +394,7 @@ const test1_3_style = StyleSheet.create({
         width: "100%"
     },
     groupChild: {
-        height: 59,
+        minHeight: 59,
         borderRadius: 30,
         backgroundColor: "#efeff0",
         justifyContent: 'center',

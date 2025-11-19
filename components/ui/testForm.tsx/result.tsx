@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { router, useLocalSearchParams, useRouter } from "expo-router";
 import { default as ReAnimated, interpolate, useAnimatedStyle, withTiming } from "react-native-reanimated";
 import LiquidGlassButton from "@/components/LiquidGlassButton";
-import { Chapter, QAFormType } from "@/constants/QAForm";
+import { Chapter, QAFormType, Test1QAForm, Test2QAForm } from "@/constants/QAForm";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useUser from "@/hooks/use-user";
 import supabase from "@/db";
@@ -102,9 +102,14 @@ const Result_Screen = ({ testType, type }: { testType: string, type: string }) =
 
     return (
         <View style={{ width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center', flex: 1 }}>
-            {/* <ReAnimated.Image style={[regularCardAnimatedStyle, { width: 267, height: 461, opacity: regularCardOpacity }]} source={require('@/assets/images/result_example.png')} />
-            <ReAnimated.Image style={[flippedCardAnimatedStyle, { width: 267, height: 461, marginTop: -461, opacity: flippedCardOpacity }]} source={require('@/assets/images/result_example2.png')} /> */}
-            <Text>{type}</Text>
+            <ReAnimated.Image
+                style={[regularCardAnimatedStyle, { width: testType === 'trip' ? 267 : 260, height: testType === 'trip' ? 461 : 519, opacity: regularCardOpacity }]}
+                source={testType === 'trip' ? Test1QAForm.resultTypes[type].image1 : Test2QAForm.resultTypes[type].image1}
+            />
+            <ReAnimated.Image
+                style={[flippedCardAnimatedStyle, { width: testType === 'trip' ? 267 : 260, height: testType === 'trip' ? 461 : 519, marginTop: testType === 'trip' ? -461 : -519, opacity: flippedCardOpacity }]}
+                source={testType === 'trip' ? Test1QAForm.resultTypes[type].image2 : Test2QAForm.resultTypes[type].image2}
+            />
 
 
             {testType === 'trip' ?
@@ -130,7 +135,16 @@ const Result_Screen = ({ testType, type }: { testType: string, type: string }) =
                 :
                 <View style={{ width: '100%', alignItems: 'center', justifyContent: 'center', gap: 10, position: 'absolute', bottom: 0, flexDirection: 'row', paddingHorizontal: 20 }}>
                     <LiquidGlassButton
-                        style={{ width: '100%' }}
+                        style={{ width: '40%' }}
+                        text='뒷장보기'
+                        backgroundColor="#FF5878"
+                        onPress={() => {
+                            if (isFlipping) return;
+                            setIsFlipped(prev => !prev);
+                        }}
+                    />
+                    <LiquidGlassButton
+                        style={{ width: '40%' }}
                         text='홈으로'
                         backgroundColor="#FF5878"
                         onPress={() => {
@@ -166,12 +180,12 @@ export default function TestResult() {
 
     const loadFormAndCalculate = async () => {
         try {
-            if(!user) return;
+            if (!user) return;
 
             // AsyncStorage에서 form 데이터 읽기
             const formData = await AsyncStorage.getItem(`${user?.pk}_testFormData`);
 
-            if(testType === 'trip') {
+            if (testType === 'trip') {
                 supabase.from('user').update({
                     trip_type: type
                 }).eq('pk', user.pk);
@@ -204,8 +218,8 @@ export default function TestResult() {
         }
 
         try {
-            if(!user) return;
-            
+            if (!user) return;
+
             let parsedForm: QAFormType = JSON.parse(formString);
 
             // 모든 질문의 선택된 답변들의 score를 합산
@@ -229,7 +243,7 @@ export default function TestResult() {
             let maxScore = 0;
             let maxScoreType = ''
             Object.keys(parsedForm.resultTypes).forEach(type => {
-                if(parsedForm.resultTypes[type]?.score === undefined) {
+                if (parsedForm.resultTypes[type]?.score === undefined) {
                     console.log('type', type, 'score is undefined');
                     return
                 }
@@ -259,7 +273,7 @@ export default function TestResult() {
 
 const test1_result_1_style = StyleSheet.create({
     text: {
-        width: 274,
+        width: 284,
         height: 36,
         fontSize: 30,
         fontWeight: "700",

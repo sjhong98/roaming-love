@@ -66,7 +66,7 @@ const LocationCard = forwardRef<View, LocationCardProps>(function LocationCard(
         return () => {
             clearInterval(interval);
         };
-    }, [name])
+    }, [name, user])
 
     const handleHeartPress = async () => {
         if (!user) return;
@@ -90,6 +90,7 @@ const LocationCard = forwardRef<View, LocationCardProps>(function LocationCard(
         setLike(newLikeState);
 
         let result: any = await AsyncStorage.getItem(`${user?.pk}_locationLikes`);
+
 
         if (result) {
             result = JSON.parse(result);

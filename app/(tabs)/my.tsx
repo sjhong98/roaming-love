@@ -191,14 +191,34 @@ export default function My() {
                         />
                     </TouchableOpacity>
                     <View style={{ flexDirection: 'row', gap: 10 }}>
-                        <View style={{ backgroundColor: '#FF5878', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}>
+                        <TouchableOpacity 
+                            onPress={() => {
+                                if (tripType) {
+                                    router.push({
+                                        pathname: '/viewResult',
+                                        params: { testType: 'trip', type: tripType }
+                                    });
+                                }
+                            }}
+                            disabled={!tripType}
+                            style={{ boxShadow: '0px 2px 19.1px rgba(0, 0, 0, 0.3)', elevation: 7.4, backgroundColor: '#FF5878', paddingVertical: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 10, opacity: tripType ? 1 : 0.5 }}>
                             <Text style={{ color: '#fff', fontSize: 14, fontWeight: 400 }}>여행 타입</Text>
-                            <Text style={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>{tripType || '타입 없음'}</Text>
-                        </View>
-                        <View style={{ backgroundColor: '#FF5878', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center' }}>
+                            <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>{tripType || '타입 없음'}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity 
+                            onPress={() => {
+                                if (loveType) {
+                                    router.push({
+                                        pathname: '/viewResult',
+                                        params: { testType: 'love', type: loveType }
+                                    });
+                                }
+                            }}
+                            disabled={!loveType}
+                            style={{ boxShadow: '0px 2px 19.1px rgba(0, 0, 0, 0.3)', elevation: 7.4, backgroundColor: '#FF5878', paddingVertical: 10, borderRadius: 15, justifyContent: 'center', alignItems: 'center', paddingHorizontal: 10, opacity: loveType ? 1 : 0.5 }}>
                             <Text style={{ color: '#fff', fontSize: 14, fontWeight: 400 }}>연애 타입</Text>
-                            <Text style={{ color: '#fff', fontSize: 20, fontWeight: 'bold' }}>{loveType || '타입 없음'}</Text>
-                        </View>
+                            <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>{loveType || '타입 없음'}</Text>
+                        </TouchableOpacity>
                     </View>
                 </View>
 

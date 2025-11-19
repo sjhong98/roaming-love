@@ -30,10 +30,6 @@ export default function LocationSelect({ setLocationSelectOpen, location, setLoc
             image: require('@/assets/images/location/sydney.png'),
         },
         {
-            title: '아시아',
-            image: require('@/assets/images/location/tokyo.png'),
-        },
-        {
             title: '동남아시아',
             image: require('@/assets/images/location/singapore.png'),
         },
@@ -116,7 +112,7 @@ export default function LocationSelect({ setLocationSelectOpen, location, setLoc
                                     }
                                 }}>
                                     <Image source={continental.image} style={{ width: 90, height: 90, zIndex: 1 }} />
-                                    <Text style={{ zIndex: 999, position: 'absolute', top: '40%', left: 0, right: 0, bottom: 0, textAlign: 'center', justifyContent: 'center', alignItems: 'center', color: '#fff', fontWeight: 900, fontSize: 20 }}>{continental.title}</Text>
+                                    <Text style={{ zIndex: 999, position: 'absolute', top: '40%', left: 0, right: 0, bottom: 0, textAlign: 'center', justifyContent: 'center', alignItems: 'center', color: '#fff', fontWeight: 900, fontSize: 18 }}>{continental.title}</Text>
                                 </TouchableOpacity>
                             ))}
                         </ScrollView>

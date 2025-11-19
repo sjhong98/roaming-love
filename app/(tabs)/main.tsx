@@ -31,6 +31,17 @@ export default function Main() {
     useEffect(() => {
         if(!user) return;
 
+        (async () => {
+            const result = await AsyncStorage.getItem(`${user?.pk}_locationLikes`);
+            if (!result) {
+                AsyncStorage.setItem(`${user?.pk}_locationLikes`, JSON.stringify([]));
+            }
+        })()
+    }, [user])
+
+    useEffect(() => {
+        if(!user) return;
+
         if (selectedTab === 'best') {
             setFilteredLocationList(Locations);
         } else {
@@ -325,9 +336,6 @@ export default function Main() {
                         }}
                         contentFit="cover"
                     />
-                    <Animated.View style={{ position: 'absolute', top: 14, right: 19, width: 25, height: 25, opacity: heartOpacity }}>
-                        <HeartActiveIcon style={{ width: 25, height: 25 }} />
-                    </Animated.View>
                     <View style={{ position: 'absolute', bottom: 18, width: '100%', alignItems: 'center' }}>
                         <Animated.View
                             style={{
