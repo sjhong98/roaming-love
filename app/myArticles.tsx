@@ -596,41 +596,11 @@ export default function MyArticles() {
                                 </TouchableOpacity>
                                 
                                 {selectedImages.length > 1 && (
-                                    <>
-                                        <TouchableOpacity
-                                            activeOpacity={0.7}
-                                            onPress={(e) => {
-                                                e.stopPropagation();
-                                                if (selectedImageIndex > 0) {
-                                                    setSelectedImageIndex(selectedImageIndex - 1);
-                                                    setSelectedImageUri(selectedImages[selectedImageIndex - 1]);
-                                                }
-                                            }}
-                                            style={{ position: 'absolute', left: 20, zIndex: 1000, padding: 15 }}
-                                            disabled={selectedImageIndex === 0}
-                                        >
-                                            <Text style={{ color: selectedImageIndex === 0 ? '#666' : '#fff', fontSize: 24, fontWeight: '600' }}>‹</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            activeOpacity={0.7}
-                                            onPress={(e) => {
-                                                e.stopPropagation();
-                                                if (selectedImageIndex < selectedImages.length - 1) {
-                                                    setSelectedImageIndex(selectedImageIndex + 1);
-                                                    setSelectedImageUri(selectedImages[selectedImageIndex + 1]);
-                                                }
-                                            }}
-                                            style={{ position: 'absolute', right: 20, zIndex: 1000, padding: 15 }}
-                                            disabled={selectedImageIndex === selectedImages.length - 1}
-                                        >
-                                            <Text style={{ color: selectedImageIndex === selectedImages.length - 1 ? '#666' : '#fff', fontSize: 24, fontWeight: '600' }}>›</Text>
-                                        </TouchableOpacity>
-                                        <View style={{ position: 'absolute', bottom: 50, zIndex: 1000 }}>
-                                            <Text style={{ color: '#fff', fontSize: 14, fontWeight: '400' }}>
-                                                {selectedImageIndex + 1} / {selectedImages.length}
-                                            </Text>
-                                        </View>
-                                    </>
+                                    <View style={{ position: 'absolute', bottom: 50, zIndex: 1000 }}>
+                                        <Text style={{ color: '#fff', fontSize: 14, fontWeight: '400' }}>
+                                            {selectedImageIndex + 1} / {selectedImages.length}
+                                        </Text>
+                                    </View>
                                 )}
                                 
                                 <ScrollView

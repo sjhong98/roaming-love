@@ -106,9 +106,9 @@ export default function ChatDetail() {
                     }
                 </ScrollView>
 
-                <View style={[bottomStyles.view, { height: 63 }]}>
+                <View style={[bottomStyles.view]}>
                     <View style={bottomStyles.child} />
-                    <View style={{ width: '100%', paddingHorizontal: 21, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <View style={{ width: '100%', paddingHorizontal: 21, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', paddingBottom: 7, paddingTop: 7 }}>
                         <View style={bottomStyles.item}>
                             <TextInput
                                 value={inputMessage}
@@ -120,8 +120,8 @@ export default function ChatDetail() {
                                 style={[bottomStyles.textInput, { textAlignVertical: 'top' }]}
                             />
                         </View>
-                        <TouchableOpacity onPress={handleSendMessage}>
-                            <SendIcon style={[bottomStyles.icon2, { marginBottom: -10 }]} />
+                        <TouchableOpacity onPress={handleSendMessage} style={{ marginBottom: -10 }}>
+                            <SendIcon style={[bottomStyles.icon2]} />
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -161,10 +161,9 @@ const bottomStyles = StyleSheet.create({
         backgroundColor: "#fff",
         width: '100%',
         position: "absolute",
-        height: 93
+        minHeight: 93
     },
     item: {
-        top: 7,
         borderRadius: 15,
         backgroundColor: "#efeff0",
         width: '88%',

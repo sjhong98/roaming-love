@@ -165,7 +165,7 @@ export default function ExploreDetail() {
         <>
             <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
                 <SafeAreaView style={{ width: '100%', position: 'relative', paddingTop: 10, paddingBottom: 0 }}>
-                    <View style={[topStyles.view0, { paddingHorizontal: 21 }]}>
+                    <View style={[topStyles.view0, { paddingHorizontal: 21,  }]}>
                         <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
                             <TouchableOpacity onPress={() => router.back()} style={{ position: 'absolute', left: 0, top: 0 }}>
                                 <ArrowLeftIcon width={24} height={24} />
@@ -176,7 +176,7 @@ export default function ExploreDetail() {
                 </SafeAreaView>
 
                 <ScrollView
-                    style={{ width: '100%' }}
+                    style={{ width: '100%', paddingTop: 10 }}
                     contentContainerStyle={{ paddingLeft: 21, paddingRight: 13, paddingBottom: 300 }}
                 >
                     {isLoading ? (
@@ -302,7 +302,7 @@ export default function ExploreDetail() {
 
                     <View style={{ width: '100%', height: 20 }} />
 
-                    <View style={{ gap: 10 }}>
+                    <View style={{ gap: 30 }}>
                         {
                             postDetail?.comment?.map((comment: any, index: number) => (
                                 <View key={index} style={[commentStyles.view, { marginTop: 5 }]}>
@@ -317,11 +317,11 @@ export default function ExploreDetail() {
                     ) : null}
                 </ScrollView>
 
-                <View style={{ position: 'relative', height: 49, width: '100%', flexDirection: 'row', gap: 6, paddingVertical: 7, paddingHorizontal: 11, backgroundColor: '#FFF' }}>
+                <View style={{ position: 'relative', width: '100%', flexDirection: 'row', gap: 6, paddingVertical: 7, paddingHorizontal: 11, backgroundColor: '#FFF', alignItems: 'flex-end' }}>
                     <Image source={user?.image ? { uri: user?.image } : require('@/assets/images/userIcon.png')} style={{ width: 35, height: 35, borderRadius: 100 }} resizeMode="cover" />
                     <View style={styles.item}>
                         <TextInput
-                            style={[styles.text, { color: commentText ? '#000' : '#999', textAlignVertical: 'top' }]}
+                            style={[styles.text, { color: '#000', textAlignVertical: 'top' }]}
                             placeholder="답글 게시하기"
                             placeholderTextColor="#999"
                             value={commentText}
@@ -377,41 +377,11 @@ export default function ExploreDetail() {
                                 </TouchableOpacity>
                                 
                                 {selectedImages.length > 1 && (
-                                    <>
-                                        <TouchableOpacity
-                                            activeOpacity={0.7}
-                                            onPress={(e) => {
-                                                e.stopPropagation();
-                                                if (selectedImageIndex > 0) {
-                                                    setSelectedImageIndex(selectedImageIndex - 1);
-                                                    setSelectedImageUri(selectedImages[selectedImageIndex - 1]);
-                                                }
-                                            }}
-                                            style={{ position: 'absolute', left: 20, zIndex: 1000, padding: 15 }}
-                                            disabled={selectedImageIndex === 0}
-                                        >
-                                            <Text style={{ color: selectedImageIndex === 0 ? '#666' : '#fff', fontSize: 24, fontWeight: '600' }}>‹</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity
-                                            activeOpacity={0.7}
-                                            onPress={(e) => {
-                                                e.stopPropagation();
-                                                if (selectedImageIndex < selectedImages.length - 1) {
-                                                    setSelectedImageIndex(selectedImageIndex + 1);
-                                                    setSelectedImageUri(selectedImages[selectedImageIndex + 1]);
-                                                }
-                                            }}
-                                            style={{ position: 'absolute', right: 20, zIndex: 1000, padding: 15 }}
-                                            disabled={selectedImageIndex === selectedImages.length - 1}
-                                        >
-                                            <Text style={{ color: selectedImageIndex === selectedImages.length - 1 ? '#666' : '#fff', fontSize: 24, fontWeight: '600' }}>›</Text>
-                                        </TouchableOpacity>
-                                        <View style={{ position: 'absolute', bottom: 50, zIndex: 1000 }}>
-                                            <Text style={{ color: '#fff', fontSize: 14, fontWeight: '400' }}>
-                                                {selectedImageIndex + 1} / {selectedImages.length}
-                                            </Text>
-                                        </View>
-                                    </>
+                                    <View style={{ position: 'absolute', bottom: 50, zIndex: 1000 }}>
+                                        <Text style={{ color: '#fff', fontSize: 14, fontWeight: '400' }}>
+                                            {selectedImageIndex + 1} / {selectedImages.length}
+                                        </Text>
+                                    </View>
                                 )}
                                 
                                 <ScrollView
@@ -516,7 +486,7 @@ const styles = StyleSheet.create({
     text: {
         fontSize: 12,
         fontWeight: "300",
-        color: "#999",
+        color: "#000",
         textAlign: "left",
     },
     plusCircle: {
@@ -584,7 +554,7 @@ const topStyles = StyleSheet.create({
     },
     view0: {
         width: "100%",
-        height: 20,
+        height: 0,
         position: 'relative'
     },
     view: {
