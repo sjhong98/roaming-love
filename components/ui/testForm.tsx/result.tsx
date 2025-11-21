@@ -273,7 +273,7 @@ const Result_Screen = ({ testType, type }: { testType: string, type: string }) =
                         text='다음 테스트'
                         backgroundColor="#FF5878"
                         onPress={() => {
-                            router.push('/test2');
+                            router.push('/test2?testType=love');
                         }}
                     />
                 </View>
@@ -386,8 +386,8 @@ export default function TestResult() {
 
             // 최고 점수를 가진 타입 찾기
             let maxScore = 0;
-            let maxScoreType = ''
-            Object.keys(parsedForm.resultTypes).forEach(type => {
+        let maxScoreType = ''
+        Object.keys(parsedForm.resultTypes).forEach(type => {
                 if (parsedForm.resultTypes[type]?.score === undefined) {
                     console.log('type', type, 'score is undefined');
                     return
@@ -400,8 +400,14 @@ export default function TestResult() {
             })
             console.log('\n\n\n\n계산결과: ', maxScoreType)
             setType(maxScoreType)
-            Alert.alert('계산결과: ' + maxScoreType + ' ' + user?.pk + ' ' + (testType as string));
-            AsyncStorage.setItem(`${user?.pk}_` + testType as string + 'Type', maxScoreType);
+            // Alert.alert('계산결과: ' + maxScoreType + ' ' + user?.pk + ' ' + (testType as string));
+            let _testType = testType as string;
+            if (_testType === 'trip') {
+                _testType = 'tripType';
+            } else {
+                _testType = 'loveType';
+            }
+            AsyncStorage.setItem(`${user?.pk}_` + _testType + 'Type', maxScoreType);
 
             console.log('\n\n\n계산결과 : ', maxScoreType, '점수:', maxScore);
         } catch (error) {

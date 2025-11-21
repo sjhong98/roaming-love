@@ -176,9 +176,12 @@ export default function My() {
                     {/* <TouchableOpacity onPress={() => router.back()} style={{ position: 'absolute', left: 21, top: -5, zIndex: 9999, padding: 5 }}>
                         <ArrowLeftIcon width={24} height={24} />
                     </TouchableOpacity> */}
-                    <View style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }}>
+                    <TouchableOpacity activeOpacity={1} style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }} onPress={() => {
+                        // AsyncStorage.removeItem(`${user?.pk}_tripType`);
+                        // AsyncStorage.removeItem(`${user?.pk}_loveType`);
+                    }}>
                         <Text style={topStyles.text}>마이페이지</Text>
-                    </View>
+                    </TouchableOpacity>
                 </View>
             </View>
 
