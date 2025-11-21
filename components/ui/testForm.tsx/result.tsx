@@ -418,7 +418,7 @@ export default function TestResult() {
 
 const test1_result_1_style = StyleSheet.create({
     text: {
-        width: 284,
+        width: 400,
         height: 36,
         fontSize: 30,
         fontWeight: "700",
