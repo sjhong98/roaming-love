@@ -177,8 +177,8 @@ export default function My() {
                         <ArrowLeftIcon width={24} height={24} />
                     </TouchableOpacity> */}
                     <TouchableOpacity activeOpacity={1} style={{ position: 'relative', width: '100%', justifyContent: 'center', alignItems: 'center' }} onPress={() => {
-                        // AsyncStorage.removeItem(`${user?.pk}_tripType`);
-                        // AsyncStorage.removeItem(`${user?.pk}_loveType`);
+                        AsyncStorage.removeItem(`${user?.pk}_tripType`);
+                        AsyncStorage.removeItem(`${user?.pk}_loveType`);
                     }}>
                         <Text style={topStyles.text}>마이페이지</Text>
                     </TouchableOpacity>

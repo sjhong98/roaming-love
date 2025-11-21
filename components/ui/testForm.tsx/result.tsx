@@ -401,13 +401,7 @@ export default function TestResult() {
             console.log('\n\n\n\n계산결과: ', maxScoreType)
             setType(maxScoreType)
             // Alert.alert('계산결과: ' + maxScoreType + ' ' + user?.pk + ' ' + (testType as string));
-            let _testType = testType as string;
-            if (_testType === 'trip') {
-                _testType = 'tripType';
-            } else {
-                _testType = 'loveType';
-            }
-            AsyncStorage.setItem(`${user?.pk}_` + _testType + 'Type', maxScoreType);
+            AsyncStorage.setItem(`${user?.pk}_` + testType as string + 'Type', maxScoreType);
 
             console.log('\n\n\n계산결과 : ', maxScoreType, '점수:', maxScore);
         } catch (error) {
