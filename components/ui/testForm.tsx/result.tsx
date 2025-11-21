@@ -400,6 +400,7 @@ export default function TestResult() {
             })
             console.log('\n\n\n\n계산결과: ', maxScoreType)
             setType(maxScoreType)
+            Alert.alert('계산결과: ' + maxScoreType + ' ' + user?.pk + ' ' + (testType as string));
             AsyncStorage.setItem(`${user?.pk}_` + testType as string + 'Type', maxScoreType);
 
             console.log('\n\n\n계산결과 : ', maxScoreType, '점수:', maxScore);
