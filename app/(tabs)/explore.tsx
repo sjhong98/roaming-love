@@ -7,7 +7,7 @@ import useUser from '@/hooks/use-user';
 import DotsIcon from '@/assets/images/dots.svg';
 import { Image } from "expo-image";
 import { router } from "expo-router";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { ActivityIndicator, Animated, Dimensions, Modal, NativeScrollEvent, NativeSyntheticEvent, ScrollView, StyleSheet, TouchableOpacity, View, Alert, PanResponder } from "react-native";
 import { CustomText as Text } from '@/components/CustomText';
 
@@ -197,12 +197,12 @@ export default function Explore() {
         }
     };
 
-    const getLikeAnimation = (postPk: number): Animated.Value => {
+    const getLikeAnimation = useCallback((postPk: number): Animated.Value => {
         if (!likeAnimations.current.has(postPk)) {
             likeAnimations.current.set(postPk, new Animated.Value(1));
         }
         return likeAnimations.current.get(postPk)!;
-    };
+    }, []);
 
     const triggerPopAnimation = (postPk: number) => {
         const animValue = getLikeAnimation(postPk);
@@ -220,7 +220,7 @@ export default function Explore() {
         ]).start();
     };
 
-    const handleLike = async (postPk: number, didILike: boolean) => {
+    const handleLike = useCallback(async (postPk: number, didILike: boolean) => {
         // Pop 애니메이션 트리거
         triggerPopAnimation(postPk);
 
@@ -231,8 +231,7 @@ export default function Explore() {
                 .delete()
                 .eq('post_pk', postPk)
                 .eq('user_pk', user?.pk);
-            let newPostList: any = postList.map((item: any) => item.pk === postPk ? { ...item, didILike: false, likeCount: item?.likeCount - 1 } : item);
-            setPostList(newPostList);
+            setPostList((prev: any) => prev.map((item: any) => item.pk === postPk ? { ...item, didILike: false, likeCount: item?.likeCount - 1 } : item));
         } else {
             // 좋아요 추가
             await supabase
@@ -241,10 +240,9 @@ export default function Explore() {
                     post_pk: postPk,
                     user_pk: user?.pk,
                 });
-            let newPostList: any = postList.map((item: any) => item.pk === postPk ? { ...item, didILike: true, likeCount: item?.likeCount + 1 } : item);
-            setPostList(newPostList);
+            setPostList((prev: any) => prev.map((item: any) => item.pk === postPk ? { ...item, didILike: true, likeCount: item?.likeCount + 1 } : item));
         }
-    }
+    }, [user?.pk]);
 
     const handleImageLoadStart = (postPk: number) => {
         setImageLoadingStates(prev => {
@@ -254,7 +252,7 @@ export default function Explore() {
         });
     }
 
-    const handleImageLoad = (postPk: number, event: any) => {
+    const handleImageLoad = useCallback((postPk: number, event: any) => {
         console.log('Image load event:', event);
         console.log('Image load event.source:', event.source);
         // expo-image의 onLoad 이벤트 구조 확인
@@ -278,9 +276,9 @@ export default function Explore() {
                 return newMap;
             });
         }
-    }
+    }, []);
 
-    const handleMenuPress = (event: any, postPk: number) => {
+    const handleMenuPress = useCallback((event: any, postPk: number) => {
         event.stopPropagation();
         dotsPressedRef.current = true;
         const { pageX, pageY } = event.nativeEvent;
@@ -291,7 +289,7 @@ export default function Explore() {
             dotsPressedRef.current = false;
             userProfilePressedRef.current = false;
         }, 100);
-    }
+    }, []);
 
     const handleDeletePost = async () => {
         if (!selectedPostPk) return;
@@ -344,7 +342,7 @@ export default function Explore() {
         setMenuPosition(null);
     }
 
-    const openImageModal = (imageUri: string, allImages?: string[], initialIndex?: number) => {
+    const openImageModal = useCallback((imageUri: string, allImages?: string[], initialIndex?: number) => {
         if (isClosingModalRef.current) return;
         if (allImages && allImages.length > 0) {
             setSelectedImages(allImages);
@@ -354,9 +352,9 @@ export default function Explore() {
             setSelectedImageIndex(0);
         }
         setSelectedImageUri(imageUri);
-    }
+    }, []);
 
-    const closeImageModal = () => {
+    const closeImageModal = useCallback(() => {
         isClosingModalRef.current = true;
         setSelectedImageUri(null);
         setSelectedImages([]);
@@ -365,8 +363,218 @@ export default function Explore() {
         setTimeout(() => {
             isClosingModalRef.current = false;
         }, 500);
-    }
+    }, []);
 
+    const renderedPostList = useMemo(() => {
+        return postList.map((item: any, index) => (
+            <TouchableOpacity
+                key={item?.pk || index}
+                activeOpacity={1}
+                onPress={() => {
+                    if (!dotsPressedRef.current && !userProfilePressedRef.current) {
+                        router.push(`/exploreDetail?postPk=${item?.pk}`);
+                    }
+                    userProfilePressedRef.current = false;
+                }}
+                style={{ width: '100%', position: 'relative', borderColor: "#b3b3b3", borderBottomWidth: 0.5, paddingTop: 10, paddingLeft: 21, paddingRight: 13, flexDirection: 'row', gap: 13, paddingBottom: 10, zIndex: 1 }}
+            >
+                <TouchableOpacity 
+                    onPress={(e) => {
+                        userProfilePressedRef.current = true;
+                        if (item?.user?.pk) {
+                            router.push(`/userProfile?id=${item?.user?.pk}&real=true`);
+                        }
+                    }}
+                    onPressIn={() => { userProfilePressedRef.current = true; }}
+                    style={{ width: 45, height: 45 }}
+                >
+                    <Image source={item?.user?.image ?? require('@/assets/images/userIcon.png')} style={[postStyles.item, postStyles.itemPosition]} resizeMode="cover" />
+                </TouchableOpacity>
+                <View style={{ width: '100%' }}>
+                    <View style={[postStyles.view2, { height: 'auto', width: '100%', position: 'relative' }]}>
+                        {user?.pk === item?.user?.pk &&
+                            <TouchableOpacity 
+                                onPress={(e) => handleMenuPress(e, item?.pk)} 
+                                onPressIn={() => { dotsPressedRef.current = true; }}
+                                style={{ position: 'absolute', right: 60, top: 10, zIndex: 9999, padding: 5 }}
+                            >
+                                <DotsIcon />
+                            </TouchableOpacity>
+                        }
+                        <TouchableOpacity 
+                            onPress={(e) => {
+                                userProfilePressedRef.current = true;
+                                if (item?.user?.pk) {
+                                    router.push(`/userProfile?id=${item?.user?.pk}&real=true`);
+                                }
+                            }}
+                            onPressIn={() => { userProfilePressedRef.current = true; }}
+                            style={{ width: 100 }}
+                        >
+                            <Text style={[postStyles.text, postStyles.textTypo, { fontWeight: 700 }]}>{item?.user?.name ?? item?.user?.nickname}</Text>
+                        </TouchableOpacity>
+                        <Text style={[postStyles.text2, postStyles.textTypo, { width: '86%' }]}>{item?.content}</Text>
+                        {item?.image ? (
+                            item?.image?.split('|SPLIT|')?.length === 1 ?
+                                (
+                                    <>
+                                        <ImageWrapper
+                                            postPk={item?.pk}
+                                            imageUri={item?.image?.split('|SPLIT|')?.[0]}
+                                            aspectRatio={imageAspectRatios.get(item?.pk)}
+                                            handleImageLoad={handleImageLoad}
+                                            onImagePress={openImageModal}
+                                            allImages={item?.image?.split('|SPLIT|')}
+                                        />
+                                    </>
+                                ) : (
+                                    <ScrollView
+                                        horizontal
+                                        showsHorizontalScrollIndicator={false}
+                                        style={{ width: Dimensions.get('window').width, gap: 10, marginLeft: -79 }}
+                                        contentContainerStyle={{ gap: 12, paddingLeft: 79, paddingRight: 13 }}
+                                        onStartShouldSetResponder={() => true}
+                                        onMoveShouldSetResponder={() => true}
+                                    >
+                                        {item?.image?.split('|SPLIT|')?.map((image: string, index: number) => {
+                                            if (index === 0) {
+                                                return (
+                                                    <ImageWrapper
+                                                        key={index}
+                                                        postPk={item?.pk}
+                                                        imageUri={image}
+                                                        aspectRatio={imageAspectRatios.get(item?.pk)}
+                                                        handleImageLoad={handleImageLoad}
+                                                        onImagePress={openImageModal}
+                                                        allImages={item?.image?.split('|SPLIT|')}
+                                                        imageIndex={index}
+                                                    />
+                                                );
+                                            }
+                                            const aspectRatio = imageAspectRatios.get(item?.pk);
+                                            const imageWidth = Dimensions.get('window').width - 104;
+                                            return (
+                                                <TouchableOpacity
+                                                    key={index}
+                                                    activeOpacity={0.9}
+                                                    onPress={() => openImageModal(image, item?.image?.split('|SPLIT|'), index)}
+                                                >
+                                                    <Image
+                                                        source={{ uri: image }}
+                                                        style={{
+                                                            width: imageWidth,
+                                                            height: aspectRatio ? imageWidth * aspectRatio : 200,
+                                                            borderRadius: 10,
+                                                            marginTop: 9
+                                                        }}
+                                                        contentFit="cover"
+                                                    />
+                                                </TouchableOpacity>
+                                            );
+                                        })}
+                                    </ScrollView>
+
+                                )
+                        ) : (
+                            <View style={{ width: '100%', height: 0 }} />
+                        )}
+                    </View>
+                    <View style={[postStyles.bookmarkParent, { marginTop: 13 }]}>
+                        <View style={[postStyles.heart, postStyles.heartLayout]}>
+                            <View style={{ position: 'relative', flexDirection: 'row', alignItems: 'center', gap: 8, minWidth: 40 }}>
+                                <Animated.View style={{ transform: [{ scale: getLikeAnimation(item?.pk) }] }}>
+                                    {item?.didILike ? (
+                                        <TouchableOpacity activeOpacity={1} onPress={() => handleLike(item?.pk, true)}>
+                                            <HeartActiveIcon />
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <TouchableOpacity activeOpacity={1} onPress={() => handleLike(item?.pk, false)}>
+                                            <HeartInactiveIcon />
+                                        </TouchableOpacity>
+                                    )}
+                                </Animated.View>
+
+                                <Text style={{ fontSize: 12, fontWeight: '300', color: '#000', marginLeft: -4 }}>{item?.likeCount === 0 ? '' : item?.likeCount?.toLocaleString()}</Text>
+                            </View>
+                        </View>
+                        <View style={[postStyles.bookmark, postStyles.heartLayout]}>
+                            <View style={{ position: 'relative', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+                                <CommentIcon style={[postStyles.icon2, { marginTop: -2 }]} />
+                                <Text style={{ fontSize: 12, fontWeight: '300', color: '#000', marginBottom: -1, marginLeft: -4 }}>{item?.comment?.length === 0 ? '' : item?.comment?.length?.toLocaleString()}</Text>
+                            </View>
+                        </View>
+                    </View>
+                </View>
+            </TouchableOpacity>
+        ));
+    }, [postList, user?.pk, imageAspectRatios, handleImageLoad, handleMenuPress, handleLike, openImageModal, getLikeAnimation]);
+
+    const imageModalContent = useMemo(() => {
+        const backgroundPanResponder = PanResponder.create({
+            onStartShouldSetPanResponder: (evt, gestureState) => {
+                // 수평 스와이프가 시작되면 responder를 설정하지 않음
+                return false;
+            },
+            onMoveShouldSetPanResponder: (_, gestureState) => {
+                // 수직 스와이프만 감지 (아래로 스와이프), 수평 스와이프는 무시
+                if (Math.abs(gestureState.dx) > Math.abs(gestureState.dy)) {
+                    return false; // 수평 스와이프는 ScrollView가 처리
+                }
+                return Math.abs(gestureState.dy) > 10;
+            },
+            onPanResponderTerminationRequest: () => true,
+            onPanResponderRelease: (_, gestureState) => {
+                // 수직 스와이프가 50px 이상이면 모달 닫기
+                if (Math.abs(gestureState.dy) > 50 && Math.abs(gestureState.dy) > Math.abs(gestureState.dx)) {
+                    closeImageModal();
+                }
+            },
+        });
+
+        return (
+            <View style={{ flex: 1, width: '100%' }} {...backgroundPanResponder.panHandlers}>
+                <TouchableOpacity
+                    activeOpacity={1}
+                    onPress={closeImageModal}
+                    style={{ position: 'absolute', top: 50, right: 20, zIndex: 1000, padding: 10 }}
+                >
+                    <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>✕</Text>
+                </TouchableOpacity>
+                
+                {selectedImages.length > 1 && (
+                    <View style={{ position: 'absolute', bottom: 50, zIndex: 1000 }}>
+                        <Text style={{ color: '#fff', fontSize: 14, fontWeight: '400' }}>
+                            {selectedImageIndex + 1} / {selectedImages.length}
+                        </Text>
+                    </View>
+                )}
+                
+                <ScrollView
+                    horizontal
+                    pagingEnabled
+                    showsHorizontalScrollIndicator={false}
+                    contentOffset={{ x: selectedImageIndex * Dimensions.get('window').width, y: 0 }}
+                    onMomentumScrollEnd={(event) => {
+                        const index = Math.round(event.nativeEvent.contentOffset.x / Dimensions.get('window').width);
+                        setSelectedImageIndex(index);
+                        setSelectedImageUri(selectedImages[index]);
+                    }}
+                    scrollEventThrottle={16}
+                    style={{ flex: 1, width: '100%' }}
+                >
+                    {selectedImages.map((image, index) => (
+                        <View key={index} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height, justifyContent: 'center', alignItems: 'center' }}>
+                            <Image
+                                source={{ uri: image }}
+                                style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height }}
+                                contentFit="contain"
+                            />
+                        </View>
+                    ))}
+                </ScrollView>
+            </View>
+        );
+    }, [selectedImages, selectedImageIndex, closeImageModal]);
 
     return (
         <View style={{ flex: 1, position: 'relative' }}>
@@ -411,147 +619,7 @@ export default function Explore() {
                         <PostSkeleton key={index} />
                     ))
                 ) : (
-                    postList.map((item: any, index) => (
-                        <TouchableOpacity
-                            key={index}
-                            activeOpacity={1}
-                            onPress={() => {
-                                if (!dotsPressedRef.current && !userProfilePressedRef.current) {
-                                    router.push(`/exploreDetail?postPk=${item?.pk}`);
-                                }
-                                userProfilePressedRef.current = false;
-                            }}
-                            style={{ width: '100%', position: 'relative', borderColor: "#b3b3b3", borderBottomWidth: 0.5, paddingTop: 10, paddingLeft: 21, paddingRight: 13, flexDirection: 'row', gap: 13, paddingBottom: 10, zIndex: 1 }}
-                        >
-                            <TouchableOpacity 
-                                onPress={(e) => {
-                                    userProfilePressedRef.current = true;
-                                    if (item?.user?.pk) {
-                                        router.push(`/userProfile?id=${item?.user?.pk}&real=true`);
-                                    }
-                                }}
-                                onPressIn={() => { userProfilePressedRef.current = true; }}
-                                style={{ width: 45, height: 45 }}
-                            >
-                                <Image source={item?.user?.image ?? require('@/assets/images/userIcon.png')} style={[postStyles.item, postStyles.itemPosition]} resizeMode="cover" />
-                            </TouchableOpacity>
-                            <View style={{ width: '100%' }}>
-                                <View style={[postStyles.view2, { height: 'auto', width: '100%', position: 'relative' }]}>
-                                    {user?.pk === item?.user?.pk &&
-                                        <TouchableOpacity 
-                                            onPress={(e) => handleMenuPress(e, item?.pk)} 
-                                            onPressIn={() => { dotsPressedRef.current = true; }}
-                                            style={{ position: 'absolute', right: 60, top: 10, zIndex: 9999, padding: 5 }}
-                                        >
-                                            <DotsIcon />
-                                        </TouchableOpacity>
-                                    }
-                                    <TouchableOpacity 
-                                        onPress={(e) => {
-                                            userProfilePressedRef.current = true;
-                                            if (item?.user?.pk) {
-                                                router.push(`/userProfile?id=${item?.user?.pk}&real=true`);
-                                            }
-                                        }}
-                                        onPressIn={() => { userProfilePressedRef.current = true; }}
-                                        style={{ width: 100 }}
-                                    >
-                                        <Text style={[postStyles.text, postStyles.textTypo, { fontWeight: 700 }]}>{item?.user?.name ?? item?.user?.nickname}</Text>
-                                    </TouchableOpacity>
-                                    <Text style={[postStyles.text2, postStyles.textTypo, { width: '86%' }]}>{item?.content}</Text>
-                                    {item?.image ? (
-                                        item?.image?.split('|SPLIT|')?.length === 1 ?
-                                            (
-                                                <>
-                                                    <ImageWrapper
-                                                        postPk={item?.pk}
-                                                        imageUri={item?.image?.split('|SPLIT|')?.[0]}
-                                                        aspectRatio={imageAspectRatios.get(item?.pk)}
-                                                        handleImageLoad={handleImageLoad}
-                                                        onImagePress={openImageModal}
-                                                        allImages={item?.image?.split('|SPLIT|')}
-                                                    />
-                                                </>
-                                            ) : (
-                                                <ScrollView
-                                                    horizontal
-                                                    showsHorizontalScrollIndicator={false}
-                                                    style={{ width: Dimensions.get('window').width, gap: 10, marginLeft: -79 }}
-                                                    contentContainerStyle={{ gap: 12, paddingLeft: 79, paddingRight: 13 }}
-                                                    onStartShouldSetResponder={() => true}
-                                                    onMoveShouldSetResponder={() => true}
-                                                >
-                                                    {item?.image?.split('|SPLIT|')?.map((image: string, index: number) => {
-                                                        if (index === 0) {
-                                                            return (
-                                                                <ImageWrapper
-                                                                    key={index}
-                                                                    postPk={item?.pk}
-                                                                    imageUri={image}
-                                                                    aspectRatio={imageAspectRatios.get(item?.pk)}
-                                                                    handleImageLoad={handleImageLoad}
-                                                                    onImagePress={openImageModal}
-                                                                    allImages={item?.image?.split('|SPLIT|')}
-                                                                    imageIndex={index}
-                                                                />
-                                                            );
-                                                        }
-                                                        const aspectRatio = imageAspectRatios.get(item?.pk);
-                                                        const imageWidth = Dimensions.get('window').width - 104;
-                                                        return (
-                                                            <TouchableOpacity
-                                                                key={index}
-                                                                activeOpacity={0.9}
-                                                                onPress={() => openImageModal(image, item?.image?.split('|SPLIT|'), index)}
-                                                            >
-                                                                <Image
-                                                                    source={{ uri: image }}
-                                                                    style={{
-                                                                        width: imageWidth,
-                                                                        height: aspectRatio ? imageWidth * aspectRatio : 200,
-                                                                        borderRadius: 10,
-                                                                        marginTop: 9
-                                                                    }}
-                                                                    contentFit="cover"
-                                                                />
-                                                            </TouchableOpacity>
-                                                        );
-                                                    })}
-                                                </ScrollView>
-
-                                            )
-                                    ) : (
-                                        <View style={{ width: '100%', height: 0 }} />
-                                    )}
-                                </View>
-                                <View style={[postStyles.bookmarkParent, { marginTop: 13 }]}>
-                                    <View style={[postStyles.heart, postStyles.heartLayout]}>
-                                        <View style={{ position: 'relative', flexDirection: 'row', alignItems: 'center', gap: 8, minWidth: 40 }}>
-                                            <Animated.View style={{ transform: [{ scale: getLikeAnimation(item?.pk) }] }}>
-                                                {item?.didILike ? (
-                                                    <TouchableOpacity activeOpacity={1} onPress={() => handleLike(item?.pk, true)}>
-                                                        <HeartActiveIcon />
-                                                    </TouchableOpacity>
-                                                ) : (
-                                                    <TouchableOpacity activeOpacity={1} onPress={() => handleLike(item?.pk, false)}>
-                                                        <HeartInactiveIcon />
-                                                    </TouchableOpacity>
-                                                )}
-                                            </Animated.View>
-
-                                            <Text style={{ fontSize: 12, fontWeight: '300', color: '#000', marginLeft: -4 }}>{item?.likeCount === 0 ? '' : item?.likeCount?.toLocaleString()}</Text>
-                                        </View>
-                                    </View>
-                                    <View style={[postStyles.bookmark, postStyles.heartLayout]}>
-                                        <View style={{ position: 'relative', flexDirection: 'row', alignItems: 'center', gap: 8 }}>
-                                            <CommentIcon style={[postStyles.icon2, { marginTop: -2 }]} />
-                                            <Text style={{ fontSize: 12, fontWeight: '300', color: '#000', marginBottom: -1, marginLeft: -4 }}>{item?.comment?.length === 0 ? '' : item?.comment?.length?.toLocaleString()}</Text>
-                                        </View>
-                                    </View>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-                    ))
+                    renderedPostList
                 )}
             </Animated.ScrollView>
             {/* </SafeAreaView> */}
@@ -620,72 +688,7 @@ export default function Explore() {
                 onRequestClose={closeImageModal}
             >
                 <View style={{ flex: 1, backgroundColor: 'rgba(0, 0, 0, 0.95)', justifyContent: 'center', alignItems: 'center' }}>
-                    {(() => {
-                        const backgroundPanResponder = PanResponder.create({
-                            onStartShouldSetPanResponder: (evt, gestureState) => {
-                                // 수평 스와이프가 시작되면 responder를 설정하지 않음
-                                return false;
-                            },
-                            onMoveShouldSetPanResponder: (_, gestureState) => {
-                                // 수직 스와이프만 감지 (아래로 스와이프), 수평 스와이프는 무시
-                                if (Math.abs(gestureState.dx) > Math.abs(gestureState.dy)) {
-                                    return false; // 수평 스와이프는 ScrollView가 처리
-                                }
-                                return Math.abs(gestureState.dy) > 10;
-                            },
-                            onPanResponderTerminationRequest: () => true,
-                            onPanResponderRelease: (_, gestureState) => {
-                                // 수직 스와이프가 50px 이상이면 모달 닫기
-                                if (Math.abs(gestureState.dy) > 50 && Math.abs(gestureState.dy) > Math.abs(gestureState.dx)) {
-                                    closeImageModal();
-                                }
-                            },
-                        });
-
-                        return (
-                            <View style={{ flex: 1, width: '100%' }} {...backgroundPanResponder.panHandlers}>
-                                <TouchableOpacity
-                                    activeOpacity={1}
-                                    onPress={closeImageModal}
-                                    style={{ position: 'absolute', top: 50, right: 20, zIndex: 1000, padding: 10 }}
-                                >
-                                    <Text style={{ color: '#fff', fontSize: 18, fontWeight: '600' }}>✕</Text>
-                                </TouchableOpacity>
-                                
-                                {selectedImages.length > 1 && (
-                                    <View style={{ position: 'absolute', bottom: 50, zIndex: 1000 }}>
-                                        <Text style={{ color: '#fff', fontSize: 14, fontWeight: '400' }}>
-                                            {selectedImageIndex + 1} / {selectedImages.length}
-                                        </Text>
-                                    </View>
-                                )}
-                                
-                                <ScrollView
-                                    horizontal
-                                    pagingEnabled
-                                    showsHorizontalScrollIndicator={false}
-                                    contentOffset={{ x: selectedImageIndex * Dimensions.get('window').width, y: 0 }}
-                                    onMomentumScrollEnd={(event) => {
-                                        const index = Math.round(event.nativeEvent.contentOffset.x / Dimensions.get('window').width);
-                                        setSelectedImageIndex(index);
-                                        setSelectedImageUri(selectedImages[index]);
-                                    }}
-                                    scrollEventThrottle={16}
-                                    style={{ flex: 1, width: '100%' }}
-                                >
-                                    {selectedImages.map((image, index) => (
-                                        <View key={index} style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height, justifyContent: 'center', alignItems: 'center' }}>
-                                            <Image
-                                                source={{ uri: image }}
-                                                style={{ width: Dimensions.get('window').width, height: Dimensions.get('window').height }}
-                                                contentFit="contain"
-                                            />
-                                        </View>
-                                    ))}
-                                </ScrollView>
-                            </View>
-                        );
-                    })()}
+                    {imageModalContent}
                 </View>
             </Modal>
         </View>
