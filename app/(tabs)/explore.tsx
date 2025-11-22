@@ -28,6 +28,8 @@ export default function Explore() {
     const [selectedImageUri, setSelectedImageUri] = useState<string | null>(null);
     const [selectedImages, setSelectedImages] = useState<string[]>([]);
     const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
+    const [visiblePostPks, setVisiblePostPks] = useState<Set<number>>(new Set());
+    const postPositionsRef = useRef<Map<number, { y: number; height: number }>>(new Map());
     const isClosingModalRef = useRef(false);
     const dotsPressedRef = useRef(false);
     const userProfilePressedRef = useRef(false);
@@ -95,6 +97,32 @@ export default function Explore() {
 
         fetchPostList();
     }, [user])
+
+    // 초기 로드 시 viewport에 있는 게시물들 로드
+    useEffect(() => {
+        if (postList.length === 0) return;
+        
+        // 약간의 딜레이를 주어 레이아웃이 완료된 후 계산
+        setTimeout(() => {
+            const viewportTop = lastHeaderY.current || 0;
+            const viewportBottom = viewportTop + containerHeightRef.current;
+            const buffer = 500;
+            
+            const newVisiblePks = new Set<number>();
+            postPositionsRef.current.forEach((position, postPk) => {
+                const postTop = position.y;
+                const postBottom = position.y + position.height;
+                
+                if (postBottom >= viewportTop - buffer && postTop <= viewportBottom + buffer) {
+                    newVisiblePks.add(postPk);
+                }
+            });
+            
+            if (newVisiblePks.size > 0) {
+                setVisiblePostPks(newVisiblePks);
+            }
+        }, 100);
+    }, [postList.length])
 
 
 
@@ -181,6 +209,24 @@ export default function Explore() {
 
         lastHeaderY.current = y;
         scrollY.setValue(y);
+
+        // Viewport 계산하여 보이는 게시물만 이미지 로드
+        const viewportTop = y;
+        const viewportBottom = y + containerHeightRef.current;
+        const buffer = 500; // 위아래 500px 버퍼 추가
+        
+        const newVisiblePks = new Set<number>();
+        postPositionsRef.current.forEach((position, postPk) => {
+            const postTop = position.y;
+            const postBottom = position.y + position.height;
+            
+            // viewport + buffer 범위 내에 있으면 로드
+            if (postBottom >= viewportTop - buffer && postTop <= viewportBottom + buffer) {
+                newVisiblePks.add(postPk);
+            }
+        });
+        
+        setVisiblePostPks(newVisiblePks);
     };
 
     const handleScrollEndDrag = () => {
@@ -376,6 +422,12 @@ export default function Explore() {
                     }
                     userProfilePressedRef.current = false;
                 }}
+                onLayout={(event) => {
+                    const { y, height } = event.nativeEvent.layout;
+                    if (item?.pk) {
+                        postPositionsRef.current.set(item.pk, { y, height });
+                    }
+                }}
                 style={{ width: '100%', position: 'relative', borderColor: "#b3b3b3", borderBottomWidth: 0.5, paddingTop: 10, paddingLeft: 21, paddingRight: 13, flexDirection: 'row', gap: 13, paddingBottom: 10, zIndex: 1 }}
             >
                 <TouchableOpacity 
@@ -425,6 +477,7 @@ export default function Explore() {
                                             handleImageLoad={handleImageLoad}
                                             onImagePress={openImageModal}
                                             allImages={item?.image?.split('|SPLIT|')}
+                                            shouldLoad={visiblePostPks.has(item?.pk)}
                                         />
                                     </>
                                 ) : (
@@ -448,27 +501,45 @@ export default function Explore() {
                                                         onImagePress={openImageModal}
                                                         allImages={item?.image?.split('|SPLIT|')}
                                                         imageIndex={index}
+                                                        shouldLoad={visiblePostPks.has(item?.pk)}
                                                     />
                                                 );
                                             }
                                             const aspectRatio = imageAspectRatios.get(item?.pk);
                                             const imageWidth = Dimensions.get('window').width - 104;
+                                            const shouldLoad = visiblePostPks.has(item?.pk);
                                             return (
                                                 <TouchableOpacity
                                                     key={index}
                                                     activeOpacity={0.9}
                                                     onPress={() => openImageModal(image, item?.image?.split('|SPLIT|'), index)}
                                                 >
-                                                    <Image
-                                                        source={{ uri: image }}
-                                                        style={{
-                                                            width: imageWidth,
-                                                            height: aspectRatio ? imageWidth * aspectRatio : 200,
-                                                            borderRadius: 10,
-                                                            marginTop: 9
-                                                        }}
-                                                        contentFit="cover"
-                                                    />
+                                                    {shouldLoad ? (
+                                                        <Image
+                                                            source={{ uri: image }}
+                                                            style={{
+                                                                width: imageWidth,
+                                                                height: aspectRatio ? imageWidth * aspectRatio : 200,
+                                                                borderRadius: 10,
+                                                                marginTop: 9
+                                                            }}
+                                                            contentFit="cover"
+                                                        />
+                                                    ) : (
+                                                        <View
+                                                            style={{
+                                                                width: imageWidth,
+                                                                height: aspectRatio ? imageWidth * aspectRatio : 200,
+                                                                borderRadius: 10,
+                                                                marginTop: 9,
+                                                                backgroundColor: '#f0f0f0',
+                                                                justifyContent: 'center',
+                                                                alignItems: 'center'
+                                                            }}
+                                                        >
+                                                            <ActivityIndicator size="small" color="#999" />
+                                                        </View>
+                                                    )}
                                                 </TouchableOpacity>
                                             );
                                         })}
@@ -507,7 +578,7 @@ export default function Explore() {
                 </View>
             </TouchableOpacity>
         ));
-    }, [postList, user?.pk, imageAspectRatios, handleImageLoad, handleMenuPress, handleLike, openImageModal, getLikeAnimation]);
+    }, [postList, user?.pk, imageAspectRatios, handleImageLoad, handleMenuPress, handleLike, openImageModal, getLikeAnimation, visiblePostPks]);
 
     const imageModalContent = useMemo(() => {
         const backgroundPanResponder = PanResponder.create({
@@ -858,7 +929,8 @@ const ImageWrapper = ({
     handleImageLoad,
     onImagePress,
     allImages,
-    imageIndex = 0
+    imageIndex = 0,
+    shouldLoad = true
 }: {
     postPk: number;
     imageUri: string;
@@ -867,6 +939,7 @@ const ImageWrapper = ({
     onImagePress?: (imageUri: string, allImages?: string[], initialIndex?: number) => void;
     allImages?: string[];
     imageIndex?: number;
+    shouldLoad?: boolean;
 }) => {
     const [isLoading, setIsLoading] = useState(true);
     const loadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -1004,20 +1077,34 @@ const ImageWrapper = ({
                     <ActivityIndicator size="small" color="#999" />
                 </View>
             )}
-            <Image
-                source={{ uri: imageUri }}
-                style={{
-                    width: imageWidth,
-                    height: aspectRatio ? imageWidth * aspectRatio : 200,
-                    borderRadius: 10,
-                    marginTop: 9,
-                    opacity: isLoading ? 0 : 1
-                }}
-                contentFit="cover"
-                onLoadStart={handleLoadStart}
-                onLoad={handleLoad}
-                onError={handleError}
-            />
+            {shouldLoad ? (
+                <Image
+                    source={{ uri: imageUri }}
+                    style={{
+                        width: imageWidth,
+                        height: aspectRatio ? imageWidth * aspectRatio : 200,
+                        borderRadius: 10,
+                        marginTop: 9,
+                        opacity: isLoading ? 0 : 1
+                    }}
+                    contentFit="cover"
+                    onLoadStart={handleLoadStart}
+                    onLoad={handleLoad}
+                    onError={handleError}
+                />
+            ) : (
+                <View
+                    style={{
+                        width: imageWidth,
+                        height: aspectRatio ? imageWidth * aspectRatio : 200,
+                        borderRadius: 10,
+                        marginTop: 9,
+                        backgroundColor: '#f0f0f0',
+                        justifyContent: 'center',
+                        alignItems: 'center'
+                    }}
+                />
+            )}
         </View>
     );
 };
