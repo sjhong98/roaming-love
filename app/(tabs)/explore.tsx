@@ -30,6 +30,9 @@ export default function Explore() {
     const [selectedImageIndex, setSelectedImageIndex] = useState<number>(0);
     const [visiblePostPks, setVisiblePostPks] = useState<Set<number>>(new Set());
     const postPositionsRef = useRef<Map<number, { y: number; height: number }>>(new Map());
+    const visiblePostPksRef = useRef<Set<number>>(new Set());
+    const lastViewportUpdateRef = useRef(0);
+    const viewportUpdateTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const isClosingModalRef = useRef(false);
     const dotsPressedRef = useRef(false);
     const userProfilePressedRef = useRef(false);
@@ -98,32 +101,6 @@ export default function Explore() {
         fetchPostList();
     }, [user])
 
-    // 초기 로드 시 viewport에 있는 게시물들 로드
-    useEffect(() => {
-        if (postList.length === 0) return;
-        
-        // 약간의 딜레이를 주어 레이아웃이 완료된 후 계산
-        setTimeout(() => {
-            const viewportTop = lastHeaderY.current || 0;
-            const viewportBottom = viewportTop + containerHeightRef.current;
-            const buffer = 500;
-            
-            const newVisiblePks = new Set<number>();
-            postPositionsRef.current.forEach((position, postPk) => {
-                const postTop = position.y;
-                const postBottom = position.y + position.height;
-                
-                if (postBottom >= viewportTop - buffer && postTop <= viewportBottom + buffer) {
-                    newVisiblePks.add(postPk);
-                }
-            });
-            
-            if (newVisiblePks.size > 0) {
-                setVisiblePostPks(newVisiblePks);
-            }
-        }, 100);
-    }, [postList.length])
-
 
 
     useEffect(() => {
@@ -188,7 +165,54 @@ export default function Explore() {
         }
     }, [isCustomRefreshing]);
 
-    const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const updateVisiblePosts = useCallback((scrollY: number) => {
+        const viewportTop = scrollY;
+        const viewportBottom = scrollY + containerHeightRef.current;
+        const buffer = 500; // 위아래 500px 버퍼 추가
+        
+        const newVisiblePks = new Set<number>();
+        postPositionsRef.current.forEach((position, postPk) => {
+            const postTop = position.y;
+            const postBottom = position.y + position.height;
+            
+            // viewport + buffer 범위 내에 있으면 로드
+            if (postBottom >= viewportTop - buffer && postTop <= viewportBottom + buffer) {
+                newVisiblePks.add(postPk);
+            }
+        });
+        
+        // 실제로 변경되었을 때만 업데이트
+        const hasChanged = newVisiblePks.size !== visiblePostPksRef.current.size ||
+            Array.from(newVisiblePks).some(pk => !visiblePostPksRef.current.has(pk));
+        
+        if (hasChanged) {
+            visiblePostPksRef.current = newVisiblePks;
+            setVisiblePostPks(newVisiblePks);
+        }
+    }, []);
+
+    // 초기 로드 시 viewport에 있는 게시물들 로드
+    useEffect(() => {
+        if (postList.length === 0) return;
+        
+        // 약간의 딜레이를 주어 레이아웃이 완료된 후 계산
+        const timer = setTimeout(() => {
+            updateVisiblePosts(lastHeaderY.current || 0);
+        }, 200);
+        
+        return () => clearTimeout(timer);
+    }, [postList.length, updateVisiblePosts])
+
+    // 컴포넌트 언마운트 시 타이머 정리
+    useEffect(() => {
+        return () => {
+            if (viewportUpdateTimerRef.current) {
+                clearTimeout(viewportUpdateTimerRef.current);
+            }
+        };
+    }, [])
+
+    const handleScroll = useCallback((event: NativeSyntheticEvent<NativeScrollEvent>) => {
         const y = event.nativeEvent.contentOffset.y;
         const maxScroll = Math.max(0, contentHeightRef.current - containerHeightRef.current);
 
@@ -210,26 +234,24 @@ export default function Explore() {
         lastHeaderY.current = y;
         scrollY.setValue(y);
 
-        // Viewport 계산하여 보이는 게시물만 이미지 로드
-        const viewportTop = y;
-        const viewportBottom = y + containerHeightRef.current;
-        const buffer = 500; // 위아래 500px 버퍼 추가
-        
-        const newVisiblePks = new Set<number>();
-        postPositionsRef.current.forEach((position, postPk) => {
-            const postTop = position.y;
-            const postBottom = position.y + position.height;
-            
-            // viewport + buffer 범위 내에 있으면 로드
-            if (postBottom >= viewportTop - buffer && postTop <= viewportBottom + buffer) {
-                newVisiblePks.add(postPk);
+        // Viewport 업데이트를 throttling (100ms마다)
+        const now = Date.now();
+        if (now - lastViewportUpdateRef.current > 100) {
+            updateVisiblePosts(y);
+            lastViewportUpdateRef.current = now;
+        } else {
+            // 마지막 업데이트가 100ms 이내면 타이머로 지연 업데이트
+            if (viewportUpdateTimerRef.current) {
+                clearTimeout(viewportUpdateTimerRef.current);
             }
-        });
-        
-        setVisiblePostPks(newVisiblePks);
-    };
+            viewportUpdateTimerRef.current = setTimeout(() => {
+                updateVisiblePosts(y);
+                lastViewportUpdateRef.current = Date.now();
+            }, 100);
+        }
+    }, [isCustomRefreshing, isPulled, updateVisiblePosts]);
 
-    const handleScrollEndDrag = () => {
+    const handleScrollEndDrag = useCallback(() => {
         if (isCustomRefreshing) return;
 
         if (pullDistanceValue.current >= PULL_THRESHOLD) {
@@ -241,7 +263,13 @@ export default function Explore() {
                 useNativeDriver: false,
             }).start();
         }
-    };
+
+        // 스크롤이 끝날 때 최종 viewport 업데이트
+        if (viewportUpdateTimerRef.current) {
+            clearTimeout(viewportUpdateTimerRef.current);
+        }
+        updateVisiblePosts(lastHeaderY.current);
+    }, [isCustomRefreshing, updateVisiblePosts]);
 
     const getLikeAnimation = useCallback((postPk: number): Animated.Value => {
         if (!likeAnimations.current.has(postPk)) {
@@ -669,8 +697,10 @@ export default function Explore() {
                 scrollEventThrottle={16}
                 onScroll={handleScroll}
                 onScrollEndDrag={handleScrollEndDrag}
+                onMomentumScrollEnd={handleScrollEndDrag}
                 onContentSizeChange={(_, height) => { contentHeightRef.current = height; }}
                 onLayout={(event) => { containerHeightRef.current = event.nativeEvent.layout.height; }}
+                removeClippedSubviews={true}
             >
                 <Animated.View style={{
                     position: 'absolute',
