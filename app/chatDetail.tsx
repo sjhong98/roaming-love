@@ -65,7 +65,7 @@ export default function ChatDetail() {
             >
                 <View style={headerStyles.view}>
                     <View style={headerStyles.child} />
-                    <Text style={headerStyles.jennifer}>Jennifer</Text>
+                    <Text style={headerStyles.jennifer}>{chatObj?.nickname}</Text>
                     <TouchableOpacity onPress={() => router.back()} style={[headerStyles.arrowLeft, headerStyles.arrowLeftPosition, { marginTop: -8 }]}>
                         <ArrowGray style={[headerStyles.icon, headerStyles.iconLayout]} />
                     </TouchableOpacity>

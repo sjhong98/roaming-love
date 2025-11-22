@@ -9,6 +9,7 @@ import TypeSelect from "@/components/trip/TypeSelect";
 import { useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import useUser from "@/hooks/use-user";
+import { router } from "expo-router";
 
 type LocationItem = {
     name: string;
@@ -185,7 +186,7 @@ export default function LocationDetailOverlay({
                     <View style={{ marginTop: 30, paddingHorizontal: 27, overflow: 'visible' }}>
                         <View style={userCardStyles.grid}>
                             {filteredUsers.length > 0 ? (
-                                filteredUsers.map((item, index) => (
+                                filteredUsers.map((item: any, index) => (
                                     <View key={`${item.nickname}-${index}`} style={[userCardStyles.cardWrapper, { width: cardContainerWidth }]}>
                                         <View style={[userCardStyles.view]}>
                                             <View style={[userCardStyles.child, { backgroundColor: item.backgroundColor }]} />
@@ -194,13 +195,13 @@ export default function LocationDetailOverlay({
                                                 <Text style={[userCardStyles.text2, userCardStyles.textTypo]}>{item.introduction}</Text>
                                             </View>
                                             <View style={userCardStyles.view3}>
-                                                <Text style={[userCardStyles.text3, userCardStyles.text3Typo]}>{item.favorite}</Text>
+                                                {/* <Text style={[userCardStyles.text3, userCardStyles.text3Typo]}>{item.favorite}</Text> */}
                                             </View>
                                             <Image source={item.image} style={userCardStyles.item} />
-                                            <View style={[userCardStyles.view4, userCardStyles.view4Position]}>
+                                            <TouchableOpacity onPress={() => router.push(`/chatDetail?id=${item?.id}`)} style={[userCardStyles.view4, userCardStyles.view4Position]}>
                                                 <View style={[userCardStyles.inner, userCardStyles.view4Position]} />
-                                                <Text style={[userCardStyles.follow, userCardStyles.text3Typo]}>{item.follow}</Text>
-                                            </View>
+                                                <Text style={[userCardStyles.follow, userCardStyles.text3Typo]}>Small Talk</Text>
+                                            </TouchableOpacity>
                                         </View>
                                     </View>
                                 ))
@@ -315,12 +316,11 @@ const userCardStyles = StyleSheet.create({
         bottom: 0
     },
     follow: {
-        marginLeft: -23.5,
         bottom: 7,
         fontWeight: "800",
         fontSize: 14,
         textAlign: "center",
-        left: "50%"
+        width: 137,
     }
 });
 
