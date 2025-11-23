@@ -49,8 +49,8 @@ export default function UserProfile() {
                     <Image source={userInfo?.image ?? require('@/assets/images/userIcon.png')} style={[styles.inner, styles.iconLayout, { borderRadius: 100 }]} />
                     <View style={{ position: 'absolute', top: 130, left: 0, width: '100%', alignItems: 'center' }}>
                         <View style={[styles.parent, { width: 'auto', flexDirection: 'row', gap: 50 }]}>
-                            <Text style={[styles.text, styles.textTypo]}>{`#${userInfo?.tripType ? userInfo?.tripType : userInfo?.trip_type ?? '여행 타입 없음'}`}</Text>
-                            <Text style={[styles.safeareaviewText, styles.textTypo]}>{`#${userInfo?.loveType ?? userInfo?.love_type ?? '연애 타입 없음'}`}</Text>
+                            {/* <Text style={[styles.text, styles.textTypo]}>{`#${userInfo?.tripType ? userInfo?.tripType : userInfo?.trip_type ?? '여행 타입 없음'}`}</Text>
+                            <Text style={[styles.safeareaviewText, styles.textTypo]}>{`#${userInfo?.loveType ?? userInfo?.love_type ?? '연애 타입 없음'}`}</Text> */}
                         </View>
                     </View>
                     <View style={{ position: 'absolute', top: 0, left: 0, width: '100%', alignItems: 'center' }}>
